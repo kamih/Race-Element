@@ -6,6 +6,9 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+        {"2.2.3.2", "Multi-Sim"+
+                    "\n - DSX: FFB is remade from scratch, it is now 2 effects, feedback and vibration, which together will feel a lot more nuanced. Additionaly there are new options to customize the FFB."
+                    },
         {"2.2.3.0", "Race Element:"+
                     "\n- Updated Start Screen HUD."+
                     "\n- ACC and Multi-Sim shift bars can now render up to 240 Hz."+
