@@ -56,7 +56,9 @@ internal sealed class SpeedometerOverlay : AbstractOverlay
             FirstRowLine = 1
         };
         this.Height = _panel.FontHeight * 3 + 1;
+
         this.RefreshRateHz = _config.InfoPanel.RefreshRateHz;
+        this.RefreshRateHz.ClipMin(10);
     }
 
     public sealed override void BeforeStart()
