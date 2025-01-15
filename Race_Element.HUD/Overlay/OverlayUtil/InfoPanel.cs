@@ -18,6 +18,7 @@ public sealed class InfoPanel
     public int FontHeight { get; private set; }
 
     public bool DrawBackground = true;
+    public Color BackgroundColor { get; init; } = Color.FromArgb(158, 0, 0, 0);
     public bool DrawValueBackground = true;
     public bool DrawRowLines { get; set; } = true;
     public int FirstRowLine { get; set; } = 0;
@@ -51,7 +52,7 @@ public sealed class InfoPanel
     {
         _cachedBackground = new CachedBitmap(MaxWidth, Lines.Count * (this.FontHeight + ExtraLineSpacing), g =>
         {
-            using SolidBrush backgroundBrush = new(Color.FromArgb(158, 0, 0, 0));
+            using SolidBrush backgroundBrush = new(BackgroundColor);
             g.FillRoundedRectangle(backgroundBrush, new Rectangle(0, 0, this.MaxWidth, Lines.Count * (this.FontHeight + ExtraLineSpacing)), 4);
 
             if (DrawValueBackground)
@@ -153,7 +154,7 @@ public sealed class InfoPanel
                     }
 
                     SizeF textWidth = g.MeasureString(bar.CenteredText, _font);
-                    g.DrawStringWithShadow($"{bar.CenteredText}", _font, Color.White, new PointF(X + MaxWidth / 2 - textWidth.Width / 2, Y + counter * (this.FontHeight + ExtraLineSpacing) + _addMonoY), 1f);
+                    g.DrawStringWithShadow($"{bar.CenteredText}", _font, bar.TextColor, new PointF(X + MaxWidth / 2 - textWidth.Width / 2, Y + counter * (this.FontHeight + ExtraLineSpacing) + _addMonoY), 1f);
                 }
 
                 if (line is CenteredTextedDeltabarLine)
@@ -240,6 +241,11 @@ public sealed class InfoPanel
         Lines.Add(new CenterTextedProgressBarLine() { CenteredText = centeredText, Min = min, Max = max, Value = value, BarColor = barColor });
     }
 
+    public void AddProgressBarWithCenteredText(string centeredText, double min, double max, double value, Brush barColor, Color textColor)
+    {
+        Lines.Add(new CenterTextedProgressBarLine() { CenteredText = centeredText, Min = min, Max = max, Value = value, BarColor = barColor, TextColor = textColor });
+    }
+
     public void AddDeltaBarWithCenteredText(string centeredText, double min, double max, double value)
     {
         Lines.Add(new CenteredTextedDeltabarLine() { CenteredText = centeredText, Min = min, Max = max, Value = value });
@@ -274,6 +280,8 @@ public sealed class InfoPanel
         internal double Max { get; set; }
         internal double Value { get; set; }
         internal Brush BarColor { get; set; } = Brushes.OrangeRed;
+
+        internal Color TextColor { get; set; } = Color.White;
     }
 
     private sealed class CenteredTextedDeltabarLine : IPanelLine

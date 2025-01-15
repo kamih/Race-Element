@@ -37,8 +37,19 @@ internal sealed class SpeedometerOverlay : AbstractOverlay
         public ColorGrouping Colors { get; init; } = new ColorGrouping();
         public sealed class ColorGrouping
         {
+
+            [ToolTip("Sets the color of the text.")]
+            public Color BarTextColor { get; init; } = Color.FromArgb(255, 255, 255, 255);
+
             [ToolTip("Sets the color of the bar")]
             public Color BarColor { get; init; } = Color.FromArgb(255, 255, 69, 0);
+
+            [ToolTip("Sets the background color of the bar")]
+            public Color BackgroundColor { get; init; } = Color.FromArgb(255, 0, 0, 0);
+
+            [ToolTip("Sets the opacity of the background color")]
+            [IntRange(10, 255, 1)]
+            public int BackgroundOpacity { get; init; } = 158;
         }
     }
 
@@ -53,7 +64,8 @@ internal sealed class SpeedometerOverlay : AbstractOverlay
         this.Width = 130;
         _panel = new InfoPanel(13, this.Width)
         {
-            FirstRowLine = 1
+            FirstRowLine = 1,
+            BackgroundColor = Color.FromArgb(_config.Colors.BackgroundOpacity, _config.Colors.BackgroundColor)
         };
         this.Height = _panel.FontHeight * 3 + 1;
 
@@ -90,7 +102,7 @@ internal sealed class SpeedometerOverlay : AbstractOverlay
 
     public sealed override void Render(Graphics g)
     {
-        _panel.AddProgressBarWithCenteredText($"{pagePhysics.SpeedKmh:F0}".FillStart(3, ' '), 0, 320, pagePhysics.SpeedKmh, _barBrush);
+        _panel.AddProgressBarWithCenteredText($"{pagePhysics.SpeedKmh:F0}".FillStart(3, ' '), 0, 320, pagePhysics.SpeedKmh, _barBrush, _config.Colors.BarTextColor);
 
         if (_config.InfoPanel.MaxSpeed)
         {
