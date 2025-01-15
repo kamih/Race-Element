@@ -22,15 +22,15 @@ internal sealed class SpeedometerOverlay : AbstractOverlay
         public InfoPanelGrouping InfoPanel { get; init; } = new InfoPanelGrouping();
         public sealed class InfoPanelGrouping
         {
+            [ToolTip("Changes the refreshrate of this HUD, the higher the more cpu usage.")]
+            [IntRange(10, 60, 1)]
+            public int RefreshRateHz { get; init; } = 30;
+
             [ToolTip("Displays the maximum speed reached on each lap.")]
             public bool MaxSpeed { get; init; } = false;
 
             [ToolTip("Displays the minimum speed reached on each lap.")]
             public bool MinSpeed { get; init; } = false;
-
-            [ToolTip("Changes the refreshrate of this HUD, the higher the more cpu usage.")]
-            [IntRange(10, 60, 1)]
-            public int RefreshRateHz { get; init; } = 30;
         }
 
         [ConfigGrouping("Colors", "Change the appearance of the HUD.")]
@@ -92,6 +92,7 @@ internal sealed class SpeedometerOverlay : AbstractOverlay
             LapTracker.Instance.LapFinished -= OnLapFinished;
 
         _barBrush?.Dispose();
+        _panel?.Dispose();
     }
 
     private void OnLapFinished(object sender, DbLapData e)
