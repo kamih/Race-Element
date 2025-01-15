@@ -27,6 +27,10 @@ internal sealed class SpeedometerOverlay : AbstractOverlay
 
             [ToolTip("Displays the minimum speed reached on each lap.")]
             public bool MinSpeed { get; init; } = false;
+
+            [ToolTip("Changes the refreshrate of this HUD, the higher the more cpu usage.")]
+            [IntRange(10, 60, 1)]
+            public int RefreshRateHz { get; init; } = 30;
         }
 
         [ConfigGrouping("Colors", "Change the appearance of the HUD.")]
@@ -52,7 +56,7 @@ internal sealed class SpeedometerOverlay : AbstractOverlay
             FirstRowLine = 1
         };
         this.Height = _panel.FontHeight * 3 + 1;
-        this.RefreshRateHz = 10;
+        this.RefreshRateHz = _config.InfoPanel.RefreshRateHz;
     }
 
     public sealed override void BeforeStart()
