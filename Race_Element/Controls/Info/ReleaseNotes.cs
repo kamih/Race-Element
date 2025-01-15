@@ -6,6 +6,11 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+        {"2.2.3.2", "Multi-Sim:"+
+                    "\n - DSX (DualSense Active Triggers): FFB is remade from scratch, it is now 2 effects, feedback and vibration, which together will feel a lot more nuanced. Additionaly there are new options to customize the FFB."+
+                    "\n\nAssetto Corsa Competizione:"+
+                    "\n - Speedometer HUD: Added option to increase RefreshRate up to 60 Hz, additionaly you can now set the background color of the panel and the text color for the bar."
+                    },
         {"2.2.3.0", "Race Element:"+
                     "\n- Updated Start Screen HUD."+
                     "\n- ACC and Multi-Sim shift bars can now render up to 240 Hz."+
