@@ -9,11 +9,11 @@ namespace RaceElement.Data.Games.AssettoCorsaEvo.DataMapper;
 [Mapper]
 internal static partial class LocalCarMapper
 {
-    internal static void AddPhysics(ref SPageFilePhysics pagePhysics, ref SPageFileStatic pageStatic, ref LocalCarData commonData)
+    internal static void AddPhysics(ref SPageFilePhysics pagePhysics, ref LocalCarData commonData, ref SessionData sessionData)
     {
         commonData.Physics.Acceleration = new(pagePhysics.AccG[0], pagePhysics.AccG[2], pagePhysics.AccG[1]);
         commonData.Engine.IsPitLimiterOn = pagePhysics.PitLimiterOn;
-        commonData.Engine.MaxRpm = pageStatic.MaxRpm;
+        commonData.Engine.MaxRpm = pagePhysics.CurrentMaxRpm;
         commonData.Engine.Rpm = pagePhysics.Rpms;
 
         commonData.Engine.IsRunning = commonData.Engine.Rpm > 0;
@@ -30,10 +30,14 @@ internal static partial class LocalCarMapper
         commonData.Tyres.Velocity = pagePhysics.Velocity;
 
         commonData.Brakes.DiscTemperature = pagePhysics.BrakeTemperature;
+        commonData.Brakes.Pressure = pagePhysics.brakePressure;
 
         commonData.Electronics.TractionControlLevel = (int)pagePhysics.TC;
         commonData.Electronics.AbsLevel = (int)pagePhysics.Abs;
         commonData.Engine.FuelLiters = pagePhysics.Fuel;
+
+        ///
+        sessionData.Weather.AirTemperature = pagePhysics.AirTemp;
     }
 
     internal static void AddGraphics(ref SPageFileGraphic pageGraphics, ref LocalCarData commonData, ref SessionData sessionData)

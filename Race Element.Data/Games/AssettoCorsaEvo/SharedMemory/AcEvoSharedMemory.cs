@@ -554,7 +554,7 @@ public sealed unsafe class AcEvoSharedMemory
         [Obsolete] public float Ballast;
 
         /// <summary>Air density</summary>
-        [Obsolete] public float AirDensity;
+        public float AirDensity;
 
         /// <summary>Air temperature</summary>
         public float AirTemp;
@@ -635,7 +635,7 @@ public sealed unsafe class AcEvoSharedMemory
         [Obsolete] public int P2PStatus;
 
         /// <summary>Maximum engine rpm</summary>
-        [Obsolete] public int CurrentMaxRpm;
+        public int CurrentMaxRpm;
 
         /// <summary>Not shown in ACC</summary>
         [Obsolete][MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)] public float[] mz;
