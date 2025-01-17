@@ -82,7 +82,7 @@ public sealed record SessionData
 
     public bool IsSetupMenuVisible { get; set; }
     public double SessionTimeLeftSecs { get; set; }
-    
+
     public CurrentFlag CurrentFlag { get; set; }
 }
 
@@ -96,7 +96,8 @@ public enum RaceSessionType
     Hotlap = 11,
     Hotstint = 12,
     HotlapSuperpole = 13,
-    Replay = 14
+    Replay = 14,
+    Unknown = 255
 };
 public enum SessionPhase
 {
