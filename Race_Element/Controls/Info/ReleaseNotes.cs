@@ -6,6 +6,7 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+        {"2.2.4.0", "TODO.." },
         {"2.2.3.2", "Multi-Sim:"+
                     "\n - DSX (DualSense Active Triggers): FFB is remade from scratch, it is now 2 effects, feedback and vibration, which together will feel a lot more nuanced. Additionaly there are new options to customize the FFB."+
                     "\n\nAssetto Corsa Competizione:"+
