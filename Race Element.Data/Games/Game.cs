@@ -29,7 +29,7 @@ public static class GameExtensions
         public const string Automobilista2 = "Automobilista 2";
         public const string EuroTruckSimulator2 = "Euro Truck Simulator 2";
         public const string AmericanTruckSimulator = "American Truck Simulator";
-        public const string AssettoCorsaEvo = "Assetto Corsa Evo";
+        public const string AssettoCorsaEvo = "Assetto Corsa EVO";
     }
 
     private static class ShortNames
