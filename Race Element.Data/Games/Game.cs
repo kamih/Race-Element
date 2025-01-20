@@ -13,6 +13,7 @@ public enum Game : int
     Automobilista2 = (1 << 5),
     EuroTruckSimulator2 = (1 << 6),
     AmericanTruckSimulator = (1 << 7),
+    AssettoCorsaEvo = (1 << 8),
     //rFactor2,
     // LMU,
 }
@@ -28,6 +29,7 @@ public static class GameExtensions
         public const string Automobilista2 = "Automobilista 2";
         public const string EuroTruckSimulator2 = "Euro Truck Simulator 2";
         public const string AmericanTruckSimulator = "American Truck Simulator";
+        public const string AssettoCorsaEvo = "Assetto Corsa EVO";
     }
 
     private static class ShortNames
@@ -39,11 +41,12 @@ public static class GameExtensions
         public const string Automobilista2 = "AMS2";
         public const string EuroTruckSimulator2 = "ETS2";
         public const string AmericanTruckSimulator = "ATS";
+        public const string AssettoCorsaEvo = "ACE";
     }
 
     private static class ExeNames
     {
-        public static readonly string[] All = [AssettoCorsa, AssettoCorsaCompetizione, IRacing, RaceRoom, RaceRoomX64, Automobilista2, EuroTruckSimulator2, AmericanTruckSimulator];
+        public static readonly string[] All = [AssettoCorsa, AssettoCorsaCompetizione, AssettoCorsaEvo, IRacing, RaceRoom, RaceRoomX64, Automobilista2, EuroTruckSimulator2, AmericanTruckSimulator];
 
         public const string AssettoCorsaCompetizione = "AC2-Win64-Shipping";
         public const string AssettoCorsa = "acs";
@@ -53,6 +56,7 @@ public static class GameExtensions
         public const string Automobilista2 = "AMS2AVX";
         public const string EuroTruckSimulator2 = "eurotrucks2";
         public const string AmericanTruckSimulator = "amtrucks";
+        public const string AssettoCorsaEvo = "AssettoCorsaEVO";
     }
 
     public static Game GameFromProcessName(string processName) => processName switch
@@ -65,6 +69,7 @@ public static class GameExtensions
         ExeNames.RaceRoomX64 => Game.RaceRoom,
         ExeNames.EuroTruckSimulator2 => Game.EuroTruckSimulator2,
         ExeNames.AmericanTruckSimulator => Game.AmericanTruckSimulator,
+        ExeNames.AssettoCorsaEvo => Game.AssettoCorsaEvo,
         _ => Game.Any,
     };
 
@@ -77,6 +82,7 @@ public static class GameExtensions
         Game.Automobilista2 => FriendlyNames.Automobilista2,
         Game.EuroTruckSimulator2 => FriendlyNames.EuroTruckSimulator2,
         Game.AmericanTruckSimulator => FriendlyNames.AmericanTruckSimulator,
+        Game.AssettoCorsaEvo => FriendlyNames.AssettoCorsaEvo,
         _ => string.Empty
     };
 
@@ -89,6 +95,7 @@ public static class GameExtensions
         Game.Automobilista2 => ShortNames.Automobilista2,
         Game.EuroTruckSimulator2 => ShortNames.EuroTruckSimulator2,
         Game.AmericanTruckSimulator => ShortNames.AmericanTruckSimulator,
+        Game.AssettoCorsaEvo => ShortNames.AssettoCorsaEvo,
         _ => string.Empty
     };
 
@@ -101,6 +108,7 @@ public static class GameExtensions
         FriendlyNames.Automobilista2 => Game.Automobilista2,
         FriendlyNames.EuroTruckSimulator2 => Game.EuroTruckSimulator2,
         FriendlyNames.AmericanTruckSimulator => Game.AmericanTruckSimulator,
+        FriendlyNames.AssettoCorsaEvo => Game.AssettoCorsaEvo,
         _ => Game.AssettoCorsaCompetizione,
     };
 
@@ -113,6 +121,7 @@ public static class GameExtensions
         Game.Automobilista2 => 1066890,
         Game.EuroTruckSimulator2 => 227300,
         Game.AmericanTruckSimulator => 270880,
+        Game.AssettoCorsaEvo => 3058630,
         _ => -1
     };
 
