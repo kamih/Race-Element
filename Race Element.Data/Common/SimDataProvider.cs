@@ -6,6 +6,7 @@ using RaceElement.Data.Games.RaceRoom;
 using RaceElement.Data.Common.SimulatorData.LocalCar;
 using RaceElement.Data.Games.Automobilista2;
 using RaceElement.Data.Games.EuroTruckSimulator2;
+using RaceElement.Data.Games.AssettoCorsaEvo;
 
 namespace RaceElement.Data.Common;
 
@@ -84,6 +85,13 @@ public static class SimDataProvider
                     _localCarEventLoop.Run();
                     break;
                 }
+            case Game.AssettoCorsaEvo:
+            {
+                Instance ??= new AssettoCorsaEvoDataProvider();
+                Instance.Update(ref _localCarData, ref _session, ref _gameData);
+                _localCarEventLoop.Run();
+                break;
+            }
             default: { break; }
         }
     }
