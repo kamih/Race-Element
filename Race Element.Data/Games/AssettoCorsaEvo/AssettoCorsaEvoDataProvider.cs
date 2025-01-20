@@ -4,7 +4,6 @@ using RaceElement.Data.Common.SimulatorData.LocalCar;
 using RaceElement.Data.Games.AssettoCorsaEvo.DataMapper;
 using RaceElement.Data.Games.AssettoCorsaEvo.SharedMemory;
 using System.Drawing;
-using static RaceElement.Data.Games.AssettoCorsaEvo.SharedMemory.AcEvoSharedMemory;
 
 namespace RaceElement.Data.Games.AssettoCorsaEvo;
 
