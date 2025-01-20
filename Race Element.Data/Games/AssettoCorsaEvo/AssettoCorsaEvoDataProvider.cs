@@ -17,7 +17,7 @@ internal sealed class AssettoCorsaEvoDataProvider : AbstractSimDataProvider
 
     internal override int PollingRate() => 200;
 
-    private static string GameName { get => Game.AssettoCorsaEvo.ToShortName(); }
+    private static string GameName => Game.AssettoCorsaEvo.ToShortName();
 
     public sealed override void Update(ref LocalCarData localCar, ref SessionData sessionData, ref GameData gameData)
     {
@@ -32,17 +32,20 @@ internal sealed class AssettoCorsaEvoDataProvider : AbstractSimDataProvider
             SimDataProvider.GameData.IsGamePaused = false;
         }
 
-        var graphicsPage = AcEvoSharedMemory.Instance.ReadGraphicsPageFile();
-        var staticPage = AcEvoSharedMemory.Instance.ReadStaticPageFile();
-
         LocalCarMapper.AddPhysics(ref physicsPage, ref localCar, ref sessionData);
-        LocalCarMapper.AddGraphics(ref graphicsPage, ref localCar, ref sessionData);
-
-        SessionData.Instance.PlayerCarIndex = graphicsPage.PlayerCarID;
-        SimDataProvider.LocalCar.CarModel.CarClass = dummyCarClass;
 
         gameData.Name = GameName;
-        lastPhysicsPacketId = physicsPage.PacketId;
+
+
+        // For now only physics page works, so no need to map other pages.
+
+        //var graphicsPage = AcEvoSharedMemory.Instance.ReadGraphicsPageFile();
+        //var staticPage = AcEvoSharedMemory.Instance.ReadStaticPageFile();
+        //LocalCarMapper.AddGraphics(ref graphicsPage, ref localCar, ref sessionData);
+
+        //SessionData.Instance.PlayerCarIndex = graphicsPage.PlayerCarID;
+        //SimDataProvider.LocalCar.CarModel.CarClass = dummyCarClass;
+
     }
 
     public override List<string> GetCarClasses()
