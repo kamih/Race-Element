@@ -11,7 +11,7 @@ internal static partial class LocalCarMapper
 {
     internal static void AddPhysics(ref SPageFilePhysics pagePhysics, ref LocalCarData commonData, ref SessionData sessionData)
     {
-        commonData.Physics.Acceleration = new(pagePhysics.AccG[0], pagePhysics.AccG[2], pagePhysics.AccG[1]);
+        commonData.Physics.Acceleration = new(pagePhysics.AccG[0], pagePhysics.AccG[1], pagePhysics.AccG[2]);
         commonData.Engine.IsPitLimiterOn = pagePhysics.PitLimiterOn;
         commonData.Engine.MaxRpm = pagePhysics.CurrentMaxRpm;
         commonData.Engine.Rpm = pagePhysics.Rpms;
@@ -50,12 +50,12 @@ internal static partial class LocalCarMapper
 
         switch (pageGraphics.SessionType)
         {
-            case AcSessionType.AC_HOTLAPSUPERPOLE: sessionData.SessionType  = RaceSessionType.HotlapSuperpole; break;
-            case AcSessionType.AC_QUALIFY: sessionData.SessionType  = RaceSessionType.Qualifying; break;
-            case AcSessionType.AC_HOTSTINT: sessionData.SessionType  = RaceSessionType.Hotstint; break;
+            case AcSessionType.AC_HOTLAPSUPERPOLE: sessionData.SessionType = RaceSessionType.HotlapSuperpole; break;
+            case AcSessionType.AC_QUALIFY: sessionData.SessionType = RaceSessionType.Qualifying; break;
+            case AcSessionType.AC_HOTSTINT: sessionData.SessionType = RaceSessionType.Hotstint; break;
             case AcSessionType.AC_PRACTICE: sessionData.SessionType = RaceSessionType.Practice; break;
-            case AcSessionType.AC_HOTLAP: sessionData.SessionType  = RaceSessionType.Hotlap; break;
-            case AcSessionType.AC_RACE: sessionData.SessionType  = RaceSessionType.Race; break;
+            case AcSessionType.AC_HOTLAP: sessionData.SessionType = RaceSessionType.Hotlap; break;
+            case AcSessionType.AC_RACE: sessionData.SessionType = RaceSessionType.Race; break;
             default: sessionData.SessionType = RaceSessionType.Unknown; break;
         }
     }
