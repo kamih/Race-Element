@@ -24,7 +24,14 @@ internal sealed class AssettoCorsaEvoDataProvider : AbstractSimDataProvider
     {
         var physicsPage = AcEvoSharedMemory.Instance.ReadPhysicsPageFile();
         if (lastPhysicsPacketId == physicsPage.PacketId) // no need to remap the physics page if packet is the same
+        {
+            SimDataProvider.GameData.IsGamePaused = true;
             return;
+        }
+        else
+        {
+            SimDataProvider.GameData.IsGamePaused = false;
+        }
 
         var graphicsPage = AcEvoSharedMemory.Instance.ReadGraphicsPageFile();
         var staticPage = AcEvoSharedMemory.Instance.ReadStaticPageFile();
