@@ -107,9 +107,8 @@ internal sealed class DsxOverlay : CommonAbstractOverlay
             Debug.WriteLine("===================================================================");
 
             Debug.WriteLine($"Status: {response.Status}");
-            TimeSpan Timespan = DateTime.Now - _timeSent;
             // First send shows high Milliseconds response time for some reason
-            Debug.WriteLine($"Time Received: {response.TimeReceived}, took: {Timespan.TotalMilliseconds} to receive response from DSX");
+            //Debug.WriteLine($"Time Received: {response.TimeReceived}, took: {Timespan.TotalMilliseconds} to receive response from DSX");
             Debug.WriteLine($"isControllerConnected: {response.isControllerConnected}");
             Debug.WriteLine($"BatteryLevel: {response.BatteryLevel}");
 
