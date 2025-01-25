@@ -1,11 +1,8 @@
-﻿using System.Net;
-using System.Runtime.InteropServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Runtime.InteropServices;
 
 namespace RaceElement.HUD.Common.Overlays.Driving.DualSense;
 
-internal static class Resources
+internal static partial class Resources
 {
     /*
         DS5W_CAPI int ds5w_init(void);
@@ -13,15 +10,15 @@ internal static class Resources
         DS5W_CAPI int ds5w_set_trigger_effect_off(int left);
         DS5W_CAPI int ds5w_set_trigger_effect_vibration(int left, int pos, int amp, int freq);
     */
-    [DllImport("ds5w_x64.dll", SetLastError = true)]
-    public static extern int ds5w_init();
+    [LibraryImport("ds5w_x64.dll", SetLastError = true)]
+    public static partial int ds5w_init();
 
-    [DllImport("ds5w_x64.dll", SetLastError = true)]
-    public static extern void ds5w_shutdown();
+    [LibraryImport("ds5w_x64.dll", SetLastError = true)]
+    public static partial void ds5w_shutdown();
 
-    [DllImport("ds5w_x64.dll", SetLastError = true)]
-    public static extern int ds5w_set_trigger_effect_off(int left);
+    [LibraryImport("ds5w_x64.dll", SetLastError = true)]
+    public static partial int ds5w_set_trigger_effect_off(int left);
 
-    [DllImport("ds5w_x64.dll", SetLastError = true)]
-    public static extern int ds5w_set_trigger_effect_vibration(int left, int pos, int amp, int freq);
+    [LibraryImport("ds5w_x64.dll", SetLastError = true)]
+    public static partial int ds5w_set_trigger_effect_vibration(int left, int pos, int amp, int freq);
 }

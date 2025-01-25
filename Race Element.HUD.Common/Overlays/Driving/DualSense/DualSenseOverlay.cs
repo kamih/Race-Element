@@ -2,6 +2,7 @@
 using RaceElement.HUD.Overlay.Internal;
 using System.Diagnostics;
 using System.Drawing;
+using System.Reflection;
 using System.Text;
 
 using static RaceElement.HUD.Common.Overlays.Driving.DualSense.Resources;
@@ -30,6 +31,9 @@ internal sealed class DualSenseOverlay : CommonAbstractOverlay
     public sealed override void BeforeStart()
     {
         if (IsPreviewing) return;
+
+        ExtractDs5ApiDll();
+
         ds5w_init();
         _DualSenseJob = new DualSenseJob(this) { IntervalMillis = 1000 / 200 };
         _DualSenseJob.Run();
@@ -40,6 +44,31 @@ internal sealed class DualSenseOverlay : CommonAbstractOverlay
 
         _DualSenseJob?.CancelJoin();
         ds5w_shutdown();
+    }
+
+    /// <summary>
+    /// Extracts the embbed dll in this namespace folder, to the executing assembly folder.
+    /// only extracts if it does not exists. Does not check for version!!!
+    /// </summary>
+    private static void ExtractDs5ApiDll()
+    {
+        string dllPath = Path.Combine(AppContext.BaseDirectory, Path.GetFileName("ds5w_x64.dll"));
+        FileInfo dllFile = new FileInfo(dllPath);
+        if (dllFile.Exists) return;
+
+        string resourceName = "RaceElement.HUD.Common.Overlays.Driving.DualSense.ds5w_x64.dll";
+        var assembly = Assembly.GetExecutingAssembly();
+        using (var stream = assembly.GetManifestResourceStream(resourceName))
+        {
+            if (stream == null)
+                throw new FileNotFoundException($"Could not find resource: {resourceName}");
+
+            dllFile.Create();
+            using (var fileStream = dllFile.Open(FileMode.Create, FileAccess.Write))
+            {
+                stream.CopyTo(fileStream);
+            }
+        }
     }
 
     public sealed override bool ShouldRender() => DefaultShouldRender() && !IsPreviewing;
