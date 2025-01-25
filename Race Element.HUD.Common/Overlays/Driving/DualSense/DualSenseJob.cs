@@ -15,5 +15,7 @@ internal sealed class DualSenseJob(DualSenseOverlay overlay) : AbstractLoopJob
     }
     public override void AfterCancel()
     {
+        ds5w_set_trigger_effect_off(0);
+        ds5w_set_trigger_effect_off(1);
     }
 }
