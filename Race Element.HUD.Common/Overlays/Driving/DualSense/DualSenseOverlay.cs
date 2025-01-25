@@ -53,7 +53,7 @@ internal sealed class DualSenseOverlay : CommonAbstractOverlay
     private static void ExtractDs5ApiDll()
     {
         string dllPath = Path.Combine(AppContext.BaseDirectory, Path.GetFileName("ds5w_x64.dll"));
-        FileInfo dllFile = new FileInfo(dllPath);
+        FileInfo dllFile = new(dllPath);
         if (dllFile.Exists) return;
 
         string resourceName = "RaceElement.HUD.Common.Overlays.Driving.DualSense.ds5w_x64.dll";
@@ -63,11 +63,10 @@ internal sealed class DualSenseOverlay : CommonAbstractOverlay
             if (stream == null)
                 throw new FileNotFoundException($"Could not find resource: {resourceName}");
 
-            dllFile.Create();
-            using (var fileStream = dllFile.Open(FileMode.Create, FileAccess.Write))
-            {
-                stream.CopyTo(fileStream);
-            }
+            using var fileStream = dllFile.Open(FileMode.Create, FileAccess.Write);
+            stream.CopyTo(fileStream);
+            stream.Close();
+            fileStream.Close();
         }
     }
 
