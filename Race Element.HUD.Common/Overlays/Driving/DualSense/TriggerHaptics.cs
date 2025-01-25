@@ -10,10 +10,16 @@ internal static class TriggerHaptics
     {
         // TODO: add either an option to threshold it on brake input or based on some curve?
         if (SimDataProvider.LocalCar.Inputs.Brake <= config.BrakeSlip.BrakeThreshold / 100f)
+        {
+            ds5w_set_trigger_effect_off(1);
             return;
+        }
         float[] slipRatios = SimDataProvider.LocalCar.Tyres.SlipRatio;
         if (slipRatios.Length != 4)
+        {
+            ds5w_set_trigger_effect_off(1);
             return;
+        }
 
         float slipRatioFront = Math.Max(slipRatios[0], slipRatios[1]);
         float slipRatioRear = Math.Max(slipRatios[2], slipRatios[3]);
@@ -45,10 +51,16 @@ internal static class TriggerHaptics
     public static void HandleAcceleration(DualSenseConfiguration config)
     {
         if (SimDataProvider.LocalCar.Inputs.Throttle <= config.ThrottleSlip.ThrottleThreshold / 100f)
+        {
+            ds5w_set_trigger_effect_off(0);
             return;
+        }
         float[] slipRatios = SimDataProvider.LocalCar.Tyres.SlipRatio;
         if (slipRatios.Length != 4)
+        {
+            ds5w_set_trigger_effect_off(0);
             return;
+        }
 
         float slipRatioFront = Math.Max(slipRatios[0], slipRatios[1]);
         float slipRatioRear = Math.Max(slipRatios[2], slipRatios[3]);
