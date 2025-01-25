@@ -38,18 +38,20 @@ internal static class TriggerHaptics
 
             if (percentage >= 0.05f)
             {
-                ds5w_set_trigger_effect_feedback(1, 0, (int)(config.BrakeSlip.FeedbackStrength * percentage));
+                float perc = (config.BrakeSlip.FeedbackStrength * percentage);
+                perc.ClipMin(config.BrakeSlip.FeedbackStrength);
+                ds5w_set_trigger_effect_feedback(1, 0, (int)perc);
+                Thread.Sleep((int)(1000f / 200));
                 ds5w_set_trigger_effect_off(1);
             }
 
             int freq = (int)(config.BrakeSlip.MaxFrequency * percentage);
             freq.ClipMin(config.BrakeSlip.MinFrequency);
             ds5w_set_trigger_effect_vibration(1, 0, config.BrakeSlip.Amplitude, freq);
+            Thread.Sleep((int)(1000f / 200 * 4));
         }
         else
-        {
             ds5w_set_trigger_effect_off(1);
-        }
     }
 
     public static void HandleAcceleration(DualSenseConfiguration config)
@@ -81,16 +83,16 @@ internal static class TriggerHaptics
             if (percentage >= 0.05f)
             {
                 ds5w_set_trigger_effect_feedback(0, 0, (int)(config.ThrottleSlip.FeedbackStrength * percentage));
+                Thread.Sleep((int)(1000f / 200));
                 ds5w_set_trigger_effect_off(0);
             }
 
             int freq = (int)(config.ThrottleSlip.MaxFrequency * percentage);
             freq.ClipMin(config.ThrottleSlip.MinFrequency);
             ds5w_set_trigger_effect_vibration(0, 0, config.ThrottleSlip.Amplitude, freq);
+            Thread.Sleep((int)(1000f / 200 * 4));
         }
         else
-        {
             ds5w_set_trigger_effect_off(0);
-        }
     }
 }
