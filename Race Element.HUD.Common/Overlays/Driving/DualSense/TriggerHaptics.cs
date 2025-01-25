@@ -36,8 +36,11 @@ internal static class TriggerHaptics
             float magicValue = frontslipCoefecient + rearSlipCoefecient;
             float percentage = magicValue * 1.0f / 17.5f;
 
-            //if (percentage >= 0.05f)
-            //    ds5w_set_trigger_effect_vibration(1, 0, (int)(config.BrakeSlip.FeedbackStrength * percentage), 90);
+            if (percentage >= 0.05f)
+            {
+                ds5w_set_trigger_effect_feedback(1, 0, (int)(config.BrakeSlip.FeedbackStrength * percentage));
+                ds5w_set_trigger_effect_off(1);
+            }
 
             int freq = (int)(config.BrakeSlip.MaxFrequency * percentage);
             freq.ClipMin(config.BrakeSlip.MinFrequency);
@@ -75,8 +78,11 @@ internal static class TriggerHaptics
 
             float magicValue = frontslipCoefecient + rearSlipCoefecient;
             float percentage = magicValue * 1.0f / 12.5f;
-            //if (percentage >= 0.05f)
-            //    ds5w_set_trigger_effect_vibration(0, 0, (int)(config.ThrottleSlip.FeedbackStrength * percentage), 0);
+            if (percentage >= 0.05f)
+            {
+                ds5w_set_trigger_effect_feedback(0, 0, (int)(config.ThrottleSlip.FeedbackStrength * percentage));
+                ds5w_set_trigger_effect_off(0);
+            }
 
             int freq = (int)(config.ThrottleSlip.MaxFrequency * percentage);
             freq.ClipMin(config.ThrottleSlip.MinFrequency);
