@@ -32,11 +32,11 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
 
         [ToolTip("Higher is stronger dynamic feedback.")]
         [IntRange(1, 8, 1)]
-        public int FeedbackStrength { get; init; } = 7;
+        public int FeedbackStrength { get; init; } = 3;
 
         [ToolTip("Sets the min frequency of the vibration effect in the trigger.")]
         [IntRange(1, 10, 1)]
-        public int MinFrequency { get; init; } = 3;
+        public int MinFrequency { get; init; } = 6;
 
         [ToolTip("Sets the max frequency of the vibration effect in the trigger.")]
         [IntRange(20, 150, 1)]
@@ -44,7 +44,7 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
 
         [ToolTip("Change the amplitude(strength) of the vibration effect in the trigger.")]
         [IntRange(1, 8, 1)]
-        public int Amplitude { get; init; } = 8;
+        public int Amplitude { get; init; } = 6;
     }
 
     [ConfigGrouping("Throttle Slip", "Adjust the slip effect whilst applying the throttle.\nModify the threshold to increase or decrease sensitivity in different situations.")]
@@ -68,7 +68,7 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
 
         [ToolTip("Higher is stronger dynamic feedback.")]
         [IntRange(1, 8, 1)]
-        public int FeedbackStrength { get; init; } = 8;
+        public int FeedbackStrength { get; init; } = 2;
 
         [ToolTip("Sets the min frequency of the vibration effect in the trigger.")]
         [IntRange(1, 10, 1)]
