@@ -38,9 +38,7 @@ internal static class TriggerHaptics
 
             if (percentage >= 0.05f)
             {
-                float perc = (config.BrakeSlip.FeedbackStrength * percentage);
-                perc.ClipMin(config.BrakeSlip.FeedbackStrength);
-                ds5w_set_trigger_effect_feedback(1, 0, (int)perc);
+                ds5w_set_trigger_effect_feedback(1, 0, (int)(config.BrakeSlip.FeedbackStrength * percentage));
                 Thread.Sleep((int)(1000f / 250));
                 ds5w_set_trigger_effect_off(1);
             }
