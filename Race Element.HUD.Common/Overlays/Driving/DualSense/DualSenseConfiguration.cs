@@ -31,7 +31,7 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         public float RearSlipThreshold { get; init; } = 0.25f;
 
         [ToolTip("Higher is stronger dynamic feedback.")]
-        [IntRange(5, 8, 1)]
+        [IntRange(1, 8, 1)]
         public int FeedbackStrength { get; init; } = 7;
 
         [ToolTip("Sets the min frequency of the vibration effect in the trigger.")]
@@ -67,7 +67,7 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         public float RearSlipThreshold { get; init; } = 0.25f;
 
         [ToolTip("Higher is stronger dynamic feedback.")]
-        [IntRange(5, 8, 1)]
+        [IntRange(1, 8, 1)]
         public int FeedbackStrength { get; init; } = 8;
 
         [ToolTip("Sets the min frequency of the vibration effect in the trigger.")]

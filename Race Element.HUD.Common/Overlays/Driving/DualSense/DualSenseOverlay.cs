@@ -19,7 +19,8 @@ namespace RaceElement.HUD.Common.Overlays.Driving.DualSense;
 internal sealed class DualSenseOverlay : CommonAbstractOverlay
 {
     internal readonly DualSenseConfiguration _config = new();
-    private DualSenseJob _DualSenseJob;
+    private ThrottleJob _throttleJob;
+    private BrakeJob _brakeJob;
 
     public DualSenseOverlay(Rectangle rectangle) : base(rectangle, "DualSense")
     {
@@ -35,14 +36,18 @@ internal sealed class DualSenseOverlay : CommonAbstractOverlay
         ExtractDs5ApiDll();
 
         ds5w_init();
-        _DualSenseJob = new DualSenseJob(this) { IntervalMillis = 1000 / 200 };
-        _DualSenseJob.Run();
+        _throttleJob = new ThrottleJob(this) { IntervalMillis = 1000 / 200 };
+        _brakeJob = new BrakeJob(this) { IntervalMillis = 1000 / 200 };
+        _throttleJob.Run();
+        _brakeJob.Run();
     }
     public sealed override void BeforeStop()
     {
         if (IsPreviewing) return;
 
-        _DualSenseJob?.CancelJoin();
+        _throttleJob?.CancelJoin();
+        _brakeJob?.CancelJoin();
+
         ds5w_shutdown();
     }
 

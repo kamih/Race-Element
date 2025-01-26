@@ -28,27 +28,27 @@ internal static class TriggerHaptics
         if (slipRatioFront > config.BrakeSlip.FrontSlipThreshold || slipRatioRear > config.BrakeSlip.RearSlipThreshold)
         {
             float frontslipCoefecient = slipRatioFront * 4f;
-            frontslipCoefecient.ClipMax(10);
+            frontslipCoefecient.ClipMax(7.5f);
 
             float rearSlipCoefecient = slipRatioFront * 2f;
-            rearSlipCoefecient.ClipMax(7.5f);
+            rearSlipCoefecient.ClipMax(5f);
 
             float magicValue = frontslipCoefecient + rearSlipCoefecient;
-            float percentage = magicValue * 1.0f / 17.5f;
+            float percentage = magicValue * 1.0f / 12.5f;
 
             if (percentage >= 0.05f)
             {
                 float perc = (config.BrakeSlip.FeedbackStrength * percentage);
                 perc.ClipMin(config.BrakeSlip.FeedbackStrength);
                 ds5w_set_trigger_effect_feedback(1, 0, (int)perc);
-                Thread.Sleep((int)(1000f / 200));
+                Thread.Sleep((int)(1000f / 250));
                 ds5w_set_trigger_effect_off(1);
             }
 
             int freq = (int)(config.BrakeSlip.MaxFrequency * percentage);
             freq.ClipMin(config.BrakeSlip.MinFrequency);
             ds5w_set_trigger_effect_vibration(1, 0, config.BrakeSlip.Amplitude, freq);
-            Thread.Sleep((int)(1000f / 200 * 4));
+            Thread.Sleep((int)(1000f / 250 * 4));
         }
         else
             ds5w_set_trigger_effect_off(1);
@@ -83,14 +83,14 @@ internal static class TriggerHaptics
             if (percentage >= 0.05f)
             {
                 ds5w_set_trigger_effect_feedback(0, 0, (int)(config.ThrottleSlip.FeedbackStrength * percentage));
-                Thread.Sleep((int)(1000f / 200));
+                Thread.Sleep((int)(1000f / 250));
                 ds5w_set_trigger_effect_off(0);
             }
 
             int freq = (int)(config.ThrottleSlip.MaxFrequency * percentage);
             freq.ClipMin(config.ThrottleSlip.MinFrequency);
             ds5w_set_trigger_effect_vibration(0, 0, config.ThrottleSlip.Amplitude, freq);
-            Thread.Sleep((int)(1000f / 200 * 4));
+            Thread.Sleep((int)(1000f / 250 * 4));
         }
         else
             ds5w_set_trigger_effect_off(0);
