@@ -1,5 +1,5 @@
 ﻿using RaceElement.Core.Jobs.Loop;
-using static RaceElement.HUD.Common.Overlays.Driving.DualSense.Resources;
+using static RaceElement.HUD.Common.Overlays.Driving.DualSense.DS5W;
 
 namespace RaceElement.HUD.Common.Overlays.Driving.DualSense;
 
@@ -10,8 +10,8 @@ internal sealed class DualSenseJob(DualSenseOverlay overlay) : AbstractLoopJob
         //if (!overlay.ShouldRender())
         //    return;
 
-        TriggerHaptics.HandleAcceleration(overlay._config);
-        TriggerHaptics.HandleBraking(overlay._config);
+        TriggerHaptics.HandleAcceleration(overlay._config.ThrottleSlip);
+        TriggerHaptics.HandleBraking(overlay._config.BrakeSlip);
     }
     public override void AfterCancel()
     {

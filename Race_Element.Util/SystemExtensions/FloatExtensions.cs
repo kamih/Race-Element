@@ -18,6 +18,10 @@ public static class FloatExtensions
         if (value > max) value = max;
         return value;
     }
+    public static float Clip(float value, float min, float max)
+    {
+        return Math.Min(max, Math.Max(min, value));
+    }
 
     /// <summary>
     /// Sets this value or returns it, clipped by max (inclusive)
@@ -45,7 +49,22 @@ public static class FloatExtensions
         return value;
     }
 
-
+    public static float Cubic(float x)
+    {
+        return x * x * (3.0f - 2.0f * x);
+    }
+    public static float SmoothStep(float x, float edge0, float edge1)
+    {
+        // Scale, bias and clamp x to 0..1 range
+        x = (x - edge0) / (edge1 - edge0);
+        x = Math.Min(1.0f, Math.Max(0.0f, x));
+        // Evaluate polynomial
+        return Cubic(x);
+    }
+    public static float Lerp(float weight, float a, float b)
+    {
+        return a * (1.0f - weight) + b * weight;
+    }
 
     public static string ToString(this float[] values, int decimals)
     {

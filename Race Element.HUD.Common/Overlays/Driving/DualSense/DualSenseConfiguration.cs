@@ -24,27 +24,23 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         [FloatRange(0.1f, 99f, 0.1f, 1)]
         public float BrakeThreshold { get; init; } = 3f;
 
-        [FloatRange(0.05f, 6f, 0.002f, 3)]
-        public float FrontSlipThreshold { get; init; } = 0.25f;
+        [FloatRange(0.0f, 1.0f, 0.002f, 3)]
+        public float MinSlipRatio { get; init; } = 0.5f;
 
-        [FloatRange(0.05f, 6f, 0.002f, 3)]
-        public float RearSlipThreshold { get; init; } = 0.25f;
+        [FloatRange(1.0f, 10.0f, 0.002f, 3)]
+        public float MaxSlipRatio { get; init; } = 2.5f;
 
-        [ToolTip("Higher is stronger dynamic feedback.")]
-        [IntRange(5, 8, 1)]
-        public int FeedbackStrength { get; init; } = 7;
+        [ToolTip("Sets the frequency of the trigger vibration effect at the MinSlipRatio value.")]
+        [FloatRange(10.0f, 255.0f, 0.5f, 2)]
+        public float FreqAtMinSlipRatio { get; init; } = 255.0f;
 
-        [ToolTip("Sets the min frequency of the vibration effect in the trigger.")]
-        [IntRange(1, 10, 1)]
-        public int MinFrequency { get; init; } = 3;
+        [ToolTip("Sets the frequency of the trigger vibration effect at the MaxSlipRatio value.")]
+        [FloatRange(10.0f, 255.0f, 0.5f, 2)]
+        public float FreqAtMaxSlipRatio { get; init; } = 20.0f;
 
-        [ToolTip("Sets the max frequency of the vibration effect in the trigger.")]
-        [IntRange(20, 150, 1)]
-        public int MaxFrequency { get; init; } = 100;
-
-        [ToolTip("Change the amplitude(strength) of the vibration effect in the trigger.")]
-        [IntRange(1, 8, 1)]
-        public int Amplitude { get; init; } = 8;
+        [ToolTip("Gain for the effect amplitude as SlipRatio increases.")]
+        [FloatRange(1.0f, 10.0f, 0.1f, 1)]
+        public float AmpGain { get; init; } = 2.5f;
     }
 
     [ConfigGrouping("Throttle Slip", "Adjust the slip effect whilst applying the throttle.\nModify the threshold to increase or decrease sensitivity in different situations.")]
@@ -58,29 +54,23 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         [FloatRange(0.1f, 99f, 0.1f, 1)]
         public float ThrottleThreshold { get; init; } = 3f;
 
-        [ToolTip("Decrease this treshold to increase the sensitivity when the front wheels slip (understeer).")]
-        [FloatRange(0.05f, 6f, 0.002f, 3)]
-        public float FrontSlipThreshold { get; init; } = 0.35f;
+        [FloatRange(0.0f, 1.0f, 0.002f, 3)]
+        public float MinSlipRatio { get; init; } = 0.5f;
 
-        [ToolTip("Decrease this treshold to increase the sensitivity when the rear wheels slip (oversteer).")]
-        [FloatRange(0.05f, 10f, 0.002f, 3)]
-        public float RearSlipThreshold { get; init; } = 0.25f;
+        [FloatRange(1.0f, 10.0f, 0.002f, 3)]
+        public float MaxSlipRatio { get; init; } = 2.5f;
 
-        [ToolTip("Higher is stronger dynamic feedback.")]
-        [IntRange(5, 8, 1)]
-        public int FeedbackStrength { get; init; } = 8;
+        [ToolTip("Sets the frequency of the trigger vibration effect at the MinSlipRatio value.")]
+        [FloatRange(10.0f, 255.0f, 0.5f, 2)]
+        public float FreqAtMinSlipRatio { get; init; } = 255.0f;
 
-        [ToolTip("Sets the min frequency of the vibration effect in the trigger.")]
-        [IntRange(1, 10, 1)]
-        public int MinFrequency { get; init; } = 6;
+        [ToolTip("Sets the frequency of the trigger vibration effect at the MaxSlipRatio value.")]
+        [FloatRange(10.0f, 255.0f, 0.5f, 2)]
+        public float FreqAtMaxSlipRatio { get; init; } = 20.0f;
 
-        [ToolTip("Sets the max frequency of the vibration effect in the trigger.")]
-        [IntRange(20, 150, 1)]
-        public int MaxFrequency { get; init; } = 100;
-
-        [ToolTip("Change the amplitude(strength) of the vibration effect in the trigger.")]
-        [IntRange(1, 8, 1)]
-        public int Amplitude { get; init; } = 7;
+        [ToolTip("Gain for the effect amplitude as SlipRatio increases.")]
+        [FloatRange(1.0f, 10.0f, 0.1f, 1)]
+        public float AmpGain { get; init; } = 2.5f;
     }
 
 }

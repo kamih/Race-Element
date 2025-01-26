@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Text;
 
-using static RaceElement.HUD.Common.Overlays.Driving.DualSense.Resources;
+using static RaceElement.HUD.Common.Overlays.Driving.DualSense.DS5W;
 
 namespace RaceElement.HUD.Common.Overlays.Driving.DualSense;
 

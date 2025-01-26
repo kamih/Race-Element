@@ -1,8 +1,19 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace RaceElement.HUD.Common.Overlays.Driving.DualSense;
 
-internal static partial class Resources
+internal class Util
+{
+    public static void DebugOut(string msg)
+    {
+        StackTrace st = new StackTrace(false);
+        string caller = st.GetFrame(1).GetMethod().Name;
+        Debug.WriteLine(caller + ": " + msg);
+    }
+}
+
+internal static partial class DS5W
 {
     [LibraryImport("ds5w_x64.dll", SetLastError = true)]
     public static partial int ds5w_init();
