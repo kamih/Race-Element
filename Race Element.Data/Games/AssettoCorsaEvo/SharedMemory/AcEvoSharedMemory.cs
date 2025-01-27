@@ -441,7 +441,7 @@ public sealed unsafe class AcEvoSharedMemory
         public float Y;
         public float Z;
 
-        public override string ToString() => $"X: {X}, Y: {Y}, Z: {Z}";
+        public override readonly string ToString() => $"X: {X}, Y: {Y}, Z: {Z}";
     }
 
     /// <summary>The following members change at each graphic step. They all refer to the player’s car</summary>

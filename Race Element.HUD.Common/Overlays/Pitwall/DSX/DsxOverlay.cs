@@ -24,7 +24,6 @@ internal sealed class DsxOverlay : CommonAbstractOverlay
 
     internal UdpClient _client;
     internal IPEndPoint _endPoint;
-    private DateTime _timeSent;
 
     public DsxOverlay(Rectangle rectangle) : base(rectangle, "DSX")
     {
@@ -86,7 +85,6 @@ internal sealed class DsxOverlay : CommonAbstractOverlay
 
         var requestData = Encoding.ASCII.GetBytes(packet);
         _client?.Send(requestData, requestData.Length, _endPoint);
-        _timeSent = DateTime.Now;
     }
 
     private ServerResponse? Receive()
@@ -109,9 +107,8 @@ internal sealed class DsxOverlay : CommonAbstractOverlay
             Debug.WriteLine("===================================================================");
 
             Debug.WriteLine($"Status: {response.Status}");
-            TimeSpan Timespan = DateTime.Now - _timeSent;
             // First send shows high Milliseconds response time for some reason
-            Debug.WriteLine($"Time Received: {response.TimeReceived}, took: {Timespan.TotalMilliseconds} to receive response from DSX");
+            //Debug.WriteLine($"Time Received: {response.TimeReceived}, took: {Timespan.TotalMilliseconds} to receive response from DSX");
             Debug.WriteLine($"isControllerConnected: {response.isControllerConnected}");
             Debug.WriteLine($"BatteryLevel: {response.BatteryLevel}");
 
