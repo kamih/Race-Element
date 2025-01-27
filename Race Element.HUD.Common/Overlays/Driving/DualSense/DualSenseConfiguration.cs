@@ -12,6 +12,7 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         GenericConfiguration.AllowRescale = false;
     }
 
+    [HideForGame(Game.RaceRoom | Game.AssettoCorsa1)]
     [ConfigGrouping("Rumble", "Adjust the rumble effects.")]
     public RumbleParams Rumble { get; init; } = new();
     public sealed class RumbleParams

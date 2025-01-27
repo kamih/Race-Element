@@ -1,5 +1,7 @@
 ﻿using RaceElement.Core.Jobs.Loop;
 using RaceElement.Data.Common;
+using RaceElement.Data.Games;
+
 using static RaceElement.HUD.Common.Overlays.Driving.DualSense.DS5W;
 using static RaceElement.HUD.Common.Overlays.Driving.DualSense.Util;
 
@@ -14,7 +16,9 @@ internal sealed class DualSenseJob(DualSenseOverlay overlay) : AbstractLoopJob
         ds5w_batch_begin();
         TriggerHaptics.HandleAcceleration(overlay._config.ThrottleSlip);
         TriggerHaptics.HandleBraking(overlay._config.BrakeSlip);
-        TriggerHaptics.HandleRumble(overlay._config.Rumble);
+        if (!GameManager.CurrentGame.HasFlag(Game.RaceRoom) &&
+            !GameManager.CurrentGame.HasFlag(Game.AssettoCorsa1))
+            TriggerHaptics.HandleRumble(overlay._config.Rumble);
         ds5w_batch_end();
     }
     public override void AfterCancel()
