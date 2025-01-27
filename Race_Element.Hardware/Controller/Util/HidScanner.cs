@@ -9,7 +9,7 @@ namespace DualSenseAPI.Util
     /// <summary>
     /// Utilities to scann for DualSense controllers on HID.
     /// </summary>
-    internal class HidScanner
+    internal sealed class HidScanner
     {
         private readonly IDeviceFactory hidFactory;
 

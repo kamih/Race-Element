@@ -2,11 +2,6 @@
 using RaceElement.HUD.Overlay.Internal;
 using System.Diagnostics;
 using System.Drawing;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
-using static RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal.Resources;
 
 namespace RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal;
 
@@ -20,7 +15,7 @@ namespace RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal;
 internal sealed class DsiOverlay : CommonAbstractOverlay
 {
     internal readonly DsiConfiguration _config = new();
-    private DsxJob _dsxJob;
+    private DsiJob _dsiJob;
 
     public DsiOverlay(Rectangle rectangle) : base(rectangle, "DSI")
     {
@@ -33,14 +28,14 @@ internal sealed class DsiOverlay : CommonAbstractOverlay
     {
         if (IsPreviewing) return;
 
-        _dsxJob = new DsxJob(this) { IntervalMillis = 1000 / 200 };
-        _dsxJob.Run();
+        _dsiJob = new DsiJob(this) { IntervalMillis = 1000 / 200 };
+        _dsiJob.Run();
     }
     public sealed override void BeforeStop()
     {
         if (IsPreviewing) return;
 
-        _dsxJob?.CancelJoin();
+        _dsiJob?.CancelJoin();
     }
 
     public sealed override bool ShouldRender() => true;// DefaultShouldRender() && !IsPreviewing;

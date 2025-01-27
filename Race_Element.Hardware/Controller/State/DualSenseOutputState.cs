@@ -6,7 +6,7 @@ namespace DualSenseAPI.State
     /// <summary>
     /// All available output variables for a DualSense controller.
     /// </summary>
-    public class DualSenseOutputState
+    public sealed class DualSenseOutputState
     {
         /// <summary>
         /// Left motor rumble, as a percentage (0 to 1). Defaults to 0.

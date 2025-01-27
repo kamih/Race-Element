@@ -7,7 +7,7 @@ namespace DualSenseAPI.State
     /// <summary>
     /// All available input variables for a DualSense controller.
     /// </summary>
-    public class DualSenseInputState
+    public sealed class DualSenseInputState
     {
         /// <summary>
         /// Default constructor, initializes all fields to 0/false/default

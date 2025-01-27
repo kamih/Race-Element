@@ -102,7 +102,8 @@ namespace DualSenseAPI
         {
             if (underlyingDevice.IsInitialized)
             {
-                underlyingDevice.Close();
+                underlyingDevice?.Close();
+                underlyingDevice?.Dispose();
             }
         }
 

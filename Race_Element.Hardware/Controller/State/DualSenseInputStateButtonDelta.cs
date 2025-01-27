@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace DualSenseAPI.State
 {
-    public class DualSenseInputStateButtonDelta
+    public sealed class DualSenseInputStateButtonDelta
     {
         /// <summary>
         /// The change status of the square button.

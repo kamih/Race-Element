@@ -1,6 +1,6 @@
 ﻿using RaceElement.Data.Common;
 using RaceElement.Util.SystemExtensions;
-using static RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal.Resources;
+using static RaceElement.HUD.Common.Overlays.Pitwall.DSX.Resources;
 
 namespace RaceElement.HUD.Common.Overlays.Pitwall.DSX;
 
