@@ -12,6 +12,24 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         GenericConfiguration.AllowRescale = false;
     }
 
+    [ConfigGrouping("Rumble", "Adjust the rumble effects.")]
+    public RumbleParams Rumble { get; init; } = new();
+    public sealed class RumbleParams
+    {
+        /// <summary>
+        /// Kerb vibration coef
+        /// </summary>
+        [ToolTip("Kerb vibration coef.")]
+        [FloatRange(0.0f, 2.0f, 0.01f, 2)]
+        public float KerbCoef { get; init; } = 1.2f;
+
+        /// <summary>
+        /// ABS vibration coef
+        /// </summary>
+        [ToolTip("ABS vibration coef.")]
+        [FloatRange(0.0f, 2.0f, 0.01f, 2)]
+        public float ABSCoef { get; init; } = 1f;
+    }
 
     [ConfigGrouping("Brake Slip", "Adjust the slip effect whilst applying the brakes.")]
     public BrakeSlipHaptics BrakeSlip { get; init; } = new();
@@ -25,14 +43,14 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         public float BrakeThreshold { get; init; } = 3f;
 
         [FloatRange(0.0f, 1.0f, 0.002f, 3)]
-        public float MinSlipRatio { get; init; } = 0.5f;
+        public float MinSlipRatio { get; init; } = 0.240f;
 
         [FloatRange(1.0f, 10.0f, 0.002f, 3)]
-        public float MaxSlipRatio { get; init; } = 2.5f;
+        public float MaxSlipRatio { get; init; } = 2.0f;
 
         [ToolTip("Sets the frequency of the trigger vibration effect at the MinSlipRatio value.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float FreqAtMinSlipRatio { get; init; } = 255.0f;
+        public float FreqAtMinSlipRatio { get; init; } = 150.0f;
 
         [ToolTip("Sets the frequency of the trigger vibration effect at the MaxSlipRatio value.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
@@ -40,7 +58,7 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
 
         [ToolTip("Gain for the effect amplitude as SlipRatio increases.")]
         [FloatRange(1.0f, 10.0f, 0.1f, 1)]
-        public float AmpGain { get; init; } = 2.5f;
+        public float AmpGain { get; init; } = 2.8f;
     }
 
     [ConfigGrouping("Throttle Slip", "Adjust the slip effect whilst applying the throttle.\nModify the threshold to increase or decrease sensitivity in different situations.")]
@@ -62,7 +80,7 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
 
         [ToolTip("Sets the frequency of the trigger vibration effect at the MinSlipRatio value.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float FreqAtMinSlipRatio { get; init; } = 255.0f;
+        public float FreqAtMinSlipRatio { get; init; } = 165.0f;
 
         [ToolTip("Sets the frequency of the trigger vibration effect at the MaxSlipRatio value.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
