@@ -289,6 +289,7 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
 
 
             SessionData.Instance.LapDeltaToSessionBestLapMs = _iRacingSDK.Data.GetFloat(lapDeltaToSessionBestLapDatum);
+            localCar.Timing.LapTimeDeltaBestMS = (int)(SessionData.Instance.LapDeltaToSessionBestLapMs * 1000.0);
 
             SessionData.Instance.Weather.AirTemperature = _iRacingSDK.Data.GetFloat(airTempDatum);
             SessionData.Instance.Weather.AirVelocity = _iRacingSDK.Data.GetFloat(windVelDatum) * 3.6f;
