@@ -2,11 +2,11 @@
 using RaceElement.Util.SystemExtensions;
 using static RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal.Resources;
 
-namespace RaceElement.HUD.Common.Overlays.Pitwall.DSX;
+namespace RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal;
 
 internal static class TriggerHaptics
 {
-    public static DsxPacket HandleBraking(DsxConfiguration config)
+    public static DsxPacket HandleBraking(DsiConfiguration config)
     {
         DsxPacket p = new();
         int controllerIndex = 0;
@@ -48,7 +48,7 @@ internal static class TriggerHaptics
         return p;
     }
 
-    public static DsxPacket HandleAcceleration(DsxConfiguration config)
+    public static DsxPacket HandleAcceleration(DsiConfiguration config)
     {
         DsxPacket p = new();
         int controllerIndex = 0;

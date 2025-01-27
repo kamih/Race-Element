@@ -1,5 +1,5 @@
 ﻿using RaceElement.Core.Jobs.Loop;
-using static RaceElement.HUD.Common.Overlays.Pitwall.DSX.Resources;
+using static RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal.Resources;
 
 namespace RaceElement.HUD.Common.Overlays.Pitwall.DSX;
 

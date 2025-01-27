@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using static RaceElement.HUD.Common.Overlays.Pitwall.DSX.Resources;
+using static RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal.Resources;
 
 namespace RaceElement.HUD.Common.Overlays.Pitwall.DSX;
 

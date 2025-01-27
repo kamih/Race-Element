@@ -1,6 +1,6 @@
 ﻿using static RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal.Resources;
 
-namespace RaceElement.HUD.Common.Overlays.Pitwall.DSX;
+namespace RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal;
 internal static class DsxPacketExtensions
 {
 
