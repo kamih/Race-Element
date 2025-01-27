@@ -1,4 +1,5 @@
 ﻿using RaceElement.HUD.Overlay.Configuration;
+using RaceElement.Data.Games;
 
 namespace RaceElement.HUD.Common.Overlays.Driving.DualSense;
 
@@ -49,13 +50,13 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         [FloatRange(1.0f, 10.0f, 0.002f, 3)]
         public float MaxSlipRatio { get; init; } = 2.0f;
 
-        [ToolTip("Sets the frequency of the trigger vibration effect at the MinSlipRatio value.")]
+        [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is <= MinSlipRatio.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float FreqAtMinSlipRatio { get; init; } = 150.0f;
+        public float LowSlipFrequency { get; init; } = 150.0f;
 
-        [ToolTip("Sets the frequency of the trigger vibration effect at the MaxSlipRatio value.")]
+        [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is >= MaxSlipRatio.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float FreqAtMaxSlipRatio { get; init; } = 20.0f;
+        public float HighSlipFrequency { get; init; } = 20.0f;
 
         [ToolTip("Gain for the effect amplitude as SlipRatio increases.")]
         [FloatRange(1.0f, 10.0f, 0.1f, 1)]
@@ -79,13 +80,13 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         [FloatRange(1.0f, 10.0f, 0.002f, 3)]
         public float MaxSlipRatio { get; init; } = 2.5f;
 
-        [ToolTip("Sets the frequency of the trigger vibration effect at the MinSlipRatio value.")]
+        [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is <= MinSlipRatio.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float FreqAtMinSlipRatio { get; init; } = 165.0f;
+        public float LowSlipFrequency { get; init; } = 165.0f;
 
-        [ToolTip("Sets the frequency of the trigger vibration effect at the MaxSlipRatio value.")]
+        [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is >= MaxSlipRatio.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float FreqAtMaxSlipRatio { get; init; } = 20.0f;
+        public float HighSlipFrequency { get; init; } = 20.0f;
 
         [ToolTip("Gain for the effect amplitude as SlipRatio increases.")]
         [FloatRange(1.0f, 10.0f, 0.1f, 1)]

@@ -38,7 +38,7 @@ internal static class TriggerHaptics
         }
         // Calculate frequency from slipRatio
         float srWeight = SmoothStep(slipRatioFront, config.MinSlipRatio, config.MaxSlipRatio);
-        float freqf = Lerp(srWeight, config.FreqAtMinSlipRatio, config.FreqAtMaxSlipRatio);
+        float freqf = Lerp(srWeight, config.LowSlipFrequency, config.HighSlipFrequency);
         int freq = (int)Math.Round(Clip(freqf, 0.0f, 255.0f));
         // Calculate amplitude from slipRatio
         int amp = 1 + (int)Math.Round(Math.Sqrt(slipRatioFront - config.MinSlipRatio ) * config.AmpGain);
@@ -64,7 +64,7 @@ internal static class TriggerHaptics
         }
         // Calculate frequency from slipRatio
         float srWeight = SmoothStep(slipRatioBack, config.MinSlipRatio, config.MaxSlipRatio);
-        float freqf = Lerp(srWeight, config.FreqAtMinSlipRatio, config.FreqAtMaxSlipRatio);
+        float freqf = Lerp(srWeight, config.LowSlipFrequency, config.HighSlipFrequency);
         int freq = (int)Math.Round(Clip(freqf, 0.0f, 255.0f));
         // Calculate amplitude from slipRatio
         int amp = 1 + (int)Math.Round(Math.Sqrt(slipRatioBack - config.MinSlipRatio) * config.AmpGain);
