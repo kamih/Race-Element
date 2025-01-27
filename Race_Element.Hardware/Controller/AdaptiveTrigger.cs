@@ -7,6 +7,14 @@
     {
         ContinuousResistance = 0x01,
         SectionResistance = 0x02,
+
+        /// <summary>
+        /// Official Feedback
+        /// </summary>
+        Feedback = 0x21,
+        /// <summary>
+        /// Official Vibration
+        /// </summary>
         Vibrate = 0x26,
         Calibrate = 0xFC,
         Default = 0x00
