@@ -5,6 +5,7 @@ using System.Drawing;
 
 namespace RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal;
 
+#if DEBUG
 [Overlay(Name = "DSI",
     Description = "Adds active triggers for the DualSense Controller.",
     OverlayCategory = OverlayCategory.Inputs,
@@ -12,6 +13,7 @@ namespace RaceElement.HUD.Common.Overlays.Pitwall.DualSenseInternal;
     Game = Game.RaceRoom | Game.AssettoCorsa1 | Game.AssettoCorsaEvo,
     Authors = ["Reinier Klarenberg"]
 )]
+#endif
 internal sealed class DsiOverlay : CommonAbstractOverlay
 {
     internal readonly DsiConfiguration _config = new();
