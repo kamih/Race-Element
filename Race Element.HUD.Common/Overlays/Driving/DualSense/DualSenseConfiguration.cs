@@ -44,19 +44,25 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         [FloatRange(0.1f, 99f, 0.1f, 1)]
         public float BrakeThreshold { get; init; } = 3f;
 
+        [ToolTip("Front/back slip ratio balance to feed into effect. Front[0..1]Back")]
+        [FloatRange(0.0f, 1.0f, 0.002f, 3)]
+        public float SlipRatioBias { get; init; } = 0.5f;
+
+        [ToolTip("Minimum slip ratio at which the effect will start.")]
         [FloatRange(0.0f, 1.0f, 0.002f, 3)]
         public float MinSlipRatio { get; init; } = 0.240f;
 
+        [ToolTip("Maximum slip ratio after which frequency of effect will be clamped.")]
         [FloatRange(1.0f, 10.0f, 0.002f, 3)]
         public float MaxSlipRatio { get; init; } = 2.0f;
 
         [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is <= MinSlipRatio.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float LowSlipFrequency { get; init; } = 150.0f;
+        public float MinSlipFrequency { get; init; } = 150.0f;
 
         [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is >= MaxSlipRatio.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float HighSlipFrequency { get; init; } = 20.0f;
+        public float MaxSlipFrequency { get; init; } = 20.0f;
 
         [ToolTip("Gain for the effect amplitude as SlipRatio increases.")]
         [FloatRange(1.0f, 10.0f, 0.1f, 1)]
@@ -74,19 +80,25 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         [FloatRange(0.1f, 99f, 0.1f, 1)]
         public float ThrottleThreshold { get; init; } = 3f;
 
+        [ToolTip("Front/back slip ratio balance to feed into effect. Front[0..1]Back")]
+        [FloatRange(0.0f, 1.0f, 0.002f, 3)]
+        public float SlipRatioBias { get; init; } = 0.5f;
+
+        [ToolTip("Minimum slip ratio at which the effect will start.")]
         [FloatRange(0.0f, 1.0f, 0.002f, 3)]
         public float MinSlipRatio { get; init; } = 0.5f;
 
+        [ToolTip("Maximum slip ratio after which frequency of effect will be clamped.")]
         [FloatRange(1.0f, 10.0f, 0.002f, 3)]
         public float MaxSlipRatio { get; init; } = 2.5f;
 
-        [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is <= MinSlipRatio.")]
+        [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is <= MinSlip.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float LowSlipFrequency { get; init; } = 165.0f;
+        public float MinSlipFrequency { get; init; } = 165.0f;
 
-        [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is >= MaxSlipRatio.")]
+        [ToolTip("Sets the frequency of the trigger vibration effect when slip ratio is >= MaxSlip.")]
         [FloatRange(10.0f, 255.0f, 0.5f, 2)]
-        public float HighSlipFrequency { get; init; } = 20.0f;
+        public float MaxSlipFrequency { get; init; } = 20.0f;
 
         [ToolTip("Gain for the effect amplitude as SlipRatio increases.")]
         [FloatRange(1.0f, 10.0f, 0.1f, 1)]
