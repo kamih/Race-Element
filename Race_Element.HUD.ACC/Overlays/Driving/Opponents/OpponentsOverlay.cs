@@ -1,4 +1,5 @@
 ﻿using RaceElement.Data.ACC.EntryList;
+using RaceElement.Data.ACC.EntryList.TrackPositionGraph;
 using RaceElement.Data.ACC.Session;
 using RaceElement.HUD.Overlay.Configuration;
 using RaceElement.HUD.Overlay.Internal;
@@ -59,12 +60,15 @@ internal sealed class OpponentsOverlay : AbstractOverlay
     private InfoTable _table;
     public OpponentsOverlay(Rectangle rectangle) : base(rectangle, "Opponents")
     {
+        Width = 350;
+        Height = 350;
         List<int> columnSizes = [50];
 
-
-        _table = new InfoTable(12, [50, 50, 50]) { DrawBackground = true, DrawRowLines = true, DrawValueBackground = false, };
+        _table = new InfoTable(12, [50, 50, 50]) { DrawBackground = true, DrawRowLines = true, DrawValueBackground = true, };
 
     }
+
+    public override bool ShouldRender() => true;
 
     public sealed override void Render(Graphics g)
     {
@@ -73,39 +77,48 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         if (model.Ahead?.Length == 0 && model.Behind?.Length == 0)
             return;
 
-        var allCars = EntryListTracker.Instance.Cars;
-
-        foreach (var item in model.Ahead)
-        {
-            var car = GetCarData(item.CarIndex);
-            string header = $"{car.CarInfo.RaceNumber}";
-            _table.AddRow(new()
+        if (model.Ahead != null)
+            foreach (var item in model.Ahead)
             {
-                Header = header,
-                Columns = [],
-            });
-        }
+                var car = GetCarData(item.CarIndex);
+                string header = $"{car.CarInfo.RaceNumber}";
+                _table.AddRow(new()
+                {
+                    Header = header,
+                    Columns = [$"P{car.RealtimeCarUpdate.Position}", $"{item.LaptimeMs}"],
+                });
+            }
         // add local car
-        var localCar = GetCarData(pageGraphics.PlayerCarID);
-        _table.AddRow(new()
-        {
-            Header = $"{localCar.CarInfo.RaceNumber}",
-            Columns = [],
-        });
-
-        foreach (var item in model.Behind)
-        {
-            var car = GetCarData(item.CarIndex);
-            string header = $"{car.CarInfo.RaceNumber}";
+        var localCar = GetCarData(PlayerCarID);
+        if (localCar != null)
             _table.AddRow(new()
             {
-                Header = header,
-                Columns = [],
+                Header = $"-> {localCar.CarInfo.RaceNumber}",
+                Columns = [$"P{localCar.RealtimeCarUpdate.Position}"],
             });
-        }
 
+        if (model.Behind != null)
+            foreach (var item in model.Behind)
+            {
+                var car = GetCarData(item.CarIndex);
+                string header = $"{car.CarInfo.RaceNumber}";
+                _table.AddRow(new()
+                {
+                    Header = header,
+                    Columns = [$"P{car.RealtimeCarUpdate.Position}", $"{item.LaptimeMs}"],
+                });
+            }
 
         _table.Draw(g);
+    }
+
+    private int PlayerCarID
+    {
+        get
+        {
+            if (broadCastRealTime.FocusedCarIndex != pageGraphics.PlayerCarID) return broadCastRealTime.FocusedCarIndex;
+            return pageGraphics.PlayerCarID;
+        }
     }
 
     private OpponentsModel CreateOpponentsModel()
@@ -113,8 +126,9 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         var allCars = EntryListTracker.Instance.Cars;
         if (allCars.Count == 0) return new();
 
-        int playerCarId = pageGraphics.PlayerCarID;
+        int playerCarId = PlayerCarID;
         var playerCar = allCars.FirstOrDefault(x => x.Key == playerCarId);
+        if (playerCar.Value == null) return new();
         int playerCarPosition = playerCar.Value.RealtimeCarUpdate.Position;
 
         List<CarDataModel> carsAhead = [];
@@ -132,7 +146,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
                     int[] sectors = [-1, -1, -1];
 
                     var lastLap = ahead.Value.RealtimeCarUpdate.LastLap;
-                    if (lastLap != null)
+                    if (lastLap != null && lastLap.LaptimeMS.HasValue)
                     {
                         laptime = lastLap.LaptimeMS.Value;
                         for (int s = 0; s < lastLap.Splits.Count; s++)
@@ -154,12 +168,13 @@ internal sealed class OpponentsOverlay : AbstractOverlay
                     carsAhead.Add(model);
                 }
             }
+            carsAhead.Reverse();
         }
 
         List<CarDataModel> carsBehind = [];
         if (playerCarPosition <= allCars.Count)
         {
-            for (int i = 0; i < allCars.Count; i++)
+            for (int i = playerCarPosition + 1; i <= allCars.Count; i++)
             {
                 if (carsBehind.Count >= _config.Opponents.BehindCount)
                     break;
@@ -171,8 +186,9 @@ internal sealed class OpponentsOverlay : AbstractOverlay
                     int[] sectors = [-1, -1, -1];
 
                     var lastLap = behind.Value.RealtimeCarUpdate.LastLap;
-                    if (lastLap != null)
+                    if (lastLap != null && lastLap.LaptimeMS.HasValue)
                     {
+
                         laptime = lastLap.LaptimeMS.Value;
                         for (int s = 0; s < lastLap.Splits.Count; s++)
                             sectors[s] = lastLap.Splits[s].Value;
@@ -190,7 +206,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
                             GapTime = gap
                         }
                     };
-                    carsAhead.Add(model);
+                    carsBehind.Add(model);
                 }
             }
         }
