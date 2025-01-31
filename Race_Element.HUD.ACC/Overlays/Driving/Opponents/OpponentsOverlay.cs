@@ -2,6 +2,7 @@
 using RaceElement.Data.ACC.Session;
 using RaceElement.HUD.Overlay.Configuration;
 using RaceElement.HUD.Overlay.Internal;
+using RaceElement.HUD.Overlay.OverlayUtil;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -22,10 +23,11 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         public OpponentsGrouping Opponents { get; init; } = new();
         public sealed class OpponentsGrouping
         {
-            public int AheadCount { get; init; } = 3;
-            public int BehindCount { get; init; } = 3;
+            [IntRange(1, 5, 1)]
+            public int AheadCount { get; init; } = 1;
+            [IntRange(1, 5, 1)]
+            public int BehindCount { get; init; } = 1;
         }
-
 
         [ConfigGrouping("Data", "Change which opponents data is displayed.")]
         public BehaviorGrouping Data { get; init; } = new();
@@ -44,8 +46,8 @@ internal sealed class OpponentsOverlay : AbstractOverlay
     private readonly record struct CarDataModel
     {
         public int CarIndex { get; init; }
-        public int Laptime { get; init; }
-        public int[] Sectors { get; init; }
+        public int LaptimeMs { get; init; }
+        public int[] SectorsMs { get; init; }
         public GapModel Gap { get; init; }
     }
     private readonly record struct GapModel
@@ -54,8 +56,14 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         public int GapLaps { get; init; }
     }
 
+    private InfoTable _table;
     public OpponentsOverlay(Rectangle rectangle) : base(rectangle, "Opponents")
     {
+        List<int> columnSizes = [50];
+
+
+        _table = new InfoTable(12, [50, 50, 50]) { DrawBackground = true, DrawRowLines = true, DrawValueBackground = false, };
+
     }
 
     public sealed override void Render(Graphics g)
@@ -65,19 +73,39 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         if (model.Ahead?.Length == 0 && model.Behind?.Length == 0)
             return;
 
+        var allCars = EntryListTracker.Instance.Cars;
+
         foreach (var item in model.Ahead)
         {
-
+            var car = GetCarData(item.CarIndex);
+            string header = $"{car.CarInfo.RaceNumber}";
+            _table.AddRow(new()
+            {
+                Header = header,
+                Columns = [],
+            });
         }
-
         // add local car
-
+        var localCar = GetCarData(pageGraphics.PlayerCarID);
+        _table.AddRow(new()
+        {
+            Header = $"{localCar.CarInfo.RaceNumber}",
+            Columns = [],
+        });
 
         foreach (var item in model.Behind)
         {
-
+            var car = GetCarData(item.CarIndex);
+            string header = $"{car.CarInfo.RaceNumber}";
+            _table.AddRow(new()
+            {
+                Header = header,
+                Columns = [],
+            });
         }
 
+
+        _table.Draw(g);
     }
 
     private OpponentsModel CreateOpponentsModel()
@@ -94,21 +122,32 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         {
             for (int i = playerCarPosition - 1; i >= 1; i--)
             {
+                if (carsAhead.Count >= _config.Opponents.AheadCount)
+                    break;
+
                 var ahead = allCars.FirstOrDefault(x => x.Value.RealtimeCarUpdate.Position == i);
                 if (ahead.Value != null)
                 {
                     int laptime = -1;
                     int[] sectors = [-1, -1, -1];
 
+                    var lastLap = ahead.Value.RealtimeCarUpdate.LastLap;
+                    if (lastLap != null)
+                    {
+                        laptime = lastLap.LaptimeMS.Value;
+                        for (int s = 0; s < lastLap.Splits.Count; s++)
+                            sectors[s] = lastLap.Splits[s].Value;
+                    }
+
                     float gap = GapTracker.Instance.TimeGapBetween(playerCarId, playerCar.Value.RealtimeCarUpdate.SplinePosition, ahead.Key);
                     CarDataModel model = new()
                     {
                         CarIndex = ahead.Key,
-                        Laptime = laptime,
-                        Sectors = sectors,
+                        LaptimeMs = laptime,
+                        SectorsMs = sectors,
                         Gap = new GapModel()
                         {
-                            GapLaps = playerCar.Value.RealtimeCarUpdate.Laps - ahead.Value.RealtimeCarUpdate.Laps,
+                            GapLaps = ahead.Value.RealtimeCarUpdate.Laps - playerCar.Value.RealtimeCarUpdate.Laps,
                             GapTime = gap
                         }
                     };
@@ -117,26 +156,57 @@ internal sealed class OpponentsOverlay : AbstractOverlay
             }
         }
 
+        List<CarDataModel> carsBehind = [];
+        if (playerCarPosition <= allCars.Count)
+        {
+            for (int i = 0; i < allCars.Count; i++)
+            {
+                if (carsBehind.Count >= _config.Opponents.BehindCount)
+                    break;
 
-        CarDataModel[] behind = [];
+                var behind = allCars.FirstOrDefault(x => x.Value.RealtimeCarUpdate.Position == i);
+                if (behind.Value != null)
+                {
+                    int laptime = -1;
+                    int[] sectors = [-1, -1, -1];
 
-        return new OpponentsModel() { Ahead = [.. carsAhead], Behind = behind };
+                    var lastLap = behind.Value.RealtimeCarUpdate.LastLap;
+                    if (lastLap != null)
+                    {
+                        laptime = lastLap.LaptimeMS.Value;
+                        for (int s = 0; s < lastLap.Splits.Count; s++)
+                            sectors[s] = lastLap.Splits[s].Value;
+                    }
+
+                    float gap = GapTracker.Instance.TimeGapBetween(behind.Key, behind.Value.RealtimeCarUpdate.SplinePosition, playerCarId);
+                    CarDataModel model = new()
+                    {
+                        CarIndex = behind.Key,
+                        LaptimeMs = laptime,
+                        SectorsMs = sectors,
+                        Gap = new GapModel()
+                        {
+                            GapLaps = playerCar.Value.RealtimeCarUpdate.Laps - behind.Value.RealtimeCarUpdate.Laps,
+                            GapTime = gap
+                        }
+                    };
+                    carsAhead.Add(model);
+                }
+            }
+        }
+
+        return new OpponentsModel()
+        {
+            Ahead = [.. carsAhead],
+            Behind = [.. carsBehind]
+        };
     }
 
-    /// <summary>
-    /// Gets the position of the car, based on <see cref="_config"/> If multiclass is set it will return the multiclass position
-    /// </summary>
-    /// <param name="carId"></param>
-    /// <returns>0 if not car id not found.</returns>
-    private int GetPosition(int carId)
+    private EntryListTracker.CarData GetCarData(int carId)
     {
         var allCars = EntryListTracker.Instance.Cars;
-        if (allCars.Count == 0) return 0;
-
+        if (allCars.Count == 0) return null;
         var car = allCars.FirstOrDefault(x => x.Key == carId);
-        if (car.Value == null) return 0;
-
-        return car.Value.RealtimeCarUpdate.Position;
+        return car.Value;
     }
-
 }
