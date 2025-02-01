@@ -24,11 +24,13 @@ internal sealed class AssettoCorsaEvoDataProvider : AbstractSimDataProvider
         var physicsPage = AcEvoSharedMemory.Instance.ReadPhysicsPageFile();
         if (lastPhysicsPacketId == physicsPage.PacketId) // no need to remap the physics page if packet is the same
         {
+            lastPhysicsPacketId = physicsPage.PacketId;
             SimDataProvider.GameData.IsGamePaused = true;
             return;
         }
         else
         {
+            lastPhysicsPacketId = physicsPage.PacketId;
             SimDataProvider.GameData.IsGamePaused = false;
         }
 
