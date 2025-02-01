@@ -1,16 +1,11 @@
 ﻿using RaceElement.Data.ACC.EntryList;
-using RaceElement.Data.ACC.EntryList.TrackPositionGraph;
 using RaceElement.Data.ACC.Session;
 using RaceElement.HUD.Overlay.Configuration;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.OverlayUtil;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace RaceElement.HUD.ACC.Overlays.Driving.Opponents;
 [Overlay(
