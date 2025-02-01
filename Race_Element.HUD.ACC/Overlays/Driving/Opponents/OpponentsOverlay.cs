@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace RaceElement.HUD.ACC.Overlays.Driving.Opponents;
 [Overlay(
@@ -64,7 +65,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         Height = 350;
         List<int> columnSizes = [50];
 
-        _table = new InfoTable(12, [50, 50, 50]) { DrawBackground = true, DrawRowLines = true, DrawValueBackground = true, };
+        _table = new InfoTable(12, [100, 100, 50]) { DrawBackground = true, DrawRowLines = true, DrawValueBackground = true, };
 
     }
 
@@ -73,6 +74,12 @@ internal sealed class OpponentsOverlay : AbstractOverlay
     public sealed override void Render(Graphics g)
     {
         OpponentsModel model = CreateOpponentsModel();
+
+        _table.AddRow(new()
+        {
+            Header = "P",
+            Columns = ["Lap", "Gap"],
+        });
 
         if (model.Ahead?.Length == 0 && model.Behind?.Length == 0)
             return;
@@ -85,7 +92,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
                 _table.AddRow(new()
                 {
                     Header = header,
-                    Columns = [$"P{car.RealtimeCarUpdate.Position}", $"{item.LaptimeMs}"],
+                    Columns = [$"P{car.RealtimeCarUpdate.Position}", $"{item.LaptimeMs}", $"{item.Gap.GapTime:F1}"],
                 });
             }
         // add local car
@@ -105,7 +112,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
                 _table.AddRow(new()
                 {
                     Header = header,
-                    Columns = [$"P{car.RealtimeCarUpdate.Position}", $"{item.LaptimeMs}"],
+                    Columns = [$"P{car.RealtimeCarUpdate.Position}", $"{item.LaptimeMs}", $"{item.Gap.GapTime:F1}"],
                 });
             }
 
