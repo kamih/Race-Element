@@ -27,7 +27,7 @@ internal static class TriggerHaptics
                     float frontslipCoefecient = slipRatioFront * 4f;
                     frontslipCoefecient.ClipMax(10);
 
-                    float rearSlipCoefecient = slipRatioFront * 2f;
+                    float rearSlipCoefecient = slipRatioRear * 2f;
                     rearSlipCoefecient.ClipMax(7.5f);
 
 
@@ -65,7 +65,7 @@ internal static class TriggerHaptics
                 {
                     float frontslipCoefecient = slipRatioFront * 3f;
                     frontslipCoefecient.ClipMax(5);
-                    float rearSlipCoefecient = slipRatioFront * 5f;
+                    float rearSlipCoefecient = slipRatioRear * 5f;
                     rearSlipCoefecient.ClipMax(7.5f);
 
                     float magicValue = frontslipCoefecient + rearSlipCoefecient;
