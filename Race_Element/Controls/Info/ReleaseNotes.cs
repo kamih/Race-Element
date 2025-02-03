@@ -6,6 +6,14 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+        {"2.2.4.4", "Assetto Corsa EVO:"+
+                    "\n- Improved detection when game is paused."
+                    },
+        {"2.2.4.2", "Race Element:"+
+                    "\n- Fixed crash when ACC Liveries were not installed."+
+                    "\n\niRacing:"+
+                    "\n- Lap Delta Bar HUD is enabled again."
+                    },
         {"2.2.4.0", "Assetto Corsa EVO Early Access"+
                     "\n- Added initial support for a few basic HUDs, like shift bar, shift rpm, input trace, g-force trace, and wheel slip."+
                     "\n- DSX (DualSense Active Triggers): Added support for AC EVO."},
