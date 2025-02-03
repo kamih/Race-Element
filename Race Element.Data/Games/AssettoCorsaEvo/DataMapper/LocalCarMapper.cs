@@ -17,6 +17,7 @@ internal static partial class LocalCarMapper
         commonData.Physics.Gvibrations = pagePhysics.Gvibrations;
         commonData.Physics.AbsVibrations = pagePhysics.AbsVibrations;
         commonData.Physics.Acceleration = new(pagePhysics.AccG[0], pagePhysics.AccG[1], pagePhysics.AccG[2]);
+        commonData.Physics.Damage = pagePhysics.CarDamage;
 
         commonData.Engine.IsPitLimiterOn = pagePhysics.PitLimiterOn;
         commonData.Engine.MaxRpm = pagePhysics.CurrentMaxRpm;

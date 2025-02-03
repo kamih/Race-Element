@@ -18,10 +18,6 @@ public static class FloatExtensions
         if (value > max) value = max;
         return value;
     }
-    public static float Clip(float value, float min, float max)
-    {
-        return Math.Min(max, Math.Max(min, value));
-    }
 
     /// <summary>
     /// Sets this value or returns it, clipped by max (inclusive)

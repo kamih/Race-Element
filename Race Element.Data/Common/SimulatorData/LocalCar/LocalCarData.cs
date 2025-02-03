@@ -147,6 +147,9 @@ public sealed record PhysicsData
     /// <summary>Wheel suspension travel.</summary>
     public float[] SuspensionTravel { get; internal set; } = new float[4];
 
+    /// <summary>Damage to each side.</summary>
+    public float[] Damage { get; internal set; } = new float[5];
+
     /// <summary>Vibrations generated from driving on curbs and off track.</summary>
     public float KerbVibration;
 

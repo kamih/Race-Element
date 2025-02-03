@@ -19,18 +19,53 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
     public sealed class RumbleParams
     {
         /// <summary>
-        /// Kerb vibration coef
+        /// Kerb rumble coef
         /// </summary>
-        [ToolTip("Kerb vibration coef.")]
+        [ToolTip("Kerb rumble coef.")]
         [FloatRange(0.0f, 2.0f, 0.01f, 2)]
         public float KerbCoef { get; init; } = 1.2f;
 
         /// <summary>
-        /// ABS vibration coef
+        /// ABS rumble coef
         /// </summary>
-        [ToolTip("ABS vibration coef.")]
+        [ToolTip("ABS rumble coef.")]
         [FloatRange(0.0f, 2.0f, 0.01f, 2)]
         public float ABSCoef { get; init; } = 1f;
+
+        /// <summary>
+        /// Damage rumble coef
+        /// </summary>
+        [ToolTip("Damage rumble coef.")]
+        [FloatRange(0.0f, 100.0f, 0.01f, 2)]
+        public float DamageCoef { get; init; } = 60f;
+
+        /// <summary>
+        /// Gear shift rumble coef
+        /// </summary>
+        [ToolTip("Gear shift rumble coef.")]
+        [FloatRange(0.0f, 100.0f, 0.01f, 2)]
+        public float GearCoef { get; init; } = 32f;
+
+        /// <summary>
+        /// How slowly rumble accum decays (low = fast)
+        /// </summary>
+        [ToolTip("How fast rumble accum decays. (low = fast)")]
+        [FloatRange(0.5f, 0.9f, 0.01f, 2)]
+        public float AccumDecay { get; init; } = 0.7f;
+
+        /// <summary>
+        /// RPM % at which rumble will start
+        /// </summary>
+        [ToolTip("RPM % at which right rumble will start.")]
+        [FloatRange(0.0f, 1.0f, 0.01f, 2)]
+        public float RPMStart { get; init; } = 0.9f;
+
+        /// <summary>
+        /// RPM right rumble coef
+        /// </summary>
+        [ToolTip("RPM right rumble coef.")]
+        [FloatRange(0.0f, 1.0f, 0.01f, 2)]
+        public float RPMCoef { get; init; } = 0.5f;
     }
 
     [ConfigGrouping("Brake Slip", "Adjust the slip effect whilst applying the brakes.")]
@@ -67,6 +102,10 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         [ToolTip("Gain for the effect amplitude as SlipRatio increases.")]
         [FloatRange(1.0f, 10.0f, 0.1f, 1)]
         public float AmpGain { get; init; } = 2.8f;
+
+        [ToolTip("Maximum effect amplitude.")]
+        [IntRange(1, 8, 1)]
+        public int MaxAmp { get; init; } = 3;
     }
 
     [ConfigGrouping("Throttle Slip", "Adjust the slip effect whilst applying the throttle.\nModify the threshold to increase or decrease sensitivity in different situations.")]
@@ -103,6 +142,10 @@ internal sealed class DualSenseConfiguration : OverlayConfiguration
         [ToolTip("Gain for the effect amplitude as SlipRatio increases.")]
         [FloatRange(1.0f, 10.0f, 0.1f, 1)]
         public float AmpGain { get; init; } = 2.5f;
+
+        [ToolTip("Maximum effect amplitude.")]
+        [IntRange(1, 8, 1)]
+        public int MaxAmp { get; init; } = 3;
     }
 
 }

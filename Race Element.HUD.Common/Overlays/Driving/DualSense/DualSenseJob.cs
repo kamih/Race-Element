@@ -9,16 +9,17 @@ namespace RaceElement.HUD.Common.Overlays.Driving.DualSense;
 
 internal sealed class DualSenseJob(DualSenseOverlay overlay) : AbstractLoopJob
 {
+    private TriggerHaptics _triggerHaptics = new();
     public sealed override void RunAction()
     {
         //if (!overlay.ShouldRender())
         //    return;
         ds5w_batch_begin();
-        TriggerHaptics.HandleAcceleration(overlay._config.ThrottleSlip);
-        TriggerHaptics.HandleBraking(overlay._config.BrakeSlip);
+        _triggerHaptics.HandleAcceleration(overlay._config.ThrottleSlip);
+        _triggerHaptics.HandleBraking(overlay._config.BrakeSlip);
         if (!GameManager.CurrentGame.HasFlag(Game.RaceRoom) &&
             !GameManager.CurrentGame.HasFlag(Game.AssettoCorsa1))
-            TriggerHaptics.HandleRumble(overlay._config.Rumble);
+            _triggerHaptics.HandleRumble(overlay._config.Rumble);
         ds5w_batch_end();
     }
     public override void AfterCancel()
