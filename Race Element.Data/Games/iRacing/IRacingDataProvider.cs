@@ -166,7 +166,7 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
         if (SessionData.Instance.Cars.Count == 0 || _iRacingSDK.Data.SessionInfo.DriverInfo == null)
         {
             Debug.WriteLine("No SessionData.Instance.Cars or DriverInfo");
-            return;
+            //return;
         };
 
         InitDatums();
@@ -176,63 +176,64 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
             // for each class, the time to get to the track position for the leader in that class
             Dictionary<string, float> classLeaderTrackPositionTimeDict = new Dictionary<string, float>();
 
-            for (var iRSDKindex = 0; iRSDKindex < _iRacingSDK.Data.SessionInfo.DriverInfo.Drivers.Count; iRSDKindex++)
-            {
-                DriverModel driverModel = _iRacingSDK.Data.SessionInfo.DriverInfo.Drivers[iRSDKindex];
-                if (driverModel.CarIsPaceCar > 0) continue;
-
-                CarInfo carInfo = GetCarInfo(driverModel.CarIdx);
-                if (carInfo == null)
+            if (_iRacingSDK.Data.SessionInfo.DriverInfo != null)
+                for (var iRSDKindex = 0; iRSDKindex < _iRacingSDK.Data.SessionInfo.DriverInfo.Drivers.Count; iRSDKindex++)
                 {
-                    Debug.WriteLine("Car not found with CarIdx {0}", driverModel.CarIdx);
-                    continue;
+                    DriverModel driverModel = _iRacingSDK.Data.SessionInfo.DriverInfo.Drivers[iRSDKindex];
+                    if (driverModel.CarIsPaceCar > 0) continue;
+
+                    CarInfo carInfo = GetCarInfo(driverModel.CarIdx);
+                    if (carInfo == null)
+                    {
+                        Debug.WriteLine("Car not found with CarIdx {0}", driverModel.CarIdx);
+                        continue;
+                    }
+                    carInfo.Position = _iRacingSDK.Data.GetInt(carIdxPositionDatum, iRSDKindex);
+                    carInfo.CupPosition = _iRacingSDK.Data.GetInt(carIdxClassPositionDatum, iRSDKindex);
+
+                    carInfo.TrackPercentCompleted = _iRacingSDK.Data.GetFloat(carIdxLapDistPctDatum, iRSDKindex);
+
+                    // Track surface: NotInWorld, OffTrack, InPitStall, AproachingPits, OnTrack
+                    // TODO: we can still distinguish between CarLocationEnum.Pitlane/PitEntry/Exit
+                    TrkLoc trackSurface = (TrkLoc)_iRacingSDK.Data.GetInt(carIdxTrackSurfaceDatum, iRSDKindex);
+                    if (_iRacingSDK.Data.GetBool(carIdxOnPitRoadDatum, iRSDKindex))
+                    {
+                        carInfo.CarLocation = CarInfo.CarLocationEnum.Pitlane;
+                    }
+                    else if (trackSurface == TrkLoc.NotInWorld)
+                    {
+                        carInfo.CarLocation = CarInfo.CarLocationEnum.NONE;
+                    }
+                    else
+                    {
+                        carInfo.CarLocation = CarInfo.CarLocationEnum.Track;
+                    }
+
+                    carInfo.CurrentDriverIndex = 0;
+                    carInfo.LapIndex = _iRacingSDK.Data.GetInt(carIdxLapDatum, iRSDKindex);
+
+
+                    LapInfo lapInfo = new LapInfo();
+                    carInfo.CurrentLap = lapInfo;
+                    if (trackSurface == TrkLoc.OffTrack)
+                    {
+                        // TODO: we need to reset this for other cars. Right now we only do so for player's car
+                        carInfo.CurrentLap.IsInvalid = true;
+                    }
+
+                    // "CarIdxF2Time: Race time behind leader or fastest lap time otherwise"
+                    // "CarIdxEstTime":  Estimated time to reach current location on track
+                    //    f2time is 0 until the driver has done a (valid?) lap. So we use CarIdxEstTime to get the time it should take a player
+                    //    to get to the current position on a track
+                    float trackPositionTime = _iRacingSDK.Data.GetFloat(carIdxEstTimeDatum, iRSDKindex);
+                    if (!classLeaderTrackPositionTimeDict.ContainsKey(carInfo.CarClass) || classLeaderTrackPositionTimeDict[carInfo.CarClass] > trackPositionTime)
+                    {
+                        classLeaderTrackPositionTimeDict[carInfo.CarClass] = trackPositionTime;
+                    }
+                    carInfo.GapToRaceLeaderMs = (int)(trackPositionTime * 1000.0);
+
+                    carInfo.GapToPlayerMs = GetGapToPlayerMs(iRSDKindex, SessionData.Instance.PlayerCarIndex);
                 }
-                carInfo.Position = _iRacingSDK.Data.GetInt(carIdxPositionDatum, iRSDKindex);
-                carInfo.CupPosition = _iRacingSDK.Data.GetInt(carIdxClassPositionDatum, iRSDKindex);
-
-                carInfo.TrackPercentCompleted = _iRacingSDK.Data.GetFloat(carIdxLapDistPctDatum, iRSDKindex);
-
-                // Track surface: NotInWorld, OffTrack, InPitStall, AproachingPits, OnTrack
-                // TODO: we can still distinguish between CarLocationEnum.Pitlane/PitEntry/Exit
-                TrkLoc trackSurface = (TrkLoc)_iRacingSDK.Data.GetInt(carIdxTrackSurfaceDatum, iRSDKindex);
-                if (_iRacingSDK.Data.GetBool(carIdxOnPitRoadDatum, iRSDKindex))
-                {
-                    carInfo.CarLocation = CarInfo.CarLocationEnum.Pitlane;
-                }
-                else if (trackSurface == TrkLoc.NotInWorld)
-                {
-                    carInfo.CarLocation = CarInfo.CarLocationEnum.NONE;
-                }
-                else
-                {
-                    carInfo.CarLocation = CarInfo.CarLocationEnum.Track;
-                }
-
-                carInfo.CurrentDriverIndex = 0;
-                carInfo.LapIndex = _iRacingSDK.Data.GetInt(carIdxLapDatum, iRSDKindex);
-
-
-                LapInfo lapInfo = new LapInfo();
-                carInfo.CurrentLap = lapInfo;
-                if (trackSurface == TrkLoc.OffTrack)
-                {
-                    // TODO: we need to reset this for other cars. Right now we only do so for player's car
-                    carInfo.CurrentLap.IsInvalid = true;
-                }
-
-                // "CarIdxF2Time: Race time behind leader or fastest lap time otherwise"
-                // "CarIdxEstTime":  Estimated time to reach current location on track
-                //    f2time is 0 until the driver has done a (valid?) lap. So we use CarIdxEstTime to get the time it should take a player
-                //    to get to the current position on a track
-                float trackPositionTime = _iRacingSDK.Data.GetFloat(carIdxEstTimeDatum, iRSDKindex);
-                if (!classLeaderTrackPositionTimeDict.ContainsKey(carInfo.CarClass) || classLeaderTrackPositionTimeDict[carInfo.CarClass] > trackPositionTime)
-                {
-                    classLeaderTrackPositionTimeDict[carInfo.CarClass] = trackPositionTime;
-                }
-                carInfo.GapToRaceLeaderMs = (int)(trackPositionTime * 1000.0);
-
-                carInfo.GapToPlayerMs = GetGapToPlayerMs(iRSDKindex, SessionData.Instance.PlayerCarIndex);
-            }
 
             // determine the gaps for each car to the class leader
             for (var index = 0; index < SessionData.Instance.Cars.Count; index++)
@@ -254,20 +255,23 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
 
             // fill player's car from telemetry
             LocalCarData localCar = SimDataProvider.LocalCar;
-            int playerCarIdx = _iRacingSDK.Data.SessionInfo.DriverInfo.DriverCarIdx;
-            CarInfo playerCarInfo = SessionData.Instance.Cars[playerCarIdx].Value;
-            localCar.Race.GlobalPosition = _iRacingSDK.Data.GetInt(playerCarPositionDatum);
-
-            localCar.Engine.FuelLiters = _iRacingSDK.Data.GetFloat(fuelLevelDatum);
-            int lapIndex = playerCarInfo.LapIndex;
-            // check if we completed a lap
-            if (lapIndex > lastLapIndex)
+            if (_iRacingSDK.Data.SessionInfo.DriverInfo != null && SessionData.Instance.Cars.Count > 0)
             {
-                lastLapFuelConsumption = lastLapFuelLevelLiters - localCar.Engine.FuelLiters;
-                lastLapFuelLevelLiters = localCar.Engine.FuelLiters;
-                playerCarInfo.CurrentLap.IsInvalid = false;
-                lastLapIndex = lapIndex;
-                Debug.WriteLine("new lap lastLapFuelConsumption {0} lastLapFuelLevelLiters {1}", lastLapFuelConsumption, lastLapFuelLevelLiters);
+                int playerCarIdx = _iRacingSDK.Data.SessionInfo.DriverInfo.DriverCarIdx;
+                CarInfo playerCarInfo = SessionData.Instance.Cars[playerCarIdx].Value;
+                localCar.Race.GlobalPosition = _iRacingSDK.Data.GetInt(playerCarPositionDatum);
+
+                localCar.Engine.FuelLiters = _iRacingSDK.Data.GetFloat(fuelLevelDatum);
+                int lapIndex = playerCarInfo.LapIndex;
+                // check if we completed a lap
+                if (lapIndex > lastLapIndex)
+                {
+                    lastLapFuelConsumption = lastLapFuelLevelLiters - localCar.Engine.FuelLiters;
+                    lastLapFuelLevelLiters = localCar.Engine.FuelLiters;
+                    playerCarInfo.CurrentLap.IsInvalid = false;
+                    lastLapIndex = lapIndex;
+                    Debug.WriteLine("new lap lastLapFuelConsumption {0} lastLapFuelLevelLiters {1}", lastLapFuelConsumption, lastLapFuelLevelLiters);
+                }
             }
 
             SimDataProvider.GameData.IsCarSetupScreenVisible = _iRacingSDK.Data.GetBool(isInGarage);
@@ -299,8 +303,11 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
 
             // Fuel telemetry and fuel consumption calc. This is using the last lap
             var fuelLevelPercent = _iRacingSDK.Data.GetFloat(fuelLevelPctDatum);
-            localCar.Engine.MaxFuelLiters = _iRacingSDK.Data.SessionInfo.DriverInfo.DriverCarFuelMaxLtr;
-
+            if (_iRacingSDK.Data.SessionInfo.DriverInfo != null)
+            {
+                localCar.Engine.MaxFuelLiters = _iRacingSDK.Data.SessionInfo.DriverInfo.DriverCarFuelMaxLtr;
+                localCar.Engine.MaxRpm = (int)_iRacingSDK.Data.SessionInfo.DriverInfo.DriverCarRedLine;
+            }
             // TODO: iRacing gives unreasonable values for fuelUseKgPerHour. At least off by a factor 10
             // We keep track of fuel usage in the last lap until this is worked out.
             /* var fuelUseKgPerHour = _iRacingSDK.Data.GetFloat("FuelUsePerHour");
@@ -321,6 +328,9 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
 
             // TODO : public int DriverIncidentCount { get; set; } and other incident info (CurDriverIncidentCount , TeamIncidentCount, ..)
 
+            if (_iRacingSDK.Data.SessionInfo.DriverInfo == null || _iRacingSDK.Data.SessionInfo.SessionInfo == null)
+                return;
+
             int sessionNumber = _iRacingSDK.Data.GetInt(sessionNumDatum);
             var sessionType = _iRacingSDK.Data.SessionInfo.SessionInfo.Sessions[sessionNumber].SessionType;
             switch (sessionType)
@@ -328,6 +338,7 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
                 case "Race":
                     SessionData.Instance.SessionType = RaceSessionType.Race; break;
                 case "Practice":
+                case "Offline Testing":
                 case "Warmup": // Warmup is sort of like practice. We only need to distinguish of we want different HUD behavior
                     SessionData.Instance.SessionType = RaceSessionType.Practice; break;
                 case "Qualify":
