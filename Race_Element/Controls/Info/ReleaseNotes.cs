@@ -7,7 +7,11 @@ public static class ReleaseNotes
     internal static readonly Dictionary<string, string> Notes = new()
     {
         {"2.2.4.4", "Assetto Corsa EVO:"+
-                    "\n- Improved detection when game is paused."
+                    "\n- Improved detection when game is paused."+
+                    "\n\niRacing:"+
+                    "\n- Steering HUD is now enabled."+
+                    "\n- Now properly detects when the game is paused so the HUDs won't show in the menus."+
+                    "\n- Shift Bar: now automatically detects the maximum rpm and shift rpm for each car."
                     },
         {"2.2.4.2", "Race Element:"+
                     "\n- Fixed crash when ACC Liveries were not installed."+
