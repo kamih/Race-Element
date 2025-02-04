@@ -68,6 +68,7 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
     private IRacingSdkDatum lateralAccelDatum;
     private IRacingSdkDatum vertAccelDatum;
     private IRacingSdkDatum isOnTrackCar;
+    private IRacingSdkDatum isOnTrack;
     private IRacingSdkDatum isInGarage;
     private bool datumsInitialized = false;
 
@@ -131,6 +132,7 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
         sessionNumDatum = _iRacingSDK.Data.TelemetryDataProperties["SessionNum"];
         sessionStateDatum = _iRacingSDK.Data.TelemetryDataProperties["SessionState"];
         isOnTrackCar = _iRacingSDK.Data.TelemetryDataProperties["IsOnTrackCar"];
+        isOnTrack = _iRacingSDK.Data.TelemetryDataProperties["IsOnTrack"];
         isInGarage = _iRacingSDK.Data.TelemetryDataProperties["IsInGarage"];
 
         datumsInitialized = true;
@@ -277,7 +279,9 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
             SimDataProvider.GameData.IsCarSetupScreenVisible = _iRacingSDK.Data.GetBool(isInGarage);
 
             localCar.Engine.Rpm = (int)_iRacingSDK.Data.GetFloat(rPMDatum);
-            localCar.Engine.IsRunning = localCar.Engine.Rpm > 0 && _iRacingSDK.Data.GetBool(isOnTrackCar) & !_iRacingSDK.Data.GetBool(isInGarage);
+            bool a = _iRacingSDK.Data.GetBool(isOnTrack);
+            bool b = _iRacingSDK.Data.GetBool(isInGarage);
+            localCar.Engine.IsRunning = localCar.Engine.Rpm > 0 && _iRacingSDK.Data.GetBool(isOnTrack) & !_iRacingSDK.Data.GetBool(isInGarage);
             // m/s -> km/h
             localCar.Physics.Velocity = _iRacingSDK.Data.GetFloat(speedDatum) * 3.6f;
             localCar.Physics.Rotation = Quaternion.CreateFromYawPitchRoll(_iRacingSDK.Data.GetFloat(yawNorthDatum), _iRacingSDK.Data.GetFloat(pitchDatum), _iRacingSDK.Data.GetFloat(rollDatum));
