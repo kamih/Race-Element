@@ -307,6 +307,7 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
             {
                 localCar.Engine.MaxFuelLiters = _iRacingSDK.Data.SessionInfo.DriverInfo.DriverCarFuelMaxLtr;
                 localCar.Engine.MaxRpm = (int)_iRacingSDK.Data.SessionInfo.DriverInfo.DriverCarRedLine;
+                localCar.Engine.ShiftUpRpm = (int)_iRacingSDK.Data.SessionInfo.DriverInfo.DriverCarSLShiftRPM;
             }
             // TODO: iRacing gives unreasonable values for fuelUseKgPerHour. At least off by a factor 10
             // We keep track of fuel usage in the last lap until this is worked out.
