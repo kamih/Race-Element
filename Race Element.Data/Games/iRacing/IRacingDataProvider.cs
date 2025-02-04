@@ -18,7 +18,7 @@ namespace RaceElement.Data.Games.iRacing;
 
 public sealed class IRacingDataProvider : AbstractSimDataProvider
 {
-    internal sealed override int PollingRate() => 60;
+    internal sealed override int PollingRate() => 120;
 
 
     Dictionary<string, Color> carClassColor = [];
@@ -279,8 +279,6 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
             SimDataProvider.GameData.IsCarSetupScreenVisible = _iRacingSDK.Data.GetBool(isInGarage);
 
             localCar.Engine.Rpm = (int)_iRacingSDK.Data.GetFloat(rPMDatum);
-            bool a = _iRacingSDK.Data.GetBool(isOnTrack);
-            bool b = _iRacingSDK.Data.GetBool(isInGarage);
             localCar.Engine.IsRunning = localCar.Engine.Rpm > 0 && _iRacingSDK.Data.GetBool(isOnTrack) & !_iRacingSDK.Data.GetBool(isInGarage);
             // m/s -> km/h
             localCar.Physics.Velocity = _iRacingSDK.Data.GetFloat(speedDatum) * 3.6f;
@@ -292,8 +290,11 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
             localCar.Inputs.Gear = _iRacingSDK.Data.GetInt(gearDatum) + 1;
             localCar.Inputs.Brake = _iRacingSDK.Data.GetFloat(brakeDatum);
             localCar.Inputs.Throttle = _iRacingSDK.Data.GetFloat(throttleDatum);
-            localCar.Inputs.MaxSteeringAngle = Single.RadiansToDegrees(_iRacingSDK.Data.GetFloat(steeringWheelAngleMaxDatum));
-            localCar.Inputs.Steering = (float)(_iRacingSDK.Data.GetFloat(steeringWheelAngleDatum) / (Math.PI * 2));
+            localCar.Inputs.MaxSteeringAngle = (int)Single.RadiansToDegrees(_iRacingSDK.Data.GetFloat(steeringWheelAngleMaxDatum));
+            float steeringRadians = -_iRacingSDK.Data.GetFloat(steeringWheelAngleDatum) * 2;
+            float steeringPercentage = Single.RadiansToDegrees(steeringRadians) / localCar.Inputs.MaxSteeringAngle;
+            Math.Clamp(steeringPercentage, -1, 1);
+            localCar.Inputs.Steering = steeringPercentage;
 
 
             SessionData.Instance.LapDeltaToSessionBestLapMs = _iRacingSDK.Data.GetFloat(lapDeltaToSessionBestLapDatum);
