@@ -10,11 +10,11 @@ using System.Drawing.Drawing2D;
 
 namespace RaceElement.HUD.Common.Overlays.Driving.Wind;
 
-[Overlay(Name = "Wind Direction (BETA)", Description = "Shows wind direction relative to car heading. For iRacing the wind direction is on the pit straight - not at the player's location.",
+[Overlay(Name = "Wind Direction", Description = "Shows wind speed and direction relative to car heading.\niRacing: wind direction is on the pit straight - not at the player's location.",
     OverlayType = OverlayType.Drive,
     OverlayCategory = OverlayCategory.Track,
     Version = 1.00,
-    Game = Game.iRacing | Game.AssettoCorsa1,
+    Game = Game.iRacing,
 Authors = ["Reinier Klarenberg"])]
 internal sealed class WindDirectionOverlay : CommonAbstractOverlay
 {
@@ -35,7 +35,7 @@ internal sealed class WindDirectionOverlay : CommonAbstractOverlay
         public sealed class ShapeGrouping
         {
             [IntRange(100, 200, 1)]
-            public int Size { get; init; } = 120;
+            public int Size { get; init; } = 110;
         }
 
         public WindDirectionConfiguration() => GenericConfiguration.AllowRescale = true;
