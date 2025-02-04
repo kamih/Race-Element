@@ -300,11 +300,12 @@ public sealed class IRacingDataProvider : AbstractSimDataProvider
             SessionData.Instance.LapDeltaToSessionBestLapMs = _iRacingSDK.Data.GetFloat(lapDeltaToSessionBestLapDatum);
             localCar.Timing.LapTimeDeltaBestMS = (int)(SessionData.Instance.LapDeltaToSessionBestLapMs * 1000.0);
 
-            SessionData.Instance.Weather.AirTemperature = _iRacingSDK.Data.GetFloat(airTempDatum);
-            SessionData.Instance.Weather.AirVelocity = _iRacingSDK.Data.GetFloat(windVelDatum) * 3.6f;
-            SessionData.Instance.Weather.AirDirection = _iRacingSDK.Data.GetFloat(windDirDatum);
 
-            SessionData.Instance.Track.Temperature = _iRacingSDK.Data.GetFloat(trackTempCrewDatum);
+            SimDataProvider.Session.Weather.AirTemperature = _iRacingSDK.Data.GetFloat(airTempDatum);
+            SimDataProvider.Session.Weather.AirVelocity = _iRacingSDK.Data.GetFloat(windVelDatum) * 3.6f;
+            SimDataProvider.Session.Weather.AirDirection = _iRacingSDK.Data.GetFloat(windDirDatum);
+
+            SimDataProvider.Session.Track.Temperature = _iRacingSDK.Data.GetFloat(trackTempCrewDatum);
 
             // Fuel telemetry and fuel consumption calc. This is using the last lap
             var fuelLevelPercent = _iRacingSDK.Data.GetFloat(fuelLevelPctDatum);
