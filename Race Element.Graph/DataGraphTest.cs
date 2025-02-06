@@ -20,19 +20,16 @@ internal class DataGraphTest
 
         // get all the fastest laptimes for person2
         string driverFirstName = "First 2";
-        var personNode = _graph.Where(x => x.Key is PersonNode node && node.FirstName == driverFirstName).Select(x => (PersonNode)x.Key).FirstOrDefault();
-        if (personNode != null)
+        var driverNode = _graph.Where(x => x.Key is RacingDriverNode node && node.FirstName == driverFirstName).Select(x => (RacingDriverNode)x.Key).FirstOrDefault();
+        if (driverNode != null)
         {
-            _graph.TryGetEdgesFrom(personNode, out var personEdges);
+            _graph.TryGetEdgesFrom(driverNode, out var driverEdges);
 
-            RacingDriverNode? raceDriver = (RacingDriverNode)personEdges.FirstOrDefault(x => x.ToNode is RacingDriverNode).ToNode;
+            RacingDriverNode? raceDriver = (RacingDriverNode)driverEdges.FirstOrDefault(x => x.ToNode is RacingDriverNode).ToNode;
 
-            _graph.TryGetEdgesTo(raceDriver, out var ownerEdges);
-            PersonNode personBehindDriver = (PersonNode)ownerEdges.First(x => x.FromNode is PersonNode).FromNode;
+            Debug.WriteLine($"{driverNode.FirstName}");
 
-            Debug.WriteLine($"{personBehindDriver?.FirstName}");
-
-            var lapTimes = personEdges.Where(x => x.ToNode is LapTimeDataNode).Select(x => (LapTimeDataNode)x.ToNode);
+            var lapTimes = driverEdges.Where(x => x.ToNode is LapTimeDataNode).Select(x => (LapTimeDataNode)x.ToNode);
             foreach (var item in lapTimes)
                 Debug.WriteLine(item?.LapTimeMs);
         }
@@ -43,28 +40,22 @@ internal class DataGraphTest
         var car = new RacingCarNode() { CarNumber = 1 };
         _graph.TryAddNode(car);
 
-        var person = new PersonNode() { FirstName = "First 1", LastName = "Last Name 1" };
-        var driver = new RacingDriverNode() { DriverNumber = 1 };
-        _graph.TryAddNode(person);
+        var driver = new RacingDriverNode() { DriverId = 1, FirstName = "First 1", LastName = "Last Name 1" };
         _graph.TryAddNode(driver);
-        _graph.TryAddEdge(new OwnsNode(person, driver));
-        _graph.TryAddEdge(new OwnsNode(car, driver));
+        _graph.TryAddEdge(new OwnsEdge(car, driver));
 
-        var person2 = new PersonNode() { FirstName = "First 2", LastName = "Last Name 2" };
-        var driver2 = new RacingDriverNode() { DriverNumber = 1 };
-        _graph.TryAddNode(person2);
+        var driver2 = new RacingDriverNode() { DriverId = 2, FirstName = "First 2", LastName = "Last Name 2" };
         _graph.TryAddNode(driver2);
-        _graph.TryAddEdge(new OwnsNode(person2, driver2));
-        _graph.TryAddEdge(new OwnsNode(car, driver2));
+        _graph.TryAddEdge(new OwnsEdge(car, driver2));
 
-        LapTimeDataNode fastestLapA = new() { LapTimeMs = 1000, SectorTimesMs = [300, 500, 200] };
-        _graph.TryAddNode(fastestLapA);
-        _graph.TryAddEdge(new OwnsNode(driver, fastestLapA));
+        LapTimeDataNode lapDataA = new() { LapIndex = 0, LapTimeMs = 1000, SectorTimesMs = [300, 500, 200] };
+        _graph.TryAddNode(lapDataA);
+        _graph.TryAddEdge(new OwnsEdge(driver, lapDataA));
 
         Thread.Sleep(200);
-        LapTimeDataNode fastestLapB = new() { LapTimeMs = 900, SectorTimesMs = [300, 400, 200] };
-        _graph.TryAddNode(fastestLapB);
-        _graph.TryAddEdge(new OwnsNode(driver2, fastestLapB));
+        LapTimeDataNode lapDataB = new() { LapIndex = 1, LapTimeMs = 900, SectorTimesMs = [300, 400, 200] };
+        _graph.TryAddNode(lapDataB);
+        _graph.TryAddEdge(new OwnsEdge(driver2, lapDataB));
     }
 }
 
@@ -72,32 +63,42 @@ public sealed record class PositionNode : AbstractIntegerNode { public PositionN
 public sealed record class LapTimeDataNode : AbstractNode
 {
     /// <summary>
+    /// Lap index (starting from 0). -1 means invalid and not set.
+    /// </summary>
+    public required int LapIndex { get; init; } = -1;
+
+    /// <summary>
     /// The duration of the lap in milliseconds.
     /// -1 if invalid.
     /// </summary>
     public int LapTimeMs { get; init; } = -1;
 
     /// <summary>
-    /// Sector Split times in milliseconds, empty if none exist.
+    /// Sector Split times in milliseconds. Empty array if none exist.
     /// </summary>
     public int[] SectorTimesMs { get; init; } = [];
 }
-public sealed record class SectorTimeNode : AbstractIntegerNode { public SectorTimeNode(int sectorTimeMs) : base(sectorTimeMs) { } }
 
 public sealed record class RacingDriverNode : AbstractNode
 {
-    public required int DriverNumber { get; init; }
+    /// <summary>
+    /// Can be driver index or specific number if assigned.
+    /// Should be used to identify the driver within the game.
+    /// -1 is invalid.
+    /// </summary>
+    public required int DriverId { get; init; } = -1;
+    public string FirstName { get; init; } = string.Empty;
+    public string LastName { get; init; } = string.Empty;
+    public string Country { get; init; } = string.Empty;
 }
 
 public sealed record class RacingCarNode : AbstractNode
 {
     public required int CarNumber { get; init; }
-}
 
-public sealed record class PersonNode : AbstractNode
-{
-    public string FirstName;
-    public string LastName;
-    public string Country;
+    /// <summary>
+    /// Race Position
+    /// </summary>
+    public int Position { get; set; } = -1;
 }
 
