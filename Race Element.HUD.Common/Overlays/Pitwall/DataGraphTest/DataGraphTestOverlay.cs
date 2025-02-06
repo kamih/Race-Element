@@ -21,38 +21,30 @@ internal class DataGraphTestOverlay : CommonAbstractOverlay
         _graph = new DataGraph();
         _panel = new InfoPanel(12, 500);
         Width = 500;
-        RefreshRateHz = 10;
+        RefreshRateHz = 2;
     }
 
     public override void BeforeStart()
     {
-        var car = new RacingCarNode() { CarNumber = 1 };
-        _graph.TryAddNode(car);
-
-        var driver = new RacingDriverNode() { DriverId = 1, FirstName = "First 1", LastName = "Last Name 1" };
-        _graph.TryAddNode(driver);
-        _graph.TryAddEdge(new OwnsEdge(car, driver));
-
-        var driver2 = new RacingDriverNode() { DriverId = 2, FirstName = "First 2", LastName = "Last Name 2" };
-        _graph.TryAddNode(driver2);
-        _graph.TryAddEdge(new OwnsEdge(car, driver2));
-
-        LapTimeDataNode lapDataA = new() { LapIndex = 0, LapTimeMs = 1500, SectorTimesMs = [600, 500, 400] };
-        _graph.TryAddNode(lapDataA);
-        _graph.TryAddEdge(new OwnsEdge(driver, lapDataA));
-
-        LapTimeDataNode lapDataB = new() { LapIndex = 1, LapTimeMs = 1300, SectorTimesMs = [500, 400, 400] };
-        _graph.TryAddNode(lapDataB);
-        _graph.TryAddEdge(new OwnsEdge(driver2, lapDataB));
-        for (int i = 3; i < 100_000; i++)
+        for (int i = 1; i < 1000; i++)
         {
-            int s1 = Random.Shared.Next(300, 400);
-            int s2 = Random.Shared.Next(300, 400);
-            int s3 = Random.Shared.Next(300, 400);
-            LapTimeDataNode lapData = new() { LapIndex = i + 1, LapTimeMs = s1 + s2 + s3, SectorTimesMs = [s1, s2, s3] };
-            _graph.TryAddNode(lapData);
-            _graph.TryAddEdge(new OwnsEdge(driver2, lapData));
+            var someCar = new RacingCarNode() { CarNumber = i };
+            _graph.TryAddNode(someCar);
+            var someDriver = new RacingDriverNode() { DriverId = i * 2, FirstName = $"random {i}", LastName = "Last Name" };
+            _graph.TryAddNode(someDriver);
+            _graph.TryAddEdge(new OwnsEdge(someCar, someDriver));
+
+            for (int j = 3; j < 1000; j++)
+            {
+                int s1 = Random.Shared.Next(30000, 40000);
+                int s2 = Random.Shared.Next(30000, 40000);
+                int s3 = Random.Shared.Next(30000, 40000);
+                LapTimeDataNode lapData = new() { LapIndex = j + 1, LapTimeMs = s1 + s2 + s3, SectorTimesMs = [s1, s2, s3] };
+                _graph.TryAddNode(lapData);
+                _graph.TryAddEdge(new OwnsEdge(someDriver, lapData));
+            }
         }
+
     }
 
     public override bool ShouldRender() => true;
