@@ -8,8 +8,6 @@ public sealed class DataGraph : ConcurrentDictionary<AbstractNode, List<Abstract
 {
     public bool TryAddNode(AbstractNode node)
     {
-        ArgumentNullException.ThrowIfNull(node);
-
         if (ContainsKey(node))
             return false;
 
@@ -18,9 +16,7 @@ public sealed class DataGraph : ConcurrentDictionary<AbstractNode, List<Abstract
 
     public bool TryAddEdge(AbstractEdge edge)
     {
-        ArgumentNullException.ThrowIfNull(edge);
-
-        if (ContainsKey(edge.FromNode))
+        if (edge.FromNode != null && ContainsKey(edge.FromNode))
         {
             this[edge.FromNode].Add(edge);
             return true;
@@ -29,11 +25,16 @@ public sealed class DataGraph : ConcurrentDictionary<AbstractNode, List<Abstract
         return false;
     }
 
+    /// <summary>
+    /// Tries to add all edges.
+    /// </summary>
+    /// <param name="edges"></param>
+    /// <returns></returns>
     public bool TryAddEdges(AbstractEdge[] edges)
     {
         ArgumentNullException.ThrowIfNull(edges);
         foreach (AbstractEdge edge in edges)
-            if (!ContainsKey(edge.FromNode))
+            if (edge.FromNode == null || edge.ToNode == null || !ContainsKey(edge.FromNode))
                 return false;
 
         foreach (AbstractEdge edge in edges)

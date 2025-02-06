@@ -9,9 +9,4 @@ public abstract record class AbstractNode
     public virtual void Accept(NodeVisitor visitor) => visitor.Visit(this);
 }
 
-public abstract record class AbstractIntegerNode : AbstractNode
-{
-    public AbstractIntegerNode(int value) => Value = value;
 
-    public int Value { get; init; }
-}
