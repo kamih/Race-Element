@@ -8,9 +8,12 @@ using System.Drawing;
 using System.Linq;
 
 namespace RaceElement.HUD.ACC.Overlays.Driving.Opponents;
+
+#if DEBUG
 [Overlay(
 Name = "Opponents",
 Description = "Shows information about the cars ahead and behind in terms of race position.")]
+#endif
 internal sealed class OpponentsOverlay : AbstractOverlay
 {
     private readonly OpponentsConfiguration _config = new();
