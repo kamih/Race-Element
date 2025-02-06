@@ -1,8 +1,8 @@
 ﻿namespace RaceElement.Graph;
 
-public sealed class DataGraph<T> : Dictionary<AbstractNode, List<Edge<T>>> where T : AbstractNode
+public sealed class DataGraph : Dictionary<AbstractNode, List<AbstractEdge>>
 {
-    private readonly Dictionary<AbstractNode, List<Edge<T>>> _edges = [];
+    private readonly Dictionary<AbstractNode, List<AbstractEdge>> _edges = [];
 
     public void AddNewNode(AbstractNode node)
     {
@@ -10,22 +10,18 @@ public sealed class DataGraph<T> : Dictionary<AbstractNode, List<Edge<T>>> where
             Add(node, []);
     }
 
-    public Edge<T> CreateEdge(T fromNode, T toNode)
+    public bool TryAddEdge(AbstractNode fromNode, AbstractEdge edge)
     {
-        var edge = new Edge<T>
-        {
-            FromNode = fromNode,
-            ToNode = toNode,
-            TimeStampUtc = DateTime.UtcNow,
-        };
-
         if (ContainsKey(fromNode))
+        {
             this[fromNode].Add(edge);
+            return true;
+        }
 
-        return edge;
+        return false;
     }
 
-    public bool GetEdges(T fromNode, out List<Edge<T>> edges)
+    public bool TryGetEdges(AbstractNode fromNode, out List<AbstractEdge> edges)
     {
         if (ContainsKey(fromNode))
         {
@@ -37,7 +33,7 @@ public sealed class DataGraph<T> : Dictionary<AbstractNode, List<Edge<T>>> where
         return false;
     }
 
-    public bool TryGetEdges(T fromNode, T toNode, out List<Edge<T>> edges)
+    public bool TryGetEdges(AbstractNode fromNode, AbstractNode toNode, out List<AbstractEdge> edges)
     {
         if (ContainsKey(fromNode))
         {
@@ -66,10 +62,10 @@ public abstract class NodeVisitor
     public abstract void Visit(AbstractNode node);
 }
 
-public class Edge<T> where T : AbstractNode
+public abstract class AbstractEdge : AbstractNode
 {
-    public required T FromNode { get; set; }
-    public required T ToNode { get; set; }
+    public required AbstractNode FromNode { get; set; }
+    public required AbstractNode ToNode { get; set; }
 
     /// <summary>
     /// The time when this Edge was created.
