@@ -2,12 +2,7 @@
 using RaceElement.Graph.Edge;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.Util;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RaceElement.HUD.Common.Overlays.Pitwall.DataGraphTest;
 
@@ -24,7 +19,9 @@ internal class DataGraphTestOverlay : CommonAbstractOverlay
     public DataGraphTestOverlay(Rectangle rectangle) : base(rectangle, "Data Graph Test")
     {
         _graph = new DataGraph();
-        _panel = new InfoPanel(12, 300);
+        _panel = new InfoPanel(12, 500);
+        Width = 500;
+        RefreshRateHz = 10;
     }
 
     public override void BeforeStart()
@@ -40,21 +37,41 @@ internal class DataGraphTestOverlay : CommonAbstractOverlay
         _graph.TryAddNode(driver2);
         _graph.TryAddEdge(new OwnsEdge(car, driver2));
 
-        LapTimeDataNode lapDataA = new() { LapIndex = 0, LapTimeMs = 1000, SectorTimesMs = [300, 500, 200] };
+        LapTimeDataNode lapDataA = new() { LapIndex = 0, LapTimeMs = 1500, SectorTimesMs = [600, 500, 400] };
         _graph.TryAddNode(lapDataA);
         _graph.TryAddEdge(new OwnsEdge(driver, lapDataA));
 
-        LapTimeDataNode lapDataB = new() { LapIndex = 1, LapTimeMs = 900, SectorTimesMs = [300, 400, 200] };
+        LapTimeDataNode lapDataB = new() { LapIndex = 1, LapTimeMs = 1300, SectorTimesMs = [500, 400, 400] };
         _graph.TryAddNode(lapDataB);
         _graph.TryAddEdge(new OwnsEdge(driver2, lapDataB));
+        for (int i = 3; i < 100_000; i++)
+        {
+            int s1 = Random.Shared.Next(300, 400);
+            int s2 = Random.Shared.Next(300, 400);
+            int s3 = Random.Shared.Next(300, 400);
+            LapTimeDataNode lapData = new() { LapIndex = i + 1, LapTimeMs = s1 + s2 + s3, SectorTimesMs = [s1, s2, s3] };
+            _graph.TryAddNode(lapData);
+            _graph.TryAddEdge(new OwnsEdge(driver2, lapData));
+        }
     }
 
     public override bool ShouldRender() => true;
 
     public override void Render(Graphics g)
     {
+        var now = TimeProvider.System.GetTimestamp();
         _panel.AddLine("Nodes", $"{_graph.Count}");
         _panel.AddLine("Edges", $"{_graph.Select(x => x.Value.Count).Sum()}");
+
+        var allLapTimes = _graph.Where(x => x.Key is LapTimeDataNode)
+                                       .Select(x => (LapTimeDataNode)x.Key);
+        var fastestLap = allLapTimes.MinBy(x => x.LapTimeMs);
+        _graph.TryGetEdgesTo(fastestLap, out var edges);
+        var fastestDriver = (RacingDriverNode)edges.First().FromNode;
+        _panel.AddLine("Fastest driver", $"{fastestDriver.FirstName} - L{fastestLap.LapIndex} - {fastestLap.LapTimeMs / 1000f:F3}");
+
+        _panel.AddLine("Time", $"{TimeProvider.System.GetElapsedTime(now)}");
+
         _panel.Draw(g);
     }
 }
