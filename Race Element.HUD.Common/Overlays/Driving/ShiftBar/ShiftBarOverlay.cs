@@ -66,7 +66,8 @@ internal sealed class ShiftBarOverlay : CommonAbstractOverlay
         float earlyPercentage = _config.Upshift.EarlyPercentage;
         float upshiftPercentage = _config.Upshift.RedlinePercentage;
 
-        if (GameWhenStarted.HasFlag(Game.RaceRoom | Game.iRacing))
+        Game upshiftSupportedGames = Game.RaceRoom | Game.iRacing;
+        if (upshiftSupportedGames.HasFlag(GameWhenStarted))
         {
             float maxRpm = SimDataProvider.LocalCar.Engine.MaxRpm;
             float upshiftRpm = SimDataProvider.LocalCar.Engine.ShiftUpRpm;
