@@ -1,4 +1,4 @@
-﻿namespace Race_Element.Graph;
+﻿namespace RaceElement.Graph;
 
 public sealed class DataGraph<T> : Dictionary<AbstractNode, List<Edge<T>>> where T : AbstractNode
 {
@@ -7,7 +7,7 @@ public sealed class DataGraph<T> : Dictionary<AbstractNode, List<Edge<T>>> where
     public void AddNewNode(AbstractNode node)
     {
         if (!ContainsKey(node))
-            base.Add(node, []);
+            Add(node, []);
     }
 
     public Edge<T> CreateEdge(T fromNode, T toNode)

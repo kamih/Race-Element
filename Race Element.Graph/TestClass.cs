@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Race_Element.Graph;
+namespace RaceElement.Graph;
 internal class TestClass
 {
 }
