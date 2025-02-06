@@ -51,16 +51,16 @@ internal sealed class AssettoCorsaEvoDataProvider : AbstractSimDataProvider
 
     }
 
-    private LogFileJob _logFileJob;
+    //private LogFileJob _logFileJob;
     internal sealed override void Start()
     {
-        _logFileJob = new() { IntervalMillis = 200 };
-        _logFileJob.Run();
+        //_logFileJob = new() { IntervalMillis = 200 };
+        //_logFileJob.Run();
     }
 
     internal override void Stop()
     {
-        _logFileJob.CancelJoin();
+        //_logFileJob.CancelJoin();
     }
 
     private sealed class LogFileJob : AbstractLoopJob
