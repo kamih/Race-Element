@@ -59,7 +59,8 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         _graph.TryGetEdgesTo(fastestLap, out var edges);
         var fastestDriver = (RacingDriverNode)edges.First().FromNode;
 
-        _panel.AddLine("Time", $"{TimeProvider.System.GetElapsedTime(now)}");
+        var elapsedTime = TimeProvider.System.GetElapsedTime(now);
+        _panel.AddLine("Time", $"{elapsedTime}");
 
         _panel.AddLine("Amount of laps", $"{allLapTimes.Count()}");
 
