@@ -25,14 +25,14 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
     public sealed override void BeforeStart()
     {
-        for (int i = 1; i <= 1000; i++)
+        for (int i = 1; i <= 20; i++)
         {
             var someCar = new RacingCarNode() { CarNumber = i };
             _graph.TryAddNode(someCar);
             var someDriver = new RacingDriverNode() { DriverId = i * 2, FirstName = $"random {i}", LastName = "Last Name" };
             _graph.TryAddNode(someDriver);
             _graph.TryAddEdge(new OwnsEdge(someCar, someDriver));
-            for (int j = 0; j < 1000; j++)
+            for (int j = 0; j < 20; j++)
             {
                 int s1 = Random.Shared.Next(10000, 40000);
                 int s2 = Random.Shared.Next(10000, 40000);
@@ -53,8 +53,8 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
         var now = TimeProvider.System.GetTimestamp();
 
-        var parallelGraph = _graph.AsParallel();
-        var allLapTimes = parallelGraph.Where(x => x.Key is LapTimeDataNode).Select(x => (LapTimeDataNode)x.Key);
+        //var parallelGraph = _graph.AsParallel();
+        var allLapTimes = _graph.Where(x => x.Key is LapTimeDataNode).Select(x => (LapTimeDataNode)x.Key);
         var fastestLap = allLapTimes.MinBy(x => x.LapTimeMs);
         _graph.TryGetEdgesTo(fastestLap, out var edges);
         var fastestDriver = (RacingDriverNode)edges.First().FromNode;
