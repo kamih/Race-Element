@@ -4,55 +4,36 @@ using System.Collections.Concurrent;
 
 namespace RaceElement.Graph;
 
-public sealed class DataGraph : ConcurrentDictionary<AbstractNode, List<AbstractEdge>>
+public sealed class DataGraph : ConcurrentBag<AbstractNode>
 {
-    public bool TryAddNode(AbstractNode node)
-    {
-        if (ContainsKey(node))
-            return false;
+    public ConcurrentBag<AbstractEdge> Edges { get; private set; } = [];
 
-        return TryAdd(node, []);
+
+    /// <summary>
+    /// Empties the data graph.
+    /// </summary>
+    public void ClearGraph()
+    {
+        Clear();
+        Edges.Clear();
     }
 
     public bool TryAddEdge(AbstractEdge edge)
     {
-        if (edge.FromNode != null && ContainsKey(edge.FromNode))
-        {
-            this[edge.FromNode].Add(edge);
-            return true;
-        }
+        if (edge.FromNode == null || edge.ToNode == null)
+            return false;
 
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to add all edges.
-    /// </summary>
-    /// <param name="edges"></param>
-    /// <returns></returns>
-    public bool TryAddEdges(AbstractEdge[] edges)
-    {
-        ArgumentNullException.ThrowIfNull(edges);
-        foreach (AbstractEdge edge in edges)
-            if (edge.FromNode == null || edge.ToNode == null || !ContainsKey(edge.FromNode))
-                return false;
-
-        foreach (AbstractEdge edge in edges)
-            this[edge.FromNode].Add(edge);
-
+        Edges.Add(edge);
         return true;
     }
 
     public bool TryGetEdges(AbstractNode fromNode, AbstractNode toNode, out List<AbstractEdge> edges)
     {
-        if (ContainsKey(fromNode) && ContainsKey(toNode))
+        var found = Edges.Where(x => x.FromNode == fromNode && x.ToNode == toNode);
+        if (found.Any())
         {
-            var found = this[fromNode].FindAll(x => x.ToNode == toNode);
-            if (found.Count > 0)
-            {
-                edges = found;
-                return true;
-            }
+            edges = found.ToList();
+            return true;
         }
 
         edges = [];
@@ -61,9 +42,10 @@ public sealed class DataGraph : ConcurrentDictionary<AbstractNode, List<Abstract
 
     public bool TryGetEdgesFrom(AbstractNode fromNode, out List<AbstractEdge> edges)
     {
-        if (ContainsKey(fromNode))
+        var found = Edges.Where(x => x.FromNode == fromNode);
+        if (found.Any())
         {
-            edges = this[fromNode];
+            edges = found.ToList();
             return true;
         }
 
@@ -73,18 +55,11 @@ public sealed class DataGraph : ConcurrentDictionary<AbstractNode, List<Abstract
 
     public bool TryGetEdgesTo(AbstractNode toNode, out List<AbstractEdge> edges)
     {
-        if (ContainsKey(toNode))
+        var found = Edges.Where(x => x.ToNode == toNode);
+        if (found.Any())
         {
-            List<AbstractEdge> found = [];
-
-            foreach (var node in this)
-                found.AddRange(node.Value.FindAll(x => x.ToNode == toNode));
-
-            if (found.Count > 0)
-            {
-                edges = found;
-                return true;
-            }
+            edges = found.ToList();
+            return true;
         }
 
         edges = [];
@@ -92,4 +67,3 @@ public sealed class DataGraph : ConcurrentDictionary<AbstractNode, List<Abstract
     }
 
 }
-

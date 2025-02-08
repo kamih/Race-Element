@@ -25,23 +25,24 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
     public sealed override void BeforeStart()
     {
-        for (int i = 1; i <= 20; i++)
+        Parallel.For(0, 100, i =>
         {
             var someCar = new RacingCarNode() { CarNumber = i };
-            _graph.TryAddNode(someCar);
+            _graph.Add(someCar);
             var someDriver = new RacingDriverNode() { DriverId = i * 2, FirstName = $"random {i}", LastName = "Last Name" };
-            _graph.TryAddNode(someDriver);
+            _graph.Add(someDriver);
             _graph.TryAddEdge(new OwnsEdge(someCar, someDriver));
-            for (int j = 0; j < 20; j++)
+
+            Parallel.For(0, 1000, j =>
             {
                 int s1 = Random.Shared.Next(10000, 40000);
                 int s2 = Random.Shared.Next(10000, 40000);
                 int s3 = Random.Shared.Next(10000, 40000);
                 LapTimeDataNode lapData = new() { LapIndex = j + 1, LapTimeMs = s1 + s2 + s3, SectorTimesMs = [s1, s2, s3] };
-                _graph.TryAddNode(lapData);
+                _graph.Add(lapData);
                 _graph.TryAddEdge(new OwnsEdge(someDriver, lapData));
-            }
-        }
+            });
+        });
     }
 
     public sealed override bool ShouldRender() => true;
@@ -49,12 +50,13 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
     public sealed override void Render(Graphics g)
     {
         _panel.AddLine("Nodes", $"{_graph.Count}");
-        _panel.AddLine("Edges", $"{_graph.Select(x => x.Value.Count).Sum()}");
+        _panel.AddLine("Edges", $"{_graph.Edges.Count}");
 
         var now = TimeProvider.System.GetTimestamp();
 
         //var parallelGraph = _graph.AsParallel();
-        var allLapTimes = _graph.Where(x => x.Key is LapTimeDataNode).Select(x => (LapTimeDataNode)x.Key);
+        var allLapTimes = _graph.Where(x => x is LapTimeDataNode).Select(x => (LapTimeDataNode)x);
+        var allDrivers = _graph.Where(x => x is RacingDriverNode);
         var fastestLap = allLapTimes.MinBy(x => x.LapTimeMs);
         _graph.TryGetEdgesTo(fastestLap, out var edges);
         var fastestDriver = (RacingDriverNode)edges.First().FromNode;
@@ -63,7 +65,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         _panel.AddLine("Time", $"{elapsedTime}");
 
         _panel.AddLine("Amount of laps", $"{allLapTimes.Count()}");
-
+        _panel.AddLine("Amount of Driver", $"{allLapTimes.Count()}");
         _panel.AddLine("Fastest driver", $"{fastestDriver.FirstName} - L{fastestLap.LapIndex} - {fastestLap.LapTimeMs / 1000f:F3}");
 
         _panel.Draw(g);
