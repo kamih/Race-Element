@@ -160,8 +160,8 @@ public static class TrackMapDrawer
         return cls switch
         {
             CarClasses.GT2 => conf.CarColors.GT2,
-            CarClasses.GT3 => conf.CarColors.GT2,
-            CarClasses.GT4 => conf.CarColors.GT3,
+            CarClasses.GT3 => conf.CarColors.GT3,
+            CarClasses.GT4 => conf.CarColors.GT4,
             CarClasses.CUP => conf.CarColors.CUP,
             CarClasses.TCX => conf.CarColors.TCX,
             CarClasses.CHL => conf.CarColors.CHL,
