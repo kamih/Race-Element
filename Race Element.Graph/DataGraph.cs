@@ -29,7 +29,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
 
     public bool TryGetEdges(AbstractNode fromNode, AbstractNode toNode, out List<AbstractEdge> edges)
     {
-        var found = Edges.Where(x => x.FromNode == fromNode && x.ToNode == toNode);
+        var found = Edges.AsParallel().Where(x => x.FromNode == fromNode && x.ToNode == toNode);
         if (found.Any())
         {
             edges = found.ToList();
@@ -42,7 +42,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
 
     public bool TryGetEdgesFrom(AbstractNode fromNode, out List<AbstractEdge> edges)
     {
-        var found = Edges.Where(x => x.FromNode == fromNode);
+        var found = Edges.AsParallel().Where(x => x.FromNode == fromNode);
         if (found.Any())
         {
             edges = found.ToList();
@@ -55,7 +55,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
 
     public bool TryGetEdgesTo(AbstractNode toNode, out List<AbstractEdge> edges)
     {
-        var found = Edges.Where(x => x.ToNode == toNode);
+        var found = Edges.AsParallel().Where(x => x.ToNode == toNode);
         if (found.Any())
         {
             edges = found.ToList();
