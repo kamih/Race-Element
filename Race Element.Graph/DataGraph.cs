@@ -1,5 +1,4 @@
-﻿using MessagePack;
-using RaceElement.Graph.Edge;
+﻿using RaceElement.Graph.Edge;
 using RaceElement.Graph.Node;
 using System.Collections.Concurrent;
 
@@ -8,6 +7,7 @@ namespace RaceElement.Graph;
 public sealed class DataGraph : ConcurrentBag<AbstractNode>
 {
     public ConcurrentBag<AbstractEdge> Edges { get; private set; } = [];
+
 
     /// <summary>
     /// Empties the data graph.
@@ -66,25 +66,4 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         return false;
     }
 
-    public byte[] GetBytes() => MessagePackSerializer.Serialize<GraphMessageObject>(new()
-    {
-        Nodes = [.. this],
-        Edges = [.. Edges]
-    });
-
-    public void InsertGraphMessage(byte[] bytes)
-    {
-        var standardOptions = MessagePackSerializerOptions.Standard;
-        var gmo = MessagePackSerializer.Deserialize<GraphMessageObject>(bytes, options: standardOptions);
-        Parallel.For(0, gmo.Nodes.Length, i => Add(gmo.Nodes[i]));
-        Parallel.For(0, gmo.Edges.Length, i => this.Edges.Add(gmo.Edges[i]));
-    }
-}
-
-[MessagePackObject]
-public record GraphMessageObject
-{
-    [Key(0)] public required AbstractNode[] Nodes { get; set; }
-
-    [Key(1)] public required AbstractEdge[] Edges { get; set; }
 }

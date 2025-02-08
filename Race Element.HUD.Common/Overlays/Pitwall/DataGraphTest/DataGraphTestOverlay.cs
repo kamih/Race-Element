@@ -25,7 +25,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
     public sealed override void BeforeStart()
     {
-        Parallel.For(0, 5, i =>
+        Parallel.For(0, 1000, i =>
         {
             var someCar = new RacingCarNode() { CarNumber = i };
             _graph.Add(someCar);
@@ -33,7 +33,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
             _graph.Add(someDriver);
             _graph.TryAddEdge(new OwnsEdge(someCar, someDriver));
 
-            Parallel.For(0, 5, j =>
+            Parallel.For(0, 1000, j =>
             {
                 int s1 = Random.Shared.Next(10000, 40000);
                 int s2 = Random.Shared.Next(10000, 40000);
@@ -43,9 +43,6 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
                 _graph.TryAddEdge(new OwnsEdge(someDriver, lapData));
             });
         });
-        var bytes = _graph.GetBytes();
-        _graph.ClearGraph();
-        _graph.InsertGraphMessage(bytes);
     }
 
     public sealed override bool ShouldRender() => true;
@@ -59,16 +56,16 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
         var allLapTimes = _graph.Where(x => x is LapTimeDataNode);
         var allDrivers = _graph.Where(x => x is RacingDriverNode);
-        LapTimeDataNode? fastestLap = allLapTimes.MinBy(x => ((LapTimeDataNode)x).LapTimeMs) as LapTimeDataNode;
+        LapTimeDataNode fastestLap = (LapTimeDataNode)allLapTimes.MinBy(x => ((LapTimeDataNode)x).LapTimeMs);
         _graph.TryGetEdgesTo(fastestLap, out var edges);
-        RacingDriverNode fastestDriver = (RacingDriverNode)edges.First().FromNode;
+        var fastestDriver = (RacingDriverNode)edges.First().FromNode;
 
         var elapsedTime = TimeProvider.System.GetElapsedTime(now);
 
         _panel.AddLine("Time", $"{elapsedTime}");
 
         _panel.AddLine("Amount of laps", $"{allLapTimes.Count()}");
-        _panel.AddLine("Amount of Driver", $"{allDrivers.Count()}");
+        _panel.AddLine("Amount of Driver", $"{allLapTimes.Count()}");
         _panel.AddLine("Fastest driver", $"{fastestDriver.FirstName} - L{fastestLap.LapIndex} - {fastestLap.LapTimeMs / 1000f:F3}");
 
         _panel.Draw(g);
