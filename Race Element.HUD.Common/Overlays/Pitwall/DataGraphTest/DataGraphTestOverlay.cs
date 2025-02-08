@@ -25,7 +25,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
     public sealed override void BeforeStart()
     {
-        Parallel.For(0, 100, i =>
+        Parallel.For(0, 1000, i =>
         {
             var someCar = new RacingCarNode() { CarNumber = i };
             _graph.Add(someCar);
@@ -54,14 +54,14 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
         var now = TimeProvider.System.GetTimestamp();
 
-        //var parallelGraph = _graph.AsParallel();
-        var allLapTimes = _graph.Where(x => x is LapTimeDataNode).Select(x => (LapTimeDataNode)x);
+        var allLapTimes = _graph.Where(x => x is LapTimeDataNode);
         var allDrivers = _graph.Where(x => x is RacingDriverNode);
-        var fastestLap = allLapTimes.MinBy(x => x.LapTimeMs);
+        LapTimeDataNode fastestLap = (LapTimeDataNode)allLapTimes.MinBy(x => ((LapTimeDataNode)x).LapTimeMs);
         _graph.TryGetEdgesTo(fastestLap, out var edges);
         var fastestDriver = (RacingDriverNode)edges.First().FromNode;
 
         var elapsedTime = TimeProvider.System.GetElapsedTime(now);
+
         _panel.AddLine("Time", $"{elapsedTime}");
 
         _panel.AddLine("Amount of laps", $"{allLapTimes.Count()}");
