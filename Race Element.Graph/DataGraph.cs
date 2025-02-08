@@ -8,7 +8,6 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
 {
     public ConcurrentBag<AbstractEdge> Edges { get; private set; } = [];
 
-
     /// <summary>
     /// Empties the data graph.
     /// </summary>
