@@ -26,27 +26,29 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
     public sealed override void BeforeStart()
     {
         int carCount = 50;
-        Parallel.For(0, carCount, i =>
-        {
-            var someCar = new RacingCarNode() { CarNumber = i + 1 };
-            _graph.Add(someCar);
-        });
+        int lapCount = 200;
 
-        Parallel.For(0, 400, i =>
+        _ = Parallel.For(0, carCount, i =>
+         {
+             var someCar = new RacingCarNode() { CarNumber = i + 1 };
+             _graph.Add(someCar);
+         });
+
+        _ = Parallel.For(0, 400, i =>
         {
             var someDriver = new RacingDriverNode() { DriverId = i * 2, FirstName = $"random {i}", LastName = "Last Name" };
             _graph.Add(someDriver);
 
             int carNumber = Random.Shared.Next(1, carCount);
-            RacingCarNode raceCar = (RacingCarNode)_graph.FirstOrDefault(x => x is RacingCarNode && ((RacingCarNode)x).CarNumber == carNumber);
+            RacingCarNode? raceCar = _graph.FirstOrDefault(x => x is RacingCarNode car && car.CarNumber == carNumber) as RacingCarNode;
             _graph.TryAddEdge(new OwnsEdge() { FromNode = raceCar, ToNode = someDriver });
 
-            Parallel.For(0, 200, j =>
+            Parallel.For(1, lapCount, j =>
             {
                 int s1 = Random.Shared.Next(10000, 40000);
                 int s2 = Random.Shared.Next(10000, 40000);
                 int s3 = Random.Shared.Next(10000, 40000);
-                LapTimeDataNode lapData = new() { LapIndex = j + 1, LapTimeMs = s1 + s2 + s3, SectorTimesMs = [s1, s2, s3] };
+                LapTimeDataNode lapData = new() { LapIndex = j, LapTimeMs = s1 + s2 + s3, SectorTimesMs = [s1, s2, s3] };
                 _graph.Add(lapData);
                 _graph.TryAddEdge(new OwnsEdge()
                 {
@@ -61,11 +63,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
     public sealed override void Render(Graphics g)
     {
-        _panel.AddLine("Nodes", $"{_graph.Count}");
-        _panel.AddLine("Edges", $"{_graph.Edges.Count}");
-
         var now = TimeProvider.System.GetTimestamp();
-
 
         var allLapTimes = _graph.Where(x => x is LapTimeDataNode);
         var allDrivers = _graph.Where(x => x is RacingDriverNode);
@@ -74,20 +72,18 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         long allDriversCount = allDrivers.Count();
         long allCarsCount = allCars.Count();
 
-        LapTimeDataNode fastestLap = (LapTimeDataNode)allLapTimes.MinBy(x => ((LapTimeDataNode)x).LapTimeMs);
-        _graph.TryGetEdgesTo(fastestLap, out var edges);
+        LapTimeDataNode? fastestLap = allLapTimes.MinBy(x => ((LapTimeDataNode)x).LapTimeMs) as LapTimeDataNode;
+        _ = _graph.TryGetEdgesTo(fastestLap, out var edges);
         var fastestDriver = (RacingDriverNode)edges.First().FromNode;
 
         var elapsedTime = TimeProvider.System.GetElapsedTime(now);
 
-
+        _panel.AddLine("Nodes", $"{_graph.Count}");
+        _panel.AddLine("Edges", $"{_graph.Edges.Count}");
         _panel.AddLine("Time", $"{elapsedTime}");
-
         _panel.AddLine("Laps", $"{allLapsCount}");
         _panel.AddLine("Drivers", $"{allDriversCount}");
         _panel.AddLine("Cars", $"{allCarsCount}");
-
-
         _panel.AddLine("Fastest driver", $"{fastestDriver.FirstName} - L{fastestLap.LapIndex} - {fastestLap.LapTimeMs / 1000f:F3}");
 
         _panel.Draw(g);
