@@ -90,16 +90,16 @@ public sealed class TrackMapConfiguration : OverlayConfiguration
         public Color GT4 { get; init; } = Color.FromArgb(255, 174, 195, 176);
 
         [ToolTip("CUP cars color")]
-        public Color CUP { get; init; } = Color.FromArgb(255, 253,69,17);
+        public Color CUP { get; init; } = Color.FromArgb(255, 253, 69, 17);
 
         [ToolTip("TCX cars color")]
-        public Color TCX { get; init; } = Color.FromArgb(255, 85,100,69);
+        public Color TCX { get; init; } = Color.FromArgb(255, 85, 100, 69);
 
         [ToolTip("CHL cars color")]
-        public Color CHL { get; init; } = Color.FromArgb(255, 194,108,69);
+        public Color CHL { get; init; } = Color.FromArgb(255, 194, 108, 69);
 
         [ToolTip("ST cars color")]
-        public Color ST { get; init; } = Color.FromArgb(255, 35,141,193);
+        public Color ST { get; init; } = Color.FromArgb(255, 35, 141, 193);
     }
 
     [ConfigGrouping("Map Colors", "Map colors")]
