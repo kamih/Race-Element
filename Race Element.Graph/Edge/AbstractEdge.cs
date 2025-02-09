@@ -9,12 +9,12 @@ public abstract record class AbstractEdge : AbstractNode
     /// <summary>
     /// The node this edge comes from.
     /// </summary>
-    public required Guid FromNodeId { get; init; }
+    public required Guid ParentId { get; init; }
 
     /// <summary>
     /// the node this edge goes to.
     /// </summary>
-    public required Guid ToNodeId { get; init; }
+    public required Guid ChildId { get; init; }
 
     /// <summary>
     /// The time when this Edge was created.

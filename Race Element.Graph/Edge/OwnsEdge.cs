@@ -2,6 +2,6 @@
 
 /// <summary>
 /// A simple relationship between two nodes.<br/>
-/// The <see cref="AbstractEdge.FromNodeId"/> owns the <see cref="AbstractEdge.ToNodeId"/>
+/// The <see cref="AbstractEdge.ParentId"/> owns the <see cref="AbstractEdge.ChildId"/>
 /// </summary>
 public sealed record class OwnsEdge : AbstractEdge { }

@@ -56,7 +56,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
 
     public bool TryAddEdge(AbstractEdge edge)
     {
-        if (edge.FromNodeId == null || edge.ToNodeId == null)
+        if (edge.ParentId == null || edge.ChildId == null)
             return false;
 
         Edges.Add(edge);
@@ -68,7 +68,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (fromNode == null || toNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.FromNodeId == fromNode.Id && x.ToNodeId == toNode.Id);
+        var found = Edges.AsParallel().Where(x => x.ParentId == fromNode.Id && x.ChildId == toNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
@@ -83,7 +83,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (fromNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.FromNodeId == fromNode.Id);
+        var found = Edges.AsParallel().Where(x => x.ParentId == fromNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
@@ -98,7 +98,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (toNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.ToNodeId == toNode.Id);
+        var found = Edges.AsParallel().Where(x => x.ChildId == toNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
