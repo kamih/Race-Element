@@ -2,7 +2,9 @@
 using RaceElement.Graph.Edge;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.Util;
+using System.Diagnostics;
 using System.Drawing;
+using System.Text.Json;
 
 namespace RaceElement.HUD.Common.Overlays.Pitwall.DataGraphTest;
 
@@ -25,9 +27,9 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
     public sealed override void BeforeStart()
     {
-        int carCount = 200;
-        int racingDriverCount = 20;
-        int lapCount = 200;
+        int carCount = 1000;
+        int racingDriverCount = 200;
+        int lapCount = 150;
 
         _ = Parallel.For(0, carCount, i =>
          {
@@ -42,7 +44,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
             int carNumber = Random.Shared.Next(1, carCount);
             RacingCarNode? raceCar = _graph.FirstOrDefault(x => x is RacingCarNode car && car.CarNumber == carNumber) as RacingCarNode;
-            _graph.TryAddEdge(new OwnsEdge() { FromNode = raceCar, ToNode = someDriver });
+            _graph.TryAddEdge(new OwnsEdge() { FromNode = raceCar.Id, ToNode = someDriver.Id });
 
             Parallel.For(1, lapCount, j =>
             {
@@ -53,15 +55,30 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
                 _graph.Add(lapData);
                 _graph.TryAddEdge(new OwnsEdge()
                 {
-                    FromNode = someDriver,
-                    ToNode = lapData
+                    FromNode = someDriver.Id,
+                    ToNode = lapData.Id
                 });
             });
         });
 
         var data = _graph.GetData();
+
+        Debug.WriteLine($"{data.Nodes.Length + data.Edges.Length} Bytes");
+
+        var lines = JsonSerializer.Serialize(data);
+        lines = lines.Replace("\\u0022", "^");
+
+        string dataFilePath = AppContext.BaseDirectory + "data.txt";
+        File.WriteAllText(dataFilePath, lines.ToCharArray());
+        string contents = File.ReadAllText(dataFilePath);
+        contents = contents.Replace("^", "\\u0022");
+
+        DataGraphBytes recoveredData = JsonSerializer.Deserialize<DataGraphBytes>(contents);
         _graph.ClearGraph();
-        _graph.InsertData(data);
+        _graph.InsertData(recoveredData);
+
+
+
     }
 
     public sealed override bool ShouldRender() => true;
@@ -79,7 +96,8 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
         LapTimeDataNode? fastestLap = allLapTimes.MinBy(x => ((LapTimeDataNode)x).LapTimeMs) as LapTimeDataNode;
         _ = _graph.TryGetEdgesTo(fastestLap, out var edges);
-        var fastestDriver = (RacingDriverNode)edges.First().FromNode;
+        var fastestDriverId = edges.First().FromNode;
+        var fastestDriver = (RacingDriverNode)_graph.FirstOrDefault(x => x.Id == fastestDriverId);
 
         var elapsedTime = TimeProvider.System.GetElapsedTime(now);
 

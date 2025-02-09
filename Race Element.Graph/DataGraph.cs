@@ -24,6 +24,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         JsonSerializerOptions options = new();
         options.Converters.Add(new AbstractNodeJsonConverter<AbstractNode>());
         options.Converters.Add(new AbstractNodeJsonConverter<AbstractEdge>());
+
         var edges = JsonSerializer.Serialize(Edges.ToArray(), options);
         var serialized = JsonSerializer.Serialize(this.ToArray(), options);
         DataGraphBytes data = new() { Nodes = serialized, Edges = edges };
@@ -57,7 +58,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (fromNode == null || toNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.FromNode.Id == fromNode.Id && x.ToNode.Id == toNode.Id);
+        var found = Edges.AsParallel().Where(x => x.FromNode == fromNode.Id && x.ToNode == toNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
@@ -72,7 +73,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (fromNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.FromNode.Id == fromNode.Id);
+        var found = Edges.AsParallel().Where(x => x.FromNode == fromNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
@@ -87,7 +88,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (toNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.ToNode.Id == toNode.Id);
+        var found = Edges.AsParallel().Where(x => x.ToNode == toNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
