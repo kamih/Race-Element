@@ -117,14 +117,14 @@ public class AbstractNodeJsonConverter<T> : JsonConverter<T>
             }
 
             string typeName = typeProp.GetString();
-            Type animalType = Type.GetType(typeName);
+            Type type = Type.GetType(typeName);
 
-            if (animalType == null || !typeof(AbstractNode).IsAssignableFrom(animalType))
+            if (type == null || !typeof(AbstractNode).IsAssignableFrom(type))
             {
                 throw new JsonException($"Unknown or invalid type: {typeName}");
             }
 
-            return (T)JsonSerializer.Deserialize(jsonDoc.RootElement.GetRawText(), animalType, options);
+            return (T)JsonSerializer.Deserialize(jsonDoc.RootElement.GetRawText(), type, options);
         }
     }
 
