@@ -1,8 +1,9 @@
 ﻿using System.Collections.Concurrent;
+
 using System.IO.Compression;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using RaceElement.Graph.Edge;
 using RaceElement.Graph.Node;
 
@@ -55,7 +56,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
 
     public bool TryAddEdge(AbstractEdge edge)
     {
-        if (edge.FromNode == null || edge.ToNode == null)
+        if (edge.FromNodeId == null || edge.ToNodeId == null)
             return false;
 
         Edges.Add(edge);
@@ -67,7 +68,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (fromNode == null || toNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.FromNode == fromNode.Id && x.ToNode == toNode.Id);
+        var found = Edges.AsParallel().Where(x => x.FromNodeId == fromNode.Id && x.ToNodeId == toNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
@@ -82,7 +83,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (fromNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.FromNode == fromNode.Id);
+        var found = Edges.AsParallel().Where(x => x.FromNodeId == fromNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
@@ -97,7 +98,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (toNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.ToNode == toNode.Id);
+        var found = Edges.AsParallel().Where(x => x.ToNodeId == toNode.Id);
         if (found.Any())
         {
             edges = found.ToList();

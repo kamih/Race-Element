@@ -1,4 +1,5 @@
-﻿using RaceElement.Graph.Node;
+﻿using RaceElement.Graph.Edge;
+using RaceElement.Graph.Node;
 
 namespace RaceElement.Graph;
 
@@ -19,6 +20,12 @@ public sealed record class LapTimeDataNode : AbstractNode
     /// Sector Split times in milliseconds. Empty array if none exist.
     /// </summary>
     public int[] SectorTimesMs { get; init; } = [];
+
+
+    /// <summary>
+    /// Whether the lap is valid, true by default.
+    /// </summary>
+    public bool IsValid { get; init; } = true;
 }
 
 public sealed record class RacingDriverNode : AbstractNode
@@ -43,4 +50,24 @@ public sealed record class RacingCarNode : AbstractNode
     /// </summary>
     public int Position { get; set; } = -1;
 }
+
+public record class TrackStateEdge : AbstractEdge
+{
+    /// <summary>
+    /// Specifies the track state
+    /// </summary>
+    public TrackStates State { get; init; } = TrackStates.None;
+}
+
+[Flags]
+public enum TrackStates : uint
+{
+    None = 0,
+    PitLaneIn = 1,
+    PitLaneOut = 2,
+    Pitlane = 3,
+    Track = 4,
+    OffTrack = 5,
+}
+
 
