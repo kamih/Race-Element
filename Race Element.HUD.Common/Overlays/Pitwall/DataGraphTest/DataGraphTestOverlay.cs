@@ -10,7 +10,7 @@ namespace RaceElement.HUD.Common.Overlays.Pitwall.DataGraphTest;
 
 [Overlay(
     Name = "Data Graph Test",
-    Description = "",
+    Description = "Creates an imaginary data graph with any kind of data and tries to query it.",
     Authors = ["Reinier Klarenberg"]
 )]
 internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
