@@ -27,16 +27,18 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
     public sealed override void BeforeStart()
     {
-        int carCount = 1000;
-        int racingDriverCount = 200;
-        int lapCount = 150;
+        int carCount = 100;
+        int racingDriverCount = 400;
+        int lapCount = 250;
 
+        Debug.WriteLine($"Inserting {carCount} RacingCars");
         _ = Parallel.For(0, carCount, i =>
          {
              var someCar = new RacingCarNode() { CarNumber = i + 1 };
              _graph.Add(someCar);
          });
 
+        Debug.WriteLine($"Inserting {racingDriverCount} RacingDrivers with each having {lapCount} LapTimeDatas");
         _ = Parallel.For(0, racingDriverCount, i =>
         {
             var someDriver = new RacingDriverNode() { DriverId = i * 2, FirstName = $"random {i}", LastName = "Last Name" };
@@ -66,19 +68,14 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         Debug.WriteLine($"{data.Nodes.Length + data.Edges.Length} Bytes");
 
         var lines = JsonSerializer.Serialize(data);
-        lines = lines.Replace("\\u0022", "^");
 
         string dataFilePath = AppContext.BaseDirectory + "data.txt";
         File.WriteAllText(dataFilePath, lines.ToCharArray());
         string contents = File.ReadAllText(dataFilePath);
-        contents = contents.Replace("^", "\\u0022");
 
         DataGraphBytes recoveredData = JsonSerializer.Deserialize<DataGraphBytes>(contents);
         _graph.ClearGraph();
         _graph.InsertData(recoveredData);
-
-
-
     }
 
     public sealed override bool ShouldRender() => true;

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using System.IO.Compression;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using RaceElement.Graph.Edge;
@@ -25,9 +27,13 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         options.Converters.Add(new AbstractNodeJsonConverter<AbstractNode>());
         options.Converters.Add(new AbstractNodeJsonConverter<AbstractEdge>());
 
+        var nodes = JsonSerializer.Serialize(this.ToArray(), options);
         var edges = JsonSerializer.Serialize(Edges.ToArray(), options);
-        var serialized = JsonSerializer.Serialize(this.ToArray(), options);
-        DataGraphBytes data = new() { Nodes = serialized, Edges = edges };
+
+        string compressedNodes = Compression.ToBrotliAsync(nodes, CompressionLevel.Optimal).GetAwaiter().GetResult().Result.Value;
+        string compressedEdges = Compression.ToBrotliAsync(edges, CompressionLevel.Optimal).GetAwaiter().GetResult().Result.Value;
+
+        DataGraphBytes data = new() { Nodes = compressedNodes, Edges = compressedEdges };
         return data;
     }
 
@@ -37,8 +43,11 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         options.Converters.Add(new AbstractNodeJsonConverter<AbstractNode>());
         options.Converters.Add(new AbstractNodeJsonConverter<AbstractEdge>());
 
-        var nodes = JsonSerializer.Deserialize<AbstractNode[]>(data.Nodes, options);
-        var edges = JsonSerializer.Deserialize<AbstractEdge[]>(data.Edges, options);
+        string decompressedNodes = Compression.FromBrotliAsync(data.Nodes).GetAwaiter().GetResult();
+        string decompressedEdges = Compression.FromBrotliAsync(data.Edges).GetAwaiter().GetResult();
+
+        var nodes = JsonSerializer.Deserialize<AbstractNode[]>(decompressedNodes, options);
+        var edges = JsonSerializer.Deserialize<AbstractEdge[]>(decompressedEdges, options);
 
         Parallel.For(0, nodes.Length, (i) => Add(nodes[i]));
         Parallel.For(0, edges.Length, (i) => TryAddEdge(edges[i]));
@@ -99,6 +108,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
     }
 
 }
+
 public struct DataGraphBytes
 {
     public string Nodes { get; set; }
