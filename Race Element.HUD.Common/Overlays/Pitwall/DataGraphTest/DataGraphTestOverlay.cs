@@ -34,7 +34,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         int lapCount = 250;
 
         Debug.WriteLine($"Inserting {carCount} RacingCars");
-        var trackStates = Enum.GetValues<TrackStates>();
+        var trackStates = Enum.GetValues<TrackState>();
         _ = Parallel.For(0, carCount, i =>
          {
              var someCar = new RacingCarNode() { CarNumber = i + 1 };
@@ -91,10 +91,11 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         if (_graph.IsEmpty) return;
 
         var now = TimeProvider.System.GetTimestamp();
-        var allLapTimes = _graph.Where(x => x is LapTimeDataNode);
-        var allDrivers = _graph.Where(x => x is RacingDriverNode);
-        var allCars = _graph.Where(x => x is RacingCarNode);
-        var allTrackStates = _graph.Edges.Where(x => x is TrackStateEdge).OrderByDescending(x => x.TimeStampUtc);
+
+        var allLapTimes = _graph.AsParallel().Where(x => x is LapTimeDataNode);
+        var allDrivers = _graph.AsParallel().Where(x => x is RacingDriverNode);
+        var allCars = _graph.AsParallel().Where(x => x is RacingCarNode);
+        var allTrackStates = _graph.Edges.AsParallel().Where(x => x is TrackStateEdge).OrderByDescending(x => x.TimeStampUtc);
 
         LapTimeDataNode? fastestLap = allLapTimes.MinBy(x => ((LapTimeDataNode)x).LapTimeMs) as LapTimeDataNode;
         _ = _graph.TryGetEdgesTo(fastestLap, out var edges);
@@ -103,8 +104,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
         _graph.TryGetEdgesTo(fastestDriver, out var driverParents);
         RacingCarNode fastestCar = (RacingCarNode)allCars.First(x => driverParents.Select(x => x.ParentId).Contains(x.Id));
-        var allCarStates = _graph.Edges.Where(x => x.ParentId == fastestCar.Id && x is TrackStateEdge);
-        var latestTrackState = allCarStates.First(x => x.ParentId == fastestCar.Id) as TrackStateEdge;
+        var latestTrackState = allTrackStates.First(x => x.ParentId == fastestCar.Id) as TrackStateEdge;
 
         var elapsedTime = TimeProvider.System.GetElapsedTime(now);
 

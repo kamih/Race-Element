@@ -51,16 +51,19 @@ public sealed record class RacingCarNode : AbstractNode
     public int Position { get; set; } = -1;
 }
 
+/// <summary>
+/// Describes a <see cref="TrackState"/> change for a <see cref="RacingCarNode"/>
+/// </summary>
 public record class TrackStateEdge : AbstractEdge
 {
     /// <summary>
     /// Specifies the track state
     /// </summary>
-    public TrackStates State { get; init; } = TrackStates.None;
+    public TrackState State { get; init; } = TrackState.None;
 }
 
 [Flags]
-public enum TrackStates : uint
+public enum TrackState : uint
 {
     None = 0,
     PitLaneIn = 1,
