@@ -26,7 +26,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         _panel = new InfoPanel(12, 550);
         Width = 550;
         Height = 400;
-        RefreshRateHz = 1;
+        RefreshRateHz = 2;
     }
 
     public sealed override void BeforeStart()
@@ -73,19 +73,19 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
             });
         });
 
-        var data = _graph.GetData();
+        //var data = _graph.GetData();
 
-        Debug.WriteLine($"{data.Nodes.Length + data.Edges.Length} Bytes");
+        //Debug.WriteLine($"{data.Nodes.Length + data.Edges.Length} Bytes");
 
-        var lines = JsonSerializer.Serialize(data);
+        //var lines = JsonSerializer.Serialize(data);
 
-        string dataFilePath = AppContext.BaseDirectory + "data.txt";
-        File.WriteAllText(dataFilePath, lines.ToCharArray());
-        string contents = File.ReadAllText(dataFilePath);
+        //string dataFilePath = AppContext.BaseDirectory + "data.txt";
+        //File.WriteAllText(dataFilePath, lines.ToCharArray());
+        //string contents = File.ReadAllText(dataFilePath);
 
-        DataGraphBytes recoveredData = JsonSerializer.Deserialize<DataGraphBytes>(contents);
-        _graph.ClearGraph();
-        _graph.InsertData(recoveredData);
+        //DataGraphBytes recoveredData = JsonSerializer.Deserialize<DataGraphBytes>(contents);
+        //_graph.ClearGraph();
+        //_graph.InsertData(recoveredData);
     }
 
     public sealed override void BeforeStop()
@@ -122,7 +122,8 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         _panel.AddLine("Nodes", $"{_graph.Count}");
         _panel.AddLine("Edges", $"{_graph.Edges.Count}");
         _panel.AddLine("Fastest", $"{fastestDriver.FirstName} - L{fastestLap.LapIndex} - {fastestLap.LapTimeMs / 1000f:F3} - {latestTrackState.State}");
-        _panel.AddLine("Time", $"{elapsedTime}");
+        _panel.AddLine("LastTime", $"{elapsedTime}");
+        _panel.AddLine("Samples", $"{_stats.Count}");
         AddStats(_panel, [.. _stats]);
         _panel.Draw(g);
     }
