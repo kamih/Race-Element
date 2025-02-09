@@ -14,7 +14,7 @@ public abstract record class AbstractEdge : AbstractNode
     /// <summary>
     /// the node this edge goes to.
     /// </summary>
-    public required Guid ChildId { get; init; }
+    public Guid ChildId { get; init; }
 
     /// <summary>
     /// The time when this Edge was created.
