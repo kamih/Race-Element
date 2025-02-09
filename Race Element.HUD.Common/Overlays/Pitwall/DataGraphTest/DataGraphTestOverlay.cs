@@ -25,7 +25,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         _graph = new DataGraph();
         _panel = new InfoPanel(12, 550);
         Width = 550;
-        Height = 400;
+        Height = 250;
         RefreshRateHz = 2;
     }
 
@@ -100,7 +100,9 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
     {
         if (_graph.IsEmpty) return;
 
+        // start of time tracking
         var now = TimeProvider.System.GetTimestamp();
+
         var allLapTimes = _graph.Where(x => x is LapTimeDataNode);
         var allDrivers = _graph.Where(x => x is RacingDriverNode);
         var allCars = _graph.Where(x => x is RacingCarNode);
@@ -116,13 +118,12 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         var allCarStates = _graph.Edges.Where(x => x.ParentId == fastestCar.Id && x is TrackStateEdge);
         var latestTrackState = allCarStates.Where(x => x.ParentId == fastestCar.Id).MaxBy(x => x.TimeStampUtc) as TrackStateEdge;
 
-        var elapsedTime = TimeProvider.System.GetElapsedTime(now);
-        _stats.Add(elapsedTime.TotalMilliseconds);
+        // end of time tracking
+        _stats.Add(TimeProvider.System.GetElapsedTime(now).TotalMilliseconds);
 
         _panel.AddLine("Nodes", $"{_graph.Count}");
         _panel.AddLine("Edges", $"{_graph.Edges.Count}");
         _panel.AddLine("Fastest", $"{fastestDriver.FirstName} - L{fastestLap.LapIndex} - {fastestLap.LapTimeMs / 1000f:F3} - {latestTrackState.State}");
-        _panel.AddLine("LastTime", $"{elapsedTime}");
         _panel.AddLine("Samples", $"{_stats.Count}");
         AddStats(_panel, [.. _stats]);
         _panel.Draw(g);
