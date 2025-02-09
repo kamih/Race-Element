@@ -20,4 +20,22 @@ public abstract record class AbstractEdge : AbstractNode
     /// The time when this Edge was created.
     /// </summary>
     public DateTime TimeStampUtc { get; private init; } = DateTime.UtcNow;
+
+    public DataEdge AsDataEdge() => new()
+    {
+        Id = Id,
+        FromNode = FromNode.Id,
+        ToNode = ToNode.Id,
+        TimeStampUtc = TimeStampUtc,
+        EdgeType = this.EqualityContract.FullName,
+    };
+}
+
+public record class DataEdge
+{
+    public Guid Id { get; set; }
+    public Guid FromNode { get; set; }
+    public Guid ToNode { get; set; }
+    public DateTime TimeStampUtc { get; set; }
+    public string EdgeType { get; set; }
 }

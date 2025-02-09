@@ -1,4 +1,7 @@
 ﻿using System.Collections.Concurrent;
+using System.Security.AccessControl;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using RaceElement.Graph.Edge;
 using RaceElement.Graph.Node;
 
@@ -17,6 +20,37 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         Edges.Clear();
     }
 
+    public struct DataGraphBytes
+    {
+        public string Nodes { get; set; }
+
+        public string Edges { get; set; }
+    }
+
+    public DataGraphBytes GetData()
+    {
+        JsonSerializerOptions options = new();
+        options.Converters.Add(new AbstractNodeJsonConverter<AbstractNode>());
+        options.Converters.Add(new AbstractNodeJsonConverter<AbstractEdge>());
+        var edges = JsonSerializer.Serialize(Edges.ToArray(), options);
+        var serialized = JsonSerializer.Serialize(this.ToArray(), options);
+        DataGraphBytes data = new() { Nodes = serialized, Edges = edges };
+        return data;
+    }
+
+    public void InsertData(DataGraphBytes data)
+    {
+        JsonSerializerOptions options = new();
+        options.Converters.Add(new AbstractNodeJsonConverter<AbstractNode>());
+        options.Converters.Add(new AbstractNodeJsonConverter<AbstractEdge>());
+
+        var nodes = JsonSerializer.Deserialize<AbstractNode[]>(data.Nodes, options);
+        var edges = JsonSerializer.Deserialize<AbstractEdge[]>(data.Edges, options);
+
+        Parallel.For(0, nodes.Length, (i) => Add(nodes[i]));
+        Parallel.For(0, edges.Length, (i) => TryAddEdge(edges[i]));
+    }
+
     public bool TryAddEdge(AbstractEdge edge)
     {
         if (edge.FromNode == null || edge.ToNode == null)
@@ -31,7 +65,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (fromNode == null || toNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.FromNode == fromNode && x.ToNode == toNode);
+        var found = Edges.AsParallel().Where(x => x.FromNode.Id == fromNode.Id && x.ToNode.Id == toNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
@@ -46,7 +80,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (fromNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.FromNode == fromNode);
+        var found = Edges.AsParallel().Where(x => x.FromNode.Id == fromNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
@@ -61,7 +95,7 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         edges = [];
         if (toNode == null) return false;
 
-        var found = Edges.AsParallel().Where(x => x.ToNode == toNode);
+        var found = Edges.AsParallel().Where(x => x.ToNode.Id == toNode.Id);
         if (found.Any())
         {
             edges = found.ToList();
@@ -71,4 +105,43 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         return false;
     }
 
+}
+public class AbstractNodeJsonConverter<T> : JsonConverter<T>
+{
+    public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        using (var jsonDoc = JsonDocument.ParseValue(ref reader))
+        {
+            if (!jsonDoc.RootElement.TryGetProperty("Type", out var typeProp))
+            {
+                throw new JsonException("Missing 'Type' discriminator property.");
+            }
+
+            string typeName = typeProp.GetString();
+            Type animalType = Type.GetType(typeName);
+
+            if (animalType == null || !typeof(AbstractNode).IsAssignableFrom(animalType))
+            {
+                throw new JsonException($"Unknown or invalid type: {typeName}");
+            }
+
+            return (T)JsonSerializer.Deserialize(jsonDoc.RootElement.GetRawText(), animalType, options);
+        }
+    }
+
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        writer.WriteString("Type", value.GetType().FullName);
+
+        var json = JsonSerializer.Serialize(value, value.GetType(), options);
+        using (var jsonDoc = JsonDocument.Parse(json))
+        {
+            foreach (var prop in jsonDoc.RootElement.EnumerateObject())
+            {
+                prop.WriteTo(writer);
+            }
+        }
+        writer.WriteEndObject();
+    }
 }

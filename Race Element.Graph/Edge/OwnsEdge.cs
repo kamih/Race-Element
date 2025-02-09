@@ -1,4 +1,5 @@
 ﻿using RaceElement.Graph.Node;
+using System.Text.Json.Serialization;
 
 namespace RaceElement.Graph.Edge;
 

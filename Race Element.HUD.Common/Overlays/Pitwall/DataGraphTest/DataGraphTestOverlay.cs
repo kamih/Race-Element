@@ -25,7 +25,8 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
     public sealed override void BeforeStart()
     {
-        int carCount = 50;
+        int carCount = 200;
+        int racingDriverCount = 20;
         int lapCount = 200;
 
         _ = Parallel.For(0, carCount, i =>
@@ -34,7 +35,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
              _graph.Add(someCar);
          });
 
-        _ = Parallel.For(0, 400, i =>
+        _ = Parallel.For(0, racingDriverCount, i =>
         {
             var someDriver = new RacingDriverNode() { DriverId = i * 2, FirstName = $"random {i}", LastName = "Last Name" };
             _graph.Add(someDriver);
@@ -57,6 +58,10 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
                 });
             });
         });
+
+        var data = _graph.GetData();
+        _graph.ClearGraph();
+        _graph.InsertData(data);
     }
 
     public sealed override bool ShouldRender() => true;
