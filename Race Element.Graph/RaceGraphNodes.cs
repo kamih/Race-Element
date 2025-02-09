@@ -54,7 +54,7 @@ public sealed record class RacingCarNode : AbstractNode
 /// <summary>
 /// Describes a <see cref="TrackStates"/> change for a <see cref="RacingCarNode"/>
 /// </summary>
-public record class TrackStateEdge : AbstractEdge
+public sealed record class TrackStateEdge : AbstractEdge
 {
     /// <summary>
     /// Specifies the track state
