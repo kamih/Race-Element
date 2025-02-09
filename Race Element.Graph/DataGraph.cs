@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Security.AccessControl;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using RaceElement.Graph.Edge;
@@ -18,13 +17,6 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
     {
         Clear();
         Edges.Clear();
-    }
-
-    public struct DataGraphBytes
-    {
-        public string Nodes { get; set; }
-
-        public string Edges { get; set; }
     }
 
     public DataGraphBytes GetData()
@@ -106,6 +98,13 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
     }
 
 }
+public struct DataGraphBytes
+{
+    public string Nodes { get; set; }
+
+    public string Edges { get; set; }
+}
+
 public class AbstractNodeJsonConverter<T> : JsonConverter<T>
 {
     public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

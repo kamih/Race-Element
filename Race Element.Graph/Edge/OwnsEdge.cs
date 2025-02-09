@@ -1,7 +1,4 @@
-﻿using RaceElement.Graph.Node;
-using System.Text.Json.Serialization;
-
-namespace RaceElement.Graph.Edge;
+﻿namespace RaceElement.Graph.Edge;
 
 /// <summary>
 /// A simple relationship between two nodes.<br/>

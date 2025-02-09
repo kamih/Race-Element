@@ -13,5 +13,3 @@ public abstract record class AbstractNode
 
     public Guid Id { get; init; }
 }
-
-
