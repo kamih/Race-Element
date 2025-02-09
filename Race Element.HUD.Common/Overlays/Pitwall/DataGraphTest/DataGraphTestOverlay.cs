@@ -2,8 +2,10 @@
 using RaceElement.Graph.Edge;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.Util;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Drawing;
+using System.Text;
 using System.Text.Json;
 
 namespace RaceElement.HUD.Common.Overlays.Pitwall.DataGraphTest;
@@ -21,8 +23,9 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
     public DataGraphTestOverlay(Rectangle rectangle) : base(rectangle, "Data Graph Test")
     {
         _graph = new DataGraph();
-        _panel = new InfoPanel(12, 500);
-        Width = 500;
+        _panel = new InfoPanel(12, 550);
+        Width = 550;
+        Height = 400;
         RefreshRateHz = 1;
     }
 
@@ -34,7 +37,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         int racingDriverCount = 400;
         int lapCount = 250;
 
-        Debug.WriteLine($"Inserting {carCount} RacingCars");
+        Debug.WriteLine($"Inserting {carCount} Racing Cars");
         var trackStates = Enum.GetValues<TrackStates>();
         _ = Parallel.For(0, carCount, i =>
          {
@@ -45,10 +48,10 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
              _graph.TryAddEdge(new TrackStateEdge() { ParentId = someCar.Id, State = trackStates[Random.Shared.Next(1, trackStates.Length - 1)] });
          });
 
-        Debug.WriteLine($"Inserting {racingDriverCount} RacingDrivers with each having {lapCount} LapTimeDatas");
+        Debug.WriteLine($"Inserting {racingDriverCount} Racing Drivers with each having {lapCount} Laps");
         _ = Parallel.For(0, racingDriverCount, i =>
         {
-            var someDriver = new RacingDriverNode() { DriverId = i * 2, FirstName = $"random {i}", LastName = "Last Name" };
+            var someDriver = new RacingDriverNode() { DriverId = i * 2, FirstName = $"Driver {i}", LastName = "Last Name" };
             _graph.Add(someDriver);
 
             int carNumber = Random.Shared.Next(1, carCount);
@@ -114,12 +117,33 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         var latestTrackState = allCarStates.Where(x => x.ParentId == fastestCar.Id).MaxBy(x => x.TimeStampUtc) as TrackStateEdge;
 
         var elapsedTime = TimeProvider.System.GetElapsedTime(now);
+        _stats.Add(elapsedTime.TotalMilliseconds);
 
         _panel.AddLine("Nodes", $"{_graph.Count}");
         _panel.AddLine("Edges", $"{_graph.Edges.Count}");
         _panel.AddLine("Fastest", $"{fastestDriver.FirstName} - L{fastestLap.LapIndex} - {fastestLap.LapTimeMs / 1000f:F3} - {latestTrackState.State}");
         _panel.AddLine("Time", $"{elapsedTime}");
-
+        AddStats(_panel, [.. _stats]);
         _panel.Draw(g);
+    }
+
+    private ConcurrentBag<double> _stats = [];
+    private static (double min, double max, double mean, double median, double std) CalculateMetrics(List<double> list)
+    {
+        var mean = list.Average();
+        var std = Math.Sqrt(list.Aggregate(0.0, (a, x) => a + (x - mean) * (x - mean)) / list.Count);
+        var sorted = list.OrderBy(x => x).ToList();
+        var median = sorted.Count % 2 == 0 ? (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2 : sorted[sorted.Count / 2];
+        return (sorted[0], sorted[^1], mean, median, std);
+    }
+
+    private static void AddStats(InfoPanel panel, List<double> data)
+    {
+        var (min, max, mean, median, std) = CalculateMetrics(data);
+        panel.AddLine("Min", $"{min:F4}");
+        panel.AddLine("Avg", $"{mean:F4}");
+        panel.AddLine("Max", $"{max:F4}");
+        panel.AddLine("Median", $"{median:F4}");
+        panel.AddLine("StDev", $"{std:F4}");
     }
 }
