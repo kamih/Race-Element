@@ -29,9 +29,9 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
     {
         if (IsPreviewing) return;
 
-        int carCount = 100;
-        int racingDriverCount = 400;
-        int lapCount = 250;
+        int carCount = 160;
+        int racingDriverCount = 160;
+        int lapCount = 20;
 
         Debug.WriteLine($"Inserting {carCount} RacingCars");
         var trackStates = Enum.GetValues<TrackState>();
@@ -56,10 +56,14 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
             Parallel.For(1, lapCount, j =>
             {
-                int s1 = Random.Shared.Next(10000, 40000);
-                int s2 = Random.Shared.Next(10000, 40000);
-                int s3 = Random.Shared.Next(10000, 40000);
-                LapTimeDataNode lapData = new() { LapIndex = j, LapTimeMs = s1 + s2 + s3, SectorTimesMs = [s1, s2, s3] };
+                int[] sectors =
+                [
+                    Random.Shared.Next(10000, 40000),
+                    Random.Shared.Next(10000, 40000),
+                    Random.Shared.Next(10000, 40000)
+                ];
+                LapTimeDataNode lapData = new() { LapIndex = j, LapTimeMs = sectors.Sum(), SectorTimesMs = sectors };
+
                 _graph.Add(lapData);
                 _graph.TryAddEdge(new OwnsEdge()
                 {
