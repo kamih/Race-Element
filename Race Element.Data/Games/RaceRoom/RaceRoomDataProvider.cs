@@ -37,7 +37,10 @@ internal sealed class RaceRoomDataProvider : AbstractSimDataProvider
                 if (Utilities.IsRrreRunning())
                     _isGameRunning = true;
                 else
+                {
+                    _isGameRunning = false;
                     _lastGameRunningCheck = DateTime.UtcNow;
+                }
             }
         }
         else
@@ -74,7 +77,11 @@ internal sealed class RaceRoomDataProvider : AbstractSimDataProvider
 
         public override void RunAction()
         {
-            if (!_provider._isGameRunning) return;
+            if (!_provider._isGameRunning)
+            {
+                SimDataProvider.RacingGraph.ClearGraph();
+                return;
+            }
 
             Shared sharedMemory = R3eSharedMemory.ReadSharedMemory();
             R3EDataGraphMapper.AddSharedMemory(SimDataProvider.RacingGraph, sharedMemory);
