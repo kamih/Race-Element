@@ -78,12 +78,34 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
         return false;
     }
 
+    public bool TryGetEdges(Guid parentId, Guid childId, out List<AbstractEdge> edges)
+    {
+        edges = [];
+        if (parentId == Guid.Empty || childId == Guid.Empty) return false;
+
+        var found = Edges.AsParallel().Where(x => x.ParentId == parentId && x.ChildId == childId);
+        if (found.Any())
+        {
+            edges = found.ToList();
+            return true;
+        }
+
+        return false;
+    }
+
     public bool TryGetEdgesFrom(AbstractNode parent, out List<AbstractEdge> edges)
     {
         edges = [];
         if (parent == null) return false;
+        return TryGetEdgesFrom(parent.Id, out edges);
+    }
 
-        var found = Edges.AsParallel().Where(x => x.ParentId == parent.Id);
+    public bool TryGetEdgesFrom(Guid parentId, out List<AbstractEdge> edges)
+    {
+        edges = [];
+        if (parentId == Guid.Empty) return false;
+
+        var found = Edges.AsParallel().Where(x => x.ParentId == parentId);
         if (found.Any())
         {
             edges = found.ToList();
@@ -97,8 +119,15 @@ public sealed class DataGraph : ConcurrentBag<AbstractNode>
     {
         edges = [];
         if (child == null) return false;
+        return TryGetEdgesTo(child.Id, out edges);
+    }
 
-        var found = Edges.AsParallel().Where(x => x.ChildId == child.Id);
+    public bool TryGetEdgesTo(Guid childId, out List<AbstractEdge> edges)
+    {
+        edges = [];
+        if (childId == Guid.Empty) return false;
+
+        var found = Edges.AsParallel().Where(x => x.ChildId == childId);
         if (found.Any())
         {
             edges = found.ToList();
