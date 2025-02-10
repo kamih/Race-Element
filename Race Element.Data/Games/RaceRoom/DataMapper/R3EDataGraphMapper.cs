@@ -63,7 +63,7 @@ internal static class R3EDataGraphMapper
                         int[] sectors = [
                             (int)(driverData.SectorTimePreviousSelf.Sector1 * 1000f),
                             (int)((driverData.SectorTimePreviousSelf.Sector2 - driverData.SectorTimePreviousSelf.Sector1) * 1000f),
-                            (int)((driverData.SectorTimePreviousSelf.Sector3 -  driverData.SectorTimePreviousSelf.Sector2 )* 1000f),
+                            (int)((driverData.SectorTimePreviousSelf.Sector3 - driverData.SectorTimePreviousSelf.Sector2) * 1000f),
                         ];
 
                         if (sectors.Sum() <= 0)
