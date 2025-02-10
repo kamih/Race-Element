@@ -1,7 +1,7 @@
 ﻿using RaceElement.Graph.Edge;
 using RaceElement.Graph.Node;
 
-namespace RaceElement.Graph;
+namespace RaceElement.Data.Common.Graph;
 
 public sealed record class LapTimeDataNode : AbstractNode
 {
@@ -36,19 +36,32 @@ public sealed record class RacingDriverNode : AbstractNode
     /// -1 is invalid.
     /// </summary>
     public required int DriverId { get; init; } = -1;
-    public string FirstName { get; init; } = string.Empty;
-    public string LastName { get; init; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
     public string Country { get; init; } = string.Empty;
 }
 
 public sealed record class RacingCarNode : AbstractNode
 {
+    /// <summary>
+    /// Car number.
+    /// </summary>
     public required int CarNumber { get; init; }
+
+    /// <summary>
+    /// The Car Model specified by the game.
+    /// Empty string if not specified.
+    /// </summary>
+    public string CarModelGameID { get; init; } = string.Empty;
 
     /// <summary>
     /// Race Position
     /// </summary>
     public int Position { get; set; } = -1;
+
+    /// <summary>
+    /// The amount of completed laps
+    /// </summary>
+    public int Laps { get; set; } = -1;
 }
 
 /// <summary>

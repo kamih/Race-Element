@@ -1,4 +1,5 @@
-﻿using RaceElement.Graph;
+﻿using RaceElement.Data.Common.Graph;
+using RaceElement.Graph;
 using RaceElement.Graph.Edge;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.Util;
@@ -51,7 +52,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         Debug.WriteLine($"Inserting {racingDriverCount} Racing Drivers with each having {lapCount} Laps");
         _ = Parallel.For(0, racingDriverCount, i =>
         {
-            var someDriver = new RacingDriverNode() { DriverId = i * 2, FirstName = $"Driver {i}", LastName = "Last Name" };
+            var someDriver = new RacingDriverNode() { DriverId = i * 2, Name = $"Driver {i}" };
             _graph.Add(someDriver);
 
             int carNumber = Random.Shared.Next(1, carCount);
@@ -123,7 +124,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
 
         _panel.AddLine("Nodes", $"{_graph.Count}");
         _panel.AddLine("Edges", $"{_graph.Edges.Count}");
-        _panel.AddLine("Fastest", $"{fastestDriver.FirstName} - L{fastestLap.LapIndex} - {fastestLap.LapTimeMs / 1000f:F3} - {latestTrackState.State}");
+        _panel.AddLine("Fastest", $"{fastestDriver.Name} - L{fastestLap.LapIndex} - {fastestLap.LapTimeMs / 1000f:F3} - {latestTrackState.State}");
         _panel.AddLine("Samples", $"{_stats.Count}");
         AddStats(_panel, [.. _stats]);
         _panel.Draw(g);

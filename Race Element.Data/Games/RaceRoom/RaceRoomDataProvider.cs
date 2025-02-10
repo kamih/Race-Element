@@ -1,4 +1,6 @@
-﻿using RaceElement.Data.Common.SimulatorData;
+﻿using RaceElement.Core.Jobs.Loop;
+using RaceElement.Data.Common;
+using RaceElement.Data.Common.SimulatorData;
 using RaceElement.Data.Common.SimulatorData.LocalCar;
 using RaceElement.Data.Games.RaceRoom.DataMapper;
 using RaceElement.Data.Games.RaceRoom.SharedMemory;
@@ -11,14 +13,19 @@ internal sealed class RaceRoomDataProvider : AbstractSimDataProvider
     private bool _isGameRunning = false;
     private DateTime _lastGameRunningCheck = DateTime.MinValue;
 
+    private GraphJob _graphjob;
+
     internal sealed override int PollingRate() => 300;
 
     internal sealed override void Start()
     {
+        _graphjob = new(this) { IntervalMillis = 500 };
+        _graphjob.Run();
     }
 
     internal sealed override void Stop()
     {
+        _graphjob.CancelJoin();
     }
 
     public sealed override void Update(ref LocalCarData localCar, ref SessionData sessionData, ref GameData gameData)
@@ -42,7 +49,6 @@ internal sealed class RaceRoomDataProvider : AbstractSimDataProvider
                 // Local Car Data
                 R3ELocalCarMapper.AddR3SharedMemory(sharedMemory, localCar);
 
-
                 // Game Data
                 gameData.Name = Game.RaceRoom.ToShortName();
                 gameData.Version = $"{sharedMemory.VersionMajor}.{sharedMemory.VersionMinor}";
@@ -58,14 +64,26 @@ internal sealed class RaceRoomDataProvider : AbstractSimDataProvider
         }
     }
 
-
-
-
-
-
     public override List<string> GetCarClasses() => [];
 
     public override bool HasTelemetry() => false;
 
+    internal sealed class GraphJob(RaceRoomDataProvider provider) : AbstractLoopJob
+    {
+        private readonly RaceRoomDataProvider _provider = provider;
 
+        public override void RunAction()
+        {
+            if (!_provider._isGameRunning) return;
+
+            Shared sharedMemory = R3eSharedMemory.ReadSharedMemory();
+            R3EDataGraphMapper.AddSharedMemory(SimDataProvider.RacingGraph, sharedMemory);
+        }
+
+        public override void AfterCancel()
+        {
+            SimDataProvider.RacingGraph.ClearGraph();
+        }
+    }
 }
+

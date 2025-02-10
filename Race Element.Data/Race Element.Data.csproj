@@ -45,6 +45,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Race Element.Core\Race Element.Core.csproj" />
+      <ProjectReference Include="..\Race Element.Graph\Race Element.Graph.csproj" />
     </ItemGroup>
 
     <ItemGroup>

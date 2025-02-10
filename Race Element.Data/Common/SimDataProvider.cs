@@ -7,6 +7,8 @@ using RaceElement.Data.Common.SimulatorData.LocalCar;
 using RaceElement.Data.Games.Automobilista2;
 using RaceElement.Data.Games.EuroTruckSimulator2;
 using RaceElement.Data.Games.AssettoCorsaEvo;
+using RaceElement.Data.Common.Graph;
+using RaceElement.Graph;
 
 namespace RaceElement.Data.Common;
 
@@ -22,12 +24,24 @@ public static class SimDataProvider
 
     private static readonly LocalCarEventLoop _localCarEventLoop = new();
 
-
-    private static SessionData _session = new();
-    public static SessionData Session { get => _session; }
-
     private static GameData _gameData = new();
     public static GameData GameData { get => _gameData; }
+
+
+    private static DataGraph _racingGraph = new();
+    public static DataGraph RacingGraph { get => _racingGraph; }
+
+
+    /// <summary>
+    /// TODO, remove and replace with <see cref="RacingGraph"/>
+    /// </summary>
+    private static SessionData _session = new();
+    /// <summary>
+    /// TODO, remove and replace with <see cref="RacingGraph"/>
+    /// </summary>
+    public static SessionData Session { get => _session; }
+
+
 
     public static void Update(bool clear = false)
     {
@@ -86,12 +100,12 @@ public static class SimDataProvider
                     break;
                 }
             case Game.AssettoCorsaEvo:
-            {
-                Instance ??= new AssettoCorsaEvoDataProvider();
-                Instance.Update(ref _localCarData, ref _session, ref _gameData);
-                _localCarEventLoop.Run();
-                break;
-            }
+                {
+                    Instance ??= new AssettoCorsaEvoDataProvider();
+                    Instance.Update(ref _localCarData, ref _session, ref _gameData);
+                    _localCarEventLoop.Run();
+                    break;
+                }
             default: { break; }
         }
     }
