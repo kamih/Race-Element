@@ -17,11 +17,9 @@ namespace RaceElement.HUD.Common.Overlays.Pitwall.DataGraphTest;
     Description = "",
     Authors = ["Reinier Klarenberg"]
 )]
-internal sealed class DataGraphLeaderBoardOverlay : CommonAbstractOverlay
+internal sealed class DataGraphLeaderBoardOverlay(Rectangle rectangle) : CommonAbstractOverlay(rectangle, "Data Graph Leaderboard")
 {
     private InfoPanel _panel;
-
-    public DataGraphLeaderBoardOverlay(Rectangle rectangle) : base(rectangle, "Data Graph Leaderboard") { }
 
     public sealed override void BeforeStart()
     {
@@ -54,13 +52,13 @@ internal sealed class DataGraphLeaderBoardOverlay : CommonAbstractOverlay
         {
             LapTimeDataNode? fastestLap = allLapTimes.MinBy(x => x?.LapTimeMs);
 
-            _ = graph.TryGetEdgesTo(fastestLap, out var fastestLapEdgeChilds);
-            if (fastestLapEdgeChilds.Count != 0)
+            _ = graph.TryGetEdgesTo(fastestLap.Id, out var fastestLapEdges);
+            if (fastestLapEdges.Count != 0)
             {
-                var fastestDriverId = fastestLapEdgeChilds.First().ParentId;
+                var fastestDriverId = fastestLapEdges.First().ParentId;
                 var fastestDriver = allDrivers.First(x => x?.Id == fastestDriverId);
 
-                graph.TryGetEdgesTo(fastestDriver, out var driverEdgesTo);
+                graph.TryGetEdgesTo(fastestDriverId, out var driverEdgesTo);
 
                 RacingCarNode fastestCar = allCars.First(x => driverEdgesTo.Select(x => x.ParentId).Contains(x.Id));
                 _panel.AddLine("Fastest", $"#{fastestCar.CarNumber} - {fastestDriver.Name} - L{fastestLap.LapIndex} - {TimeSpan.FromMilliseconds(fastestLap.LapTimeMs):mm\\:ss\\:fff}");
@@ -86,16 +84,6 @@ internal sealed class DataGraphLeaderBoardOverlay : CommonAbstractOverlay
         var sorted = list.OrderBy(x => x).ToList();
         var median = sorted.Count % 2 == 0 ? (sorted[sorted.Count / 2 - 1] + sorted[sorted.Count / 2]) / 2 : sorted[sorted.Count / 2];
         return (sorted[0], sorted[^1], mean, median, std);
-    }
-
-    private static void AddStats(InfoPanel panel, List<double> data)
-    {
-        var (min, max, mean, median, std) = CalculateMetrics(data);
-        panel.AddLine("Min", $"{min:F4}");
-        panel.AddLine("Avg", $"{mean:F4}");
-        panel.AddLine("Max", $"{max:F4}");
-        panel.AddLine("Median", $"{median:F4}");
-        panel.AddLine("StDev", $"{std:F4}");
     }
 
     private static void AddTimeStats(InfoPanel panel, List<double> data)
