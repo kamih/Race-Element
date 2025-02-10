@@ -5,6 +5,12 @@ using RaceElement.Graph.Edge;
 using System.Diagnostics;
 
 namespace RaceElement.Data.Games.RaceRoom.DataMapper;
+
+
+
+/// <summary>
+/// Very rough testing data mapper, should have state tracking of tree nodes!
+/// </summary>
 internal static class R3EDataGraphMapper
 {
     public static void AddSharedMemory(DataGraph graph, Shared shared)
