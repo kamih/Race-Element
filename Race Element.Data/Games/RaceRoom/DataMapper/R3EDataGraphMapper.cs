@@ -9,8 +9,11 @@ internal static class R3EDataGraphMapper
 {
     public static void AddSharedMemory(DataGraph graph, Shared shared)
     {
-        if (shared.SessionType == (int)Constants.Session.Unavailable)
+        if (shared.SessionType == (int)Constants.Session.Unavailable || shared.DriverData == null)
+        {
             graph.ClearGraph();
+            return;
+        }
 
         var existingCars = graph.Where(x => x is RacingCarNode).Select(x => x as RacingCarNode);
         var existingDrivers = graph.Where(x => x is RacingDriverNode).Select(x => x as RacingDriverNode);
@@ -44,35 +47,33 @@ internal static class R3EDataGraphMapper
             }
             else
             {
-                var car = matchingCars.FirstOrDefault();
-                if (car != null)
+                var raceCarNode = matchingCars.FirstOrDefault();
+
+                if (raceCarNode != null)
                 {
+
                     // Update data
-                    if (car.Position != driverData.Place)
-                        car.Position = driverData.Place;
+                    if (raceCarNode.Position != driverData.Place)
+                        raceCarNode.Position = driverData.Place;
 
-
-                    if (car.Laps < driverData.CompletedLaps && graph.Edges.Any())
+                    if (raceCarNode.Laps < driverData.CompletedLaps && graph.Edges.Any())
                     {
-                        car.Laps = driverData.CompletedLaps;
+                        raceCarNode.Laps = driverData.CompletedLaps;
 
                         int[] sectors = [
                             (int)(driverData.SectorTimePreviousSelf.Sector1 * 1000f),
-                            (int)(driverData.SectorTimePreviousSelf.Sector2 * 1000f),
-                            (int)(driverData.SectorTimePreviousSelf.Sector3 * 1000f),
+                            (int)((driverData.SectorTimePreviousSelf.Sector2 - driverData.SectorTimePreviousSelf.Sector1) * 1000f),
+                            (int)((driverData.SectorTimePreviousSelf.Sector3 -  driverData.SectorTimePreviousSelf.Sector2 )* 1000f),
                         ];
 
-                        if (sectors[2] < 0)
-                        {
-                            // sector[2] is the laptime, it's not a sector in this case, if it's lower than 0 we will skip it.
+                        if (sectors.Sum() <= 0)
                             continue;
-                        }
 
-                        LapTimeDataNode lapNode = new() { SectorTimesMs = sectors, LapIndex = car.Laps, LapTimeMs = (int)(driverData.SectorTimePreviousSelf.Sector3 * 1000f) };
-                        Debug.WriteLine($"Added new lap for:\n- {car}\n- {lapNode}");
+                        LapTimeDataNode lapNode = new() { SectorTimesMs = sectors, LapIndex = raceCarNode.Laps, LapTimeMs = sectors.Sum() };
+                        Debug.WriteLine($"Added new lap for:\n- {raceCarNode}\n- {lapNode}");
                         graph.Add(lapNode);
 
-                        graph.TryGetEdgesFrom(car, out var carEdgesFrom);
+                        graph.TryGetEdgesFrom(raceCarNode, out var carEdgesFrom);
 
                         RacingDriverNode driverNode = (RacingDriverNode)existingDrivers.First(x => carEdgesFrom.Select(x => x.ChildId).Contains(x.Id));
 
