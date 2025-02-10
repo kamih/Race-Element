@@ -19,19 +19,18 @@ namespace RaceElement.HUD.Common.Overlays.Pitwall.DataGraphTest;
 )]
 internal sealed class DataGraphLeaderBoardOverlay : CommonAbstractOverlay
 {
-    private readonly InfoPanel _panel;
+    private InfoPanel _panel;
 
-    public DataGraphLeaderBoardOverlay(Rectangle rectangle) : base(rectangle, "Data Graph Leaderboard")
-    {
-        _panel = new InfoPanel(12, 550);
-        Width = 550;
-        Height = 250;
-        RefreshRateHz = 2;
-    }
+    public DataGraphLeaderBoardOverlay(Rectangle rectangle) : base(rectangle, "Data Graph Leaderboard") { }
 
     public sealed override void BeforeStart()
     {
         if (IsPreviewing) return;
+
+        _panel = new InfoPanel(12, 550);
+        Width = 550;
+        Height = 250;
+        RefreshRateHz = 2;
     }
 
     public sealed override void BeforeStop()
@@ -47,24 +46,23 @@ internal sealed class DataGraphLeaderBoardOverlay : CommonAbstractOverlay
 
         var graph = SimDataProvider.RacingGraph;
 
-        // start of time tracking
-        var allLapTimes = graph.Where(x => x is LapTimeDataNode);
-        var allDrivers = graph.Where(x => x is RacingDriverNode);
-        var allCars = graph.Where(x => x is RacingCarNode);
+        var allLapTimes = graph.Where(x => x is LapTimeDataNode).Select(x => x as LapTimeDataNode);
+        var allDrivers = graph.Where(x => x is RacingDriverNode).Select(x => x as RacingDriverNode);
+        var allCars = graph.Where(x => x is RacingCarNode).Select(x => x as RacingCarNode);
 
         if (allLapTimes.Any())
         {
-            LapTimeDataNode? fastestLap = allLapTimes.MinBy(x => ((LapTimeDataNode)x).LapTimeMs) as LapTimeDataNode;
+            LapTimeDataNode? fastestLap = allLapTimes.MinBy(x => x?.LapTimeMs);
 
-            _ = graph.TryGetEdgesTo(fastestLap, out var edges);
-            if (edges.Count != 0)
+            _ = graph.TryGetEdgesTo(fastestLap, out var fastestLapEdgeChilds);
+            if (fastestLapEdgeChilds.Count != 0)
             {
-                var fastestDriverId = edges.First().ParentId;
-                var fastestDriver = (RacingDriverNode)allDrivers.First(x => x.Id == fastestDriverId);
+                var fastestDriverId = fastestLapEdgeChilds.First().ParentId;
+                var fastestDriver = allDrivers.First(x => x?.Id == fastestDriverId);
 
                 graph.TryGetEdgesTo(fastestDriver, out var driverEdgesTo);
 
-                RacingCarNode fastestCar = (RacingCarNode)allCars.First(x => driverEdgesTo.Select(x => x.ParentId).Contains(x.Id));
+                RacingCarNode fastestCar = allCars.First(x => driverEdgesTo.Select(x => x.ParentId).Contains(x.Id));
                 _panel.AddLine("Fastest", $"#{fastestCar.CarNumber} - {fastestDriver.Name} - L{fastestLap.LapIndex} - {TimeSpan.FromMilliseconds(fastestLap.LapTimeMs):mm\\:ss\\:fff}");
             }
         }
@@ -74,7 +72,7 @@ internal sealed class DataGraphLeaderBoardOverlay : CommonAbstractOverlay
         if (allLapTimes.Any())
         {
             _panel.AddLine("Laps", $"{allLapTimes.Count()}");
-            int[] avgLapTimeMs = allLapTimes.Select(x => ((LapTimeDataNode)x).LapTimeMs).ToArray();
+            int[] avgLapTimeMs = allLapTimes.Select(x => x.LapTimeMs).ToArray();
             AddTimeStats(_panel, [.. avgLapTimeMs]);
         }
 
