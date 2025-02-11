@@ -40,7 +40,7 @@ internal sealed class DataGraphLeaderBoardOverlay(Rectangle rectangle) : CommonA
 
     public sealed override void Render(Graphics g)
     {
-        if (SimDataProvider.RacingGraph.IsEmpty) return;
+        if (SimDataProvider.RacingGraph.IsEmpty || IsPreviewing) return;
 
         var graph = SimDataProvider.RacingGraph;
 
@@ -58,21 +58,24 @@ internal sealed class DataGraphLeaderBoardOverlay(Rectangle rectangle) : CommonA
                 var fastestDriverId = fastestLapEdges.First().ParentId;
                 var fastestDriver = allDrivers.First(x => x?.Id == fastestDriverId);
 
-                graph.TryGetEdgesTo(fastestDriverId, out var driverEdgesTo);
+                _ = graph.TryGetEdgesTo(fastestDriverId, out var driverEdgesTo);
 
                 RacingCarNode fastestCar = allCars.First(x => driverEdgesTo.Select(x => x.ParentId).Contains(x.Id));
-                _panel.AddLine("Fastest", $"#{fastestCar.CarNumber} - {fastestDriver.Name} - L{fastestLap.LapIndex} - {TimeSpan.FromMilliseconds(fastestLap.LapTimeMs):mm\\:ss\\:fff}");
+                _panel.AddLine("Fastest", $"#{fastestCar.CarNumber} - {fastestDriver.Name} - L{fastestLap.LapIndex}");
+                _panel.AddLine("Fastest Lap", $"{TimeSpan.FromMilliseconds(fastestLap.LapTimeMs):mm\\:ss\\.fff}");
             }
         }
 
-        _panel.AddLine("Nodes", $"{graph.Count}");
-        _panel.AddLine("Edges", $"{graph.Edges.Count}");
+
         if (allLapTimes.Any())
         {
             _panel.AddLine("Laps", $"{allLapTimes.Count()}");
             int[] avgLapTimeMs = allLapTimes.Select(x => x.LapTimeMs).ToArray();
             AddTimeStats(_panel, [.. avgLapTimeMs]);
         }
+
+        _panel.AddLine("Nodes", $"{graph.Count}");
+        _panel.AddLine("Edges", $"{graph.Edges.Count}");
 
         _panel.Draw(g);
     }
@@ -89,10 +92,10 @@ internal sealed class DataGraphLeaderBoardOverlay(Rectangle rectangle) : CommonA
     private static void AddTimeStats(InfoPanel panel, List<double> data)
     {
         var (min, max, mean, median, std) = CalculateMetrics(data);
-        panel.AddLine("Min", $"{TimeSpan.FromMilliseconds(min):mm\\:ss\\:fff}");
-        panel.AddLine("Avg", $"{TimeSpan.FromMilliseconds(mean):mm\\:ss\\:ffff}");
-        panel.AddLine("Max", $"{TimeSpan.FromMilliseconds(max):mm\\:ss\\:fff}");
-        panel.AddLine("Median", $"{TimeSpan.FromMilliseconds(median):mm\\:ss\\:ffff}");
-        panel.AddLine("StDev", $"{TimeSpan.FromMilliseconds(std):mm\\:ss\\:ffff}");
+        panel.AddLine("Min", $"{TimeSpan.FromMilliseconds(min):mm\\:ss\\.fff}");
+        panel.AddLine("Avg", $"{TimeSpan.FromMilliseconds(mean):mm\\:ss\\.ffff}");
+        panel.AddLine("Max", $"{TimeSpan.FromMilliseconds(max):mm\\:ss\\.fff}");
+        panel.AddLine("Median", $"{TimeSpan.FromMilliseconds(median):mm\\:ss\\.ffff}");
+        panel.AddLine("StDev", $"{TimeSpan.FromMilliseconds(std):s\\.ffff}");
     }
 }
