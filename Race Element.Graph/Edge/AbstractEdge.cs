@@ -9,15 +9,16 @@ public abstract record class AbstractEdge : AbstractNode
     /// <summary>
     /// The node this edge comes from.
     /// </summary>
-    public AbstractNode? FromNode { get; init; } = default;
+    public required Guid ParentId { get; init; }
 
     /// <summary>
     /// the node this edge goes to.
     /// </summary>
-    public AbstractNode? ToNode { get; init; } = default;
+    public Guid ChildId { get; init; }
 
     /// <summary>
     /// The time when this Edge was created.
     /// </summary>
     public DateTime TimeStampUtc { get; private init; } = DateTime.UtcNow;
+
 }

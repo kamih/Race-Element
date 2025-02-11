@@ -24,7 +24,7 @@ internal sealed class Constants
     /// <summary>
     /// Session Type
     /// </summary>
-    enum Session
+    public enum Session : int
     {
         Unavailable = -1,
         Practice = 0,

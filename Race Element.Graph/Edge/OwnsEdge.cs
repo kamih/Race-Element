@@ -1,16 +1,7 @@
-﻿using RaceElement.Graph.Node;
-
-namespace RaceElement.Graph.Edge;
+﻿namespace RaceElement.Graph.Edge;
 
 /// <summary>
 /// A simple relationship between two nodes.<br/>
-/// The <see cref="AbstractEdge.FromNode"/> owns the <see cref="AbstractEdge.ToNode"/>
+/// The <see cref="AbstractEdge.ParentId"/> owns the <see cref="AbstractEdge.ChildId"/>
 /// </summary>
-public sealed record class OwnsEdge : AbstractEdge
-{
-    public OwnsEdge(AbstractNode parent, AbstractNode child)
-    {
-        FromNode = parent;
-        ToNode = child;
-    }
-}
+public sealed record class OwnsEdge : AbstractEdge { }

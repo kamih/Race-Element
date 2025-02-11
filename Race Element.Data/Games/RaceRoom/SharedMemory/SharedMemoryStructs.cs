@@ -373,6 +373,10 @@ internal struct AidSettings
     public Int32 Cornering;
 }
 
+/// <summary>
+/// if <see cref="T"/> is <see cref="Single"/> and used for sector timing the sectors are the time in the lap that has passed, not the duration of the sector.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 internal struct Sectors<T>
 {
