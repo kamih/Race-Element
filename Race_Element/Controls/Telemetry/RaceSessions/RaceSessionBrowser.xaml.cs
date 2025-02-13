@@ -730,7 +730,7 @@ public partial class RaceSessionBrowser : UserControl
                     $"{lap.Sector2/1000f:F3}",
                     $"{lap.Sector3/1000f:F3}",
                     $"{lap.FuelUsage/1000f:F3}",
-                    $"{lap.FuelInTank/1000f:F3}",
+                    $"{lap.FuelInTank:F3}",
                     $"{LapTypeToString(lap.LapType)}",
                     $"{lap.GripStatus}",
                     $"{lap.TempAmbient:F3}",
