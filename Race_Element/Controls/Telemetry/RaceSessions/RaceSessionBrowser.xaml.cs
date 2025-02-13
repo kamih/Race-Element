@@ -748,6 +748,6 @@ public partial class RaceSessionBrowser : UserControl
     {
         LapType.Inlap => "In",
         LapType.Outlap => "Out",
-        _ => " "
+        _ => string.Empty,
     };
 }
