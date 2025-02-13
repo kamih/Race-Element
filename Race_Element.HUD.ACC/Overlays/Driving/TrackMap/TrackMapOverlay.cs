@@ -273,14 +273,16 @@ internal sealed class TrackMapOverlay : AbstractOverlay
                 car.CarClass = ConversionFactory.GetConversion(carModel).CarClass;
             }
 
-            var x = it.Value.RealtimeCarUpdate.WorldPosX;
-            var y = it.Value.RealtimeCarUpdate.WorldPosY;
-            var spline = it.Value.RealtimeCarUpdate.SplinePosition;
-
             car.RacePosition = it.Value.RealtimeCarUpdate.Position.ToString();
             car.Laps = it.Value.RealtimeCarUpdate.Laps;
-            car.Pos = new TrackPoint() { X = x, Y = y, Spline = spline };
             car.Id = it.Key;
+
+            car.Pos = new TrackPoint()
+            {
+                X = it.Value.RealtimeCarUpdate.WorldPosX,
+                Y = it.Value.RealtimeCarUpdate.WorldPosY,
+                Spline = it.Value.RealtimeCarUpdate.SplinePosition
+            };
 
             car.Spline = it.Value.RealtimeCarUpdate.SplinePosition;
             car.Kmh = it.Value.RealtimeCarUpdate.Kmh;
