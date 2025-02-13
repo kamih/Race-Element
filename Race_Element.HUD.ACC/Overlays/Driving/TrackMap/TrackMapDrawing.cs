@@ -124,18 +124,18 @@ public static class TrackMapDrawer
 
         foreach (var it in cars.Cars)
         {
-            Color outlineColor = Color.Black;
+            Color carColor = Color.Black;
 
             if (sessionType == ACCSharedMemory.AcSessionType.AC_RACE)
             {
-                outlineColor = GetRaceCarOutlineColor(cars.Player, it, conf, trackMeters);
+                carColor = GetRaceCarColor(cars.Player, it, conf, trackMeters);
             }
             else
             {
-                outlineColor = GetOtherSessionCarOutlineColor(it, conf);
+                carColor = GetOtherSessionCarColor(it, conf);
             }
 
-            var bitmap = CreateCircleWithOutline(GetCarBitmap(it.CarClass, conf), conf.Others.CarSize, conf.Others.OutCircleSize, outlineColor);
+            var bitmap = CreateCircleWithOutline(carColor, conf.Others.CarSize, conf.Others.OutCircleSize, Color.Black);
             DrawCarOnMap(it, bitmap, conf, g, font);
         }
 
@@ -160,8 +160,8 @@ public static class TrackMapDrawer
         return cls switch
         {
             CarClasses.GT2 => conf.CarColors.GT2,
-            CarClasses.GT3 => conf.CarColors.GT2,
-            CarClasses.GT4 => conf.CarColors.GT3,
+            CarClasses.GT3 => conf.CarColors.GT3,
+            CarClasses.GT4 => conf.CarColors.GT4,
             CarClasses.CUP => conf.CarColors.CUP,
             CarClasses.TCX => conf.CarColors.TCX,
             CarClasses.CHL => conf.CarColors.CHL,
@@ -270,7 +270,7 @@ public static class TrackMapDrawer
         }
     }
 
-    private static Color GetRaceCarOutlineColor(CarOnTrack player, CarOnTrack other, TrackMapConfiguration conf, float trackMeters)
+    private static Color GetRaceCarColor(CarOnTrack player, CarOnTrack other, TrackMapConfiguration conf, float trackMeters)
     {
         if (player == null || other == null)
         {
@@ -303,32 +303,32 @@ public static class TrackMapDrawer
             return conf.MapColors.OthersLappedPlayer;
         }
 
-        return Color.Black;
+        return GetCarBitmap(other.CarClass, conf);
     }
 
-    private static Color GetOtherSessionCarOutlineColor(CarOnTrack car, TrackMapConfiguration config)
+    private static Color GetOtherSessionCarColor(CarOnTrack car, TrackMapConfiguration conf)
     {
         if (car.Location != CarLocationEnum.Track)
         {
-            return config.MapColors.Default;
+            return conf.MapColors.Default;
         }
 
-        if (car.Kmh <= config.General.KmhThreshold)
+        if (car.Kmh <= conf.General.KmhThreshold)
         {
             return Color.Yellow;
         }
 
         if (!car.IsValid)
         {
-            return config.MapColors.PlayerLappedOthers;
+            return conf.MapColors.PlayerLappedOthers;
         }
 
         if (car.Delta < 0 && car.IsValidForBest)
         {
-            return config.MapColors.ImprovingLap;
+            return conf.MapColors.ImprovingLap;
         }
 
-        return Color.Black;
+        return GetCarBitmap(car.CarClass, conf);
     }
 
 }

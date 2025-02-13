@@ -258,7 +258,7 @@ public class TrackMapCreationJob : AbstractLoopJob
         using BinaryWriter binaryWriter = new(fileStream);
 
         binaryWriter.Write(_magic);     // Magic number
-        binaryWriter.Write(Version);   // Version
+        binaryWriter.Write(Version);    // Version
         binaryWriter.Write(0);          // Reserved 01 (future use)
         binaryWriter.Write(0);          // Reserved 02 (future use)
 
