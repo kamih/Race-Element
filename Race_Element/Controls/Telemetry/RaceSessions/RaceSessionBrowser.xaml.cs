@@ -725,7 +725,7 @@ public partial class RaceSessionBrowser : UserControl
                 string[] columnData =
                 [
                     $"{lap.Index}",
-                    $"{TimeSpan.FromMilliseconds(lap.Time):mm\\:ss\\:fff}",
+                    $"{TimeSpan.FromMilliseconds(lap.Time):mm\\:ss\\.fff}",
                     $"{lap.Sector1/1000f:F3}",
                     $"{lap.Sector2/1000f:F3}",
                     $"{lap.Sector3/1000f:F3}",
