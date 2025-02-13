@@ -83,7 +83,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel x:Name="stackerSessionViewer" Grid.Row="0" Margin="3" Orientation="Vertical"/>
-            <Grid Grid.Row="1" x:Name="gridSessionLaps"></Grid>
+            <Grid Grid.Row="1" x:Name="gridSessionLaps" MouseRightButtonUp="GridSessionLapsOnMouseRightButtonUp"></Grid>
         </Grid>
 
         <GridSplitter x:Name="gridSplitter" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="3" HorizontalAlignment="Stretch" ResizeDirection="Rows"
