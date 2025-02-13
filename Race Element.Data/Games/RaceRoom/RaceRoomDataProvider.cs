@@ -19,13 +19,17 @@ internal sealed class RaceRoomDataProvider : AbstractSimDataProvider
 
     internal sealed override void Start()
     {
+#if DEBUG
         _graphjob = new(this) { IntervalMillis = 500 };
         _graphjob.Run();
+#endif
     }
 
     internal sealed override void Stop()
     {
+#if DEBUG
         _graphjob.CancelJoin();
+#endif
     }
 
     public sealed override void Update(ref LocalCarData localCar, ref SessionData sessionData, ref GameData gameData)

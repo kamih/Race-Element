@@ -12,11 +12,13 @@ using System.Text.Json;
 
 namespace RaceElement.HUD.Common.Overlays.Pitwall.DataGraphTest;
 
+#if DEBUG
 [Overlay(
     Name = "Data Graph Leaderboard",
     Description = "",
     Authors = ["Reinier Klarenberg"]
 )]
+#endif
 internal sealed class DataGraphLeaderBoardOverlay(Rectangle rectangle) : CommonAbstractOverlay(rectangle, "Data Graph Leaderboard")
 {
     private InfoPanel _panel;
