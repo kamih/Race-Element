@@ -6,9 +6,11 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
-        {"2.2.4.6", "Assetto Corsa Competizione:"+
+        {"2.2.4.6", "Automobilista 2:"+
+                    "\n- LFM HUD: Take into consideration multi-class for ELO calculation."+
+                    "\n\nAssetto Corsa Competizione:"+
                     "\n- Data Tab: you can now right click the lap table to copy all the laps in the table to clipboard, in csv format."+
-                    "\n- Track Map HUD: Updated design of cars and defaults."
+                    "\n- Track Map HUD: Updated design of cars and defaults. Instead of using the circle outline use the dot itself, the outline now is always black."
                     },
         {"2.2.4.4", "Assetto Corsa EVO:"+
                     "\n- Improved detection when game is paused."+
