@@ -715,7 +715,7 @@ public partial class RaceSessionBrowser : UserControl
 
         StringBuilder stringBuilder = new();
 
-        string[] columnTitles = ["Lap", "Time", "S1", "S2", "S3", "Fuel Used", "Fuel Left", "Box", "Grip", "Air °C", "Track °C", "UTC Completed", "Invalid Sector"];
+        string[] columnTitles = ["Lap", "Time", "S1", "S2", "S3", "Fuel Used", "Fuel Left", "Box", "Grip", "Air °C", "Track °C", "Valid Lap", "UTC Completed"];
         stringBuilder.Append(string.Join(",", columnTitles.ToList()) + "\n");
 
         foreach (var item in grid.Items)
@@ -735,8 +735,8 @@ public partial class RaceSessionBrowser : UserControl
                     $"{lap.GripStatus}",
                     $"{lap.TempAmbient:F3}",
                     $"{lap.TempTrack:F3}",
+                    $"{(lap.IsValid ? "Yes" : "No")}",
                     $"{DateTime.SpecifyKind(lap.UtcCompleted, DateTimeKind.Utc).ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture)}",
-                    $"{lap.InvalidatedSectorIndex + 1}",
                 ];
                 stringBuilder.Append(string.Join(",", columnData.ToList()) + "\n");
             }
