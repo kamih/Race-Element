@@ -13,7 +13,7 @@ namespace RaceElement.HUD.ACC.Overlays.Driving.ExpectedQualifying;
 
 [Overlay(
     Name = "Expected Qualifying",
-Description = "Works after setting a valid lap, shows expected position and delta to purple lap.\nWill not display in racing sessions, by default only qualifying with optionally practice."
+Description = "Works after setting a valid lap, shows expected position and delta compared to purple lap.\nWill not display in racing sessions, by default only qualifying with optionally practice."
 )]
 internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractOverlay(rectangle, "Expected Qualifying")
 {
@@ -44,7 +44,7 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
         RefreshRateHz = 2;
 
         _whiteBrush = new SolidBrush(Color.White);
-        _purpleBrush = new SolidBrush(Color.Purple);
+        _purpleBrush = new SolidBrush(Color.FromArgb(255, 153, 91, 213));
         _greenBrush = new SolidBrush(Color.LimeGreen);
         _redBrush = new SolidBrush(Color.Red);
     }
@@ -103,9 +103,7 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
             }
             int expectedPosition = localCar.RealtimeCarUpdate.Position;
             if (fasterThanPositions.Count > 0) expectedPosition = fasterThanPositions.Min();
-            int positionGain = localCar.RealtimeCarUpdate.Position - expectedPosition;
-            string positionString = $"{expectedPosition}";
-            if (positionGain > 0) positionString += $" (+{positionGain})";
+
             SolidBrush positionBrush = expectedPosition switch
             {
                 1 => _purpleBrush,
@@ -113,12 +111,12 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
                 var p when p == localCar.RealtimeCarUpdate.Position => _whiteBrush,
                 _ => _redBrush,
             };
-            _panel.AddLine("Position?", $"{positionString}", positionBrush);
+            _panel.AddLine("Expected Pos", $"{expectedPosition}", positionBrush);
         }
         else
         {
             _panel.AddLine("Purple Delta", "?");
-            _panel.AddLine("Position", "?");
+            _panel.AddLine("Expected", "?");
         }
         _panel.Draw(g);
     }
