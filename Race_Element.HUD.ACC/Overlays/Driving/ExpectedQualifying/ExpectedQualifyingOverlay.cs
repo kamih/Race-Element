@@ -41,7 +41,7 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
         _panel = new(11, 220);
         Width = 220;
         Height = _panel.FontHeight * 2;
-        RefreshRateHz = 2;
+        RefreshRateHz = 4;
 
         _whiteBrush = new SolidBrush(Color.White);
         _purpleBrush = new SolidBrush(Color.FromArgb(255, 153, 91, 213));
