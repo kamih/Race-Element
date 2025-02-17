@@ -116,7 +116,7 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
         else
         {
             _panel.AddLine("Purple Delta", "?");
-            _panel.AddLine("Expected", "?");
+            _panel.AddLine("Expected Pos", "?");
         }
         _panel.Draw(g);
     }
