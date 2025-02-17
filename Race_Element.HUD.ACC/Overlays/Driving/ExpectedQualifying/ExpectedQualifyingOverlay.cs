@@ -1,4 +1,5 @@
 ﻿using RaceElement.Data.ACC.EntryList;
+using RaceElement.Data.ACC.Session;
 using RaceElement.HUD.Overlay.Configuration;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.Util;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using static RaceElement.Data.ACC.EntryList.EntryListTracker;
 
 namespace RaceElement.HUD.ACC.Overlays.Driving.ExpectedQualifying;
 
@@ -29,14 +31,19 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
 
     private InfoPanel _panel;
 
+    private SolidBrush _whiteBrush;
     private SolidBrush _purpleBrush;
     private SolidBrush _greenBrush;
     private SolidBrush _redBrush;
 
     public sealed override void BeforeStart()
     {
-        _panel = new(11, 300);
+        _panel = new(11, 250);
+        Width = 250;
+        Height = _panel.FontHeight * 2;
+        RefreshRateHz = 2;
 
+        _whiteBrush = new SolidBrush(Color.White);
         _purpleBrush = new SolidBrush(Color.Purple);
         _greenBrush = new SolidBrush(Color.LimeGreen);
         _redBrush = new SolidBrush(Color.Red);
@@ -46,6 +53,7 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
     {
         _panel?.Dispose();
 
+        _whiteBrush?.Dispose();
         _purpleBrush?.Dispose();
         _greenBrush?.Dispose();
         _redBrush?.Dispose();
@@ -67,20 +75,21 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
             default: break;
         }
 
-        return isCorrectSession && base.ShouldRender();
+        return isCorrectSession && (base.ShouldRender() || RaceSessionState.IsSpectating(pageGraphics.PlayerCarID, broadCastRealTime.FocusedCarIndex));
     }
 
     public sealed override void Render(Graphics g)
     {
-        if (pageGraphics.BestTimeMs > 0 && broadCastRealTime.BestSessionLap != null)
+        CarData localCar = GetLocalCar();
+
+        if (broadCastRealTime.BestSessionLap != null && localCar != null && localCar.RealtimeCarUpdate.BestSessionLap != null && localCar.RealtimeCarUpdate.BestSessionLap.LaptimeMS != null)
         {
             int purpleLapMs = broadCastRealTime.BestSessionLap.GetLapTimeMS();
-            int localExpectedMs = pageGraphics.EstimatedLapTimeMillis;
+            int localBestLapMs = localCar.RealtimeCarUpdate.BestSessionLap.GetLapTimeMS();
+            int localExpectedMs = localBestLapMs + localCar.RealtimeCarUpdate.Delta;
             int deltaToPurple = purpleLapMs - localExpectedMs;
 
-            _panel.AddLine("Purple Delta", $"{TimeSpan.FromMilliseconds(deltaToPurple):SS\\.fff}", deltaToPurple < 0 ? _purpleBrush : _greenBrush);
-
-
+            _panel.AddLine("Purple Delta", $"{(deltaToPurple > 0 ? "-" : "+")}{TimeSpan.FromMilliseconds(deltaToPurple):s\\.fff}");
             HashSet<int> fasterThanPositions = [];
             foreach (var car in EntryListTracker.Instance.Cars)
             {
@@ -92,9 +101,19 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
                         fasterThanPositions.Add(car.Value.RealtimeCarUpdate.Position);
                 }
             }
-            int expectedPosition = pageGraphics.Position;
+            int expectedPosition = localCar.RealtimeCarUpdate.Position;
             if (fasterThanPositions.Count > 0) expectedPosition = fasterThanPositions.Min();
-            _panel.AddLine("Position?", $"{expectedPosition}", expectedPosition <= pageGraphics.Position ? (deltaToPurple < 0 ? _purpleBrush : _greenBrush) : _redBrush);
+            int positionGain = localCar.RealtimeCarUpdate.Position - expectedPosition;
+            string positionString = $"{expectedPosition}";
+            if (positionGain > 0) positionString += $" (+{positionGain})";
+            SolidBrush positionBrush = expectedPosition switch
+            {
+                1 => _purpleBrush,
+                var p when p < localCar.RealtimeCarUpdate.Position => _greenBrush,
+                var p when p == localCar.RealtimeCarUpdate.Position => _whiteBrush,
+                _ => _redBrush,
+            };
+            _panel.AddLine("Position?", $"{positionString}", positionBrush);
         }
         else
         {
@@ -102,5 +121,25 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
             _panel.AddLine("Position", "?");
         }
         _panel.Draw(g);
+    }
+
+    private CarData GetLocalCar()
+    {
+        int focussedIndex = broadCastRealTime.FocusedCarIndex;
+        if (focussedIndex < 0)
+            return null;
+
+        CarData localCar = null;
+        foreach (var car in EntryListTracker.Instance.Cars)
+        {
+            if (car.Value.CarInfo == null) continue;
+            if (car.Key == focussedIndex)
+            {
+                localCar = car.Value;
+                break;
+            }
+        }
+
+        return localCar;
     }
 }
