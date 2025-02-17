@@ -38,8 +38,8 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
 
     public sealed override void BeforeStart()
     {
-        _panel = new(11, 250);
-        Width = 250;
+        _panel = new(11, 220);
+        Width = 220;
         Height = _panel.FontHeight * 2;
         RefreshRateHz = 2;
 
