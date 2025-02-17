@@ -6,11 +6,13 @@ using static RaceElement.ACCSharedMemory;
 
 namespace RaceElement.HUD.ACC.Overlays.Pitwall.OverlayPenaltyTypes;
 
+#if DEBUG
 [Overlay(
     Name = "Penalty Types",
     Description = "Logs penalty types (Use for debugging)",
     OverlayType = OverlayType.Pitwall
 )]
+#endif
 internal class PentlyTypesOverlay(Rectangle rectangle) : AbstractOverlay(rectangle, "Penalty Types")
 {
 
