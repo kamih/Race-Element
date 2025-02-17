@@ -90,8 +90,6 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
                     int otherCarLapMs = car.Value.RealtimeCarUpdate.BestSessionLap.GetLapTimeMS();
                     if (localExpectedMs < otherCarLapMs)
                         fasterThanPositions.Add(car.Value.RealtimeCarUpdate.Position);
-
-                    break;
                 }
             }
             int expectedPosition = pageGraphics.Position;
@@ -103,5 +101,6 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
             _panel.AddLine("Purple Delta", "?");
             _panel.AddLine("Position", "?");
         }
+        _panel.Draw(g);
     }
 }
