@@ -61,19 +61,12 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
 
     public sealed override bool ShouldRender()
     {
-        bool isCorrectSession = false;
-        switch (broadCastRealTime.SessionType)
+        bool isCorrectSession = broadCastRealTime.SessionType switch
         {
-            case Broadcast.RaceSessionType.Practice:
-                {
-                    if (_config.Visibility.ShowInPractice)
-                        isCorrectSession = true;
-                    break;
-                }
-            case Broadcast.RaceSessionType.Qualifying: { isCorrectSession = true; break; }
-
-            default: break;
-        }
+            Broadcast.RaceSessionType.Qualifying => true,
+            Broadcast.RaceSessionType.Practice => _config.Visibility.ShowInPractice,
+            _ => false,
+        };
 
         return isCorrectSession && (base.ShouldRender() || RaceSessionState.IsSpectating(pageGraphics.PlayerCarID, broadCastRealTime.FocusedCarIndex));
     }
