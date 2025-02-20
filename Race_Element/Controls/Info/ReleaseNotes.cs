@@ -6,6 +6,10 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+        {"2.2.4.8", "Assetto Corsa Competizione:"+
+                    "\n- Added Expected Qualifying HUD: Shows the delta to the purple lap and the expected position when finishing the current lap with the current lap delta. Only works during qualifying and optionally practice sessions."+
+                    "\n- Data Tab: Right clicking laptime table now also exports whether the lap was valid or not and the UTC time when the lap was completed."
+                    },
         {"2.2.4.6", "Automobilista 2:"+
                     "\n- LFM HUD: Take into consideration multi-class for ELO calculation."+
                     "\n\nAssetto Corsa Competizione:"+
