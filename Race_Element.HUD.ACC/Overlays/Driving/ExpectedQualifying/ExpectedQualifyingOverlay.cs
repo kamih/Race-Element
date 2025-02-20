@@ -23,6 +23,8 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
     private readonly ExpectedQualifyingConfiguration _config = new();
     private sealed class ExpectedQualifyingConfiguration : OverlayConfiguration
     {
+        public ExpectedQualifyingConfiguration() => this.GenericConfiguration.AllowRescale = true;
+
         [ConfigGrouping("Visibility", "Adjust visibility for other session types than qualifying.")]
         public VisibilityGrouping Visibility { get; init; } = new();
         public sealed class VisibilityGrouping
