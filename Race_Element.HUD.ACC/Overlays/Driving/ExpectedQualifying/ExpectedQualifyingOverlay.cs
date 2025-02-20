@@ -13,7 +13,10 @@ namespace RaceElement.HUD.ACC.Overlays.Driving.ExpectedQualifying;
 
 [Overlay(
     Name = "Expected Qualifying",
-Description = "Works after setting a valid lap, shows expected position and delta compared to purple lap.\nWill not display in racing sessions, by default only qualifying with optionally practice."
+    Description = "Works after setting a valid lap, displays expected position and delta compared to purple lap for your current lap.\nWill not display in racing sessions, by default only qualifying with optionally practice.",
+    OverlayCategory = OverlayCategory.Lap,
+    OverlayType = OverlayType.Drive,
+    Authors = ["Reinier Klarenberg"]
 )]
 internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractOverlay(rectangle, "Expected Qualifying")
 {
@@ -41,12 +44,12 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
         _panel = new(11, 220);
         Width = 220;
         Height = _panel.FontHeight * 2;
-        RefreshRateHz = 4;
+        RefreshRateHz = 6;
 
         _whiteBrush = new SolidBrush(Color.White);
         _purpleBrush = new SolidBrush(Color.FromArgb(255, 153, 91, 213));
         _greenBrush = new SolidBrush(Color.LimeGreen);
-        _redBrush = new SolidBrush(Color.Red);
+        _redBrush = new SolidBrush(Color.OrangeRed);
     }
 
     public sealed override void BeforeStop()
@@ -99,9 +102,9 @@ internal sealed class ExpectedQualifyingOverlay(Rectangle rectangle) : AbstractO
 
             SolidBrush positionBrush = expectedPosition switch
             {
-                1 => _purpleBrush,
-                var p when p < localCar.RealtimeCarUpdate.Position => _greenBrush,
-                var p when p == localCar.RealtimeCarUpdate.Position => _whiteBrush,
+                1 => (deltaToPurple > 0 ? _purpleBrush : _whiteBrush),
+                int p when p < localCar.RealtimeCarUpdate.Position => _greenBrush,
+                int p when p == localCar.RealtimeCarUpdate.Position => _whiteBrush,
                 _ => _redBrush,
             };
             _panel.AddLine("Expected Pos", $"{expectedPosition}", positionBrush);
