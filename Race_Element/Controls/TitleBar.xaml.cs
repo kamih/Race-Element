@@ -1,10 +1,9 @@
-﻿using Octokit;
+﻿using Microsoft.VisualBasic.FileIO;
+using Octokit;
 using RaceElement.Controls.Util.Updater;
-using RaceElement.Data.Games;
-using RaceElement.Util.Settings;
-using RaceElement.Util.SystemExtensions;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -173,6 +172,17 @@ public partial class TitleBar : UserControl
         updateButton.ToolTip = releaseNotes;
         updateButton.Click += (s, e) =>
         {
+            DirectoryInfo appDir = new(AppContext.BaseDirectory);
+            DirectoryInfo documentsFolder = new(SpecialDirectories.MyDocuments);
+
+            if (!appDir.FullName.Contains(documentsFolder.FullName))
+            {
+                MainWindow.Instance.EnqueueSnackbarMessage($"App is not located within any folder of the Documents folder.\n You may experience issues whilst updating, please place the app in the Document Folder and restart.",
+                                                           "Open current folder of Race Element",
+                                                           () => Process.Start("explorer", appDir.FullName));
+                Thread.Sleep(1500);
+            }
+
             updateButton.IsEnabled = false;
             MainWindow.Instance.EnqueueSnackbarMessage($"Updating to version... {version}, this may take a while..");
             new Thread(x =>
@@ -181,4 +191,5 @@ public partial class TitleBar : UserControl
             }).Start();
         };
     }
+
 }
