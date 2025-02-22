@@ -19,6 +19,18 @@ internal sealed class LowFuelMotorsportSpeechSynthesizer(DateTime RaceStartTimeU
         string message = $"{timeDiff.Minutes} minutes until race starts";
         int minTimeRaceStartSec = 5;
 
+        if (timeDiff.Hours > 0)
+        {
+            var h = timeDiff.Hours > 1 ? "hours" : "hour";
+            message = $"{timeDiff.Hours} {h} and {message}";
+        }
+
+        if (timeDiff.TotalDays > 1)
+        {
+            var d = timeDiff.TotalDays > 2 ? "days" : "day";
+            message = $"{timeDiff.Days} {d} and {message}";
+        }
+
         if (timeDiff.TotalSeconds <= minTimeRaceStartSec)
         {
             message = "Race has started";
