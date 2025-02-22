@@ -12,11 +12,23 @@ using RaceElement.Broadcast;
 using static RaceElement.Data.SetupConverter;
 using static RaceElement.HUD.ACC.Overlays.Driving.TrackMap.TrackMapConfiguration;
 using System.Linq;
+using System.Numerics;
 
 namespace RaceElement.HUD.ACC.Overlays.Driving.TrackMap;
 
 public static class TrackMapDrawer
 {
+    private static Graphics GraphicsFromImage(Bitmap image)
+    {
+        var g = Graphics.FromImage(image);
+        g.SmoothingMode = SmoothingMode.AntiAlias;
+        g.CompositingMode = CompositingMode.SourceOver;
+        g.TextRenderingHint = TextRenderingHint.AntiAlias;
+        g.CompositingQuality = CompositingQuality.HighQuality;
+
+        return g;
+    }
+
     public static Bitmap CreateCircleWithOutline(Color color, float diameter, float outLineSize, Color outline)
     {
         var w = diameter + outLineSize + 1.5f;
@@ -25,12 +37,7 @@ public static class TrackMapDrawer
         var bitmap = new Bitmap((int)w, (int)h, PixelFormat.Format32bppPArgb);
         bitmap.MakeTransparent();
 
-        using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
-
+        using var g = GraphicsFromImage(bitmap);
         using SolidBrush backgroundBrush = new(color);
         g.FillEllipse(backgroundBrush, outLineSize * 0.5f, outLineSize * 0.5f, diameter, diameter);
 
@@ -49,18 +56,46 @@ public static class TrackMapDrawer
         var bitmap = new Bitmap((int)w, (int)h, PixelFormat.Format32bppPArgb);
         bitmap.MakeTransparent();
 
-        using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
-
         List<PointF> tmpTrack = [];
         foreach (var it in points) tmpTrack.Add(new PointF(it.X, it.Y));
 
         using Pen linePen = new(color, thickness);
+        using var g = GraphicsFromImage(bitmap);
+
         g.DrawLines(linePen, tmpTrack.ToArray());
         return bitmap;
+    }
+
+    public static Bitmap CreateStartLine(Color color, float length, float thickness, List<TrackPoint> points, Bitmap map)
+    {
+        Vector2 perp;
+
+        {
+            // Compute direction vector direction from the spline
+            // Get the perpendicular vector
+
+            Vector2 p0 = new(points[ 0].X, points[ 0].Y);
+            Vector2 p1 = new(points[10].X, points[10].Y);
+
+            Vector2 dir = Vector2.Normalize(p1 - p0);
+            perp = new Vector2(-dir.Y, dir.X);
+        }
+
+        {
+            // Finish line is the perpendicular vector with a length
+            // Draw a line from the start to the end of the end
+
+            using var g = GraphicsFromImage(map);
+            var p1 = perp *  length;
+            var p2 = perp * -length;
+
+            var start = new PointF(points[0].X + p1.X, points[0].Y + p1.Y);
+            var end   = new PointF(points[0].X + p2.X, points[0].Y + p2.Y);
+
+            g.DrawLine(new Pen(color, thickness), start, end);
+        }
+
+        return map;
     }
 
     public static Bitmap FillBackground(Color color, float margin, List<TrackPoint> points, BoundingBox boundaries)
@@ -77,14 +112,10 @@ public static class TrackMapDrawer
         var bitmap = new Bitmap((int)w, (int)h, PixelFormat.Format32bppPArgb);
         bitmap.MakeTransparent();
 
-        using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
-
+        using var g = GraphicsFromImage(bitmap);
         using SolidBrush brush = new(color);
         using GraphicsPath path = new();
+
         path.AddLines(drawingPoints.ToArray());
         g.FillPath(brush, path);
 
@@ -96,11 +127,7 @@ public static class TrackMapDrawer
         var bitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
         bitmap.MakeTransparent();
 
-        using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
+        using var g = GraphicsFromImage(bitmap);
 
         for (int i = 0; i < bitmaps.Length; i++)
             g.DrawImage(bitmaps[i], Point.Empty);
@@ -112,12 +139,7 @@ public static class TrackMapDrawer
     {
         // TODO: prevent NullReferenceException when cache.Map is null
         var result = new Bitmap(cache.Map);
-        using var g = Graphics.FromImage(result);
-
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
+        using var g = GraphicsFromImage(result);
 
         var sessionType = ACCSharedMemory.Instance.PageFileGraphic.SessionType;
         using var font = FontUtil.FontSegoeMono(conf.Others.FontSize);
@@ -330,5 +352,4 @@ public static class TrackMapDrawer
 
         return GetCarBitmap(car.CarClass, conf);
     }
-
 }
