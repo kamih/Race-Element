@@ -86,11 +86,13 @@ public static class TrackMapDrawer
             // Draw a line from the start to the end of the end
 
             using var g = GraphicsFromImage(map);
-            var p1 = perp *  length;
-            var p2 = perp * -length;
+            Vector2 startLine = new(points[0].X, points[0].Y);
 
-            var start = new PointF(points[0].X + p1.X, points[0].Y + p1.Y);
-            var end   = new PointF(points[0].X + p2.X, points[0].Y + p2.Y);
+            var v1 = (perp *  length) + startLine;
+            var v2 = (perp * -length) + startLine;
+
+            var start = new PointF(v1.X, v1.Y);
+            var end   = new PointF(v2.X, v2.Y);
 
             g.DrawLine(new Pen(color, thickness), start, end);
         }
