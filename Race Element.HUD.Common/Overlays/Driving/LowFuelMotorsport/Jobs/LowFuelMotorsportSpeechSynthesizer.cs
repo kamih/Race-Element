@@ -25,9 +25,9 @@ internal sealed class LowFuelMotorsportSpeechSynthesizer(DateTime RaceStartTimeU
             message = $"{timeDiff.Hours} {h} and {message}";
         }
 
-        if (timeDiff.TotalDays > 1)
+        if (timeDiff.Days > 0)
         {
-            var d = timeDiff.TotalDays > 2 ? "days" : "day";
+            var d = timeDiff.Days > 1 ? "days" : "day";
             message = $"{timeDiff.Days} {d} and {message}";
         }
 
