@@ -76,7 +76,7 @@ internal readonly record struct User
 /// information used for compute the ELO and the position
 /// threshold where the player wins/losses ELO.
 /// </summary>
-public readonly record struct SplitEntry(int RaceNumber, int Elo, bool IsPlayer);
+public readonly record struct SplitEntry(int RaceNumber, string CarClass, int Elo, bool IsPlayer);
 
 /// <summary>
 /// Information about the race.

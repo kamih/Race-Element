@@ -12,11 +12,23 @@ using RaceElement.Broadcast;
 using static RaceElement.Data.SetupConverter;
 using static RaceElement.HUD.ACC.Overlays.Driving.TrackMap.TrackMapConfiguration;
 using System.Linq;
+using System.Numerics;
 
 namespace RaceElement.HUD.ACC.Overlays.Driving.TrackMap;
 
 public static class TrackMapDrawer
 {
+    private static Graphics GraphicsFromImage(Bitmap image)
+    {
+        var g = Graphics.FromImage(image);
+        g.SmoothingMode = SmoothingMode.AntiAlias;
+        g.CompositingMode = CompositingMode.SourceOver;
+        g.TextRenderingHint = TextRenderingHint.AntiAlias;
+        g.CompositingQuality = CompositingQuality.HighQuality;
+
+        return g;
+    }
+
     public static Bitmap CreateCircleWithOutline(Color color, float diameter, float outLineSize, Color outline)
     {
         var w = diameter + outLineSize + 1.5f;
@@ -25,12 +37,7 @@ public static class TrackMapDrawer
         var bitmap = new Bitmap((int)w, (int)h, PixelFormat.Format32bppPArgb);
         bitmap.MakeTransparent();
 
-        using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
-
+        using var g = GraphicsFromImage(bitmap);
         using SolidBrush backgroundBrush = new(color);
         g.FillEllipse(backgroundBrush, outLineSize * 0.5f, outLineSize * 0.5f, diameter, diameter);
 
@@ -49,18 +56,48 @@ public static class TrackMapDrawer
         var bitmap = new Bitmap((int)w, (int)h, PixelFormat.Format32bppPArgb);
         bitmap.MakeTransparent();
 
-        using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
-
         List<PointF> tmpTrack = [];
         foreach (var it in points) tmpTrack.Add(new PointF(it.X, it.Y));
 
         using Pen linePen = new(color, thickness);
+        using var g = GraphicsFromImage(bitmap);
+
         g.DrawLines(linePen, tmpTrack.ToArray());
         return bitmap;
+    }
+
+    public static Bitmap CreateStartLine(Color color, float length, float thickness, List<TrackPoint> points, Bitmap map)
+    {
+        Vector2 perp;
+
+        {
+            // Compute direction vector direction from the spline
+            // Get the perpendicular vector
+
+            Vector2 p0 = new(points[ 0].X, points[ 0].Y);
+            Vector2 p1 = new(points[10].X, points[10].Y);
+
+            Vector2 dir = Vector2.Normalize(p1 - p0);
+            perp = new Vector2(-dir.Y, dir.X);
+        }
+
+        {
+            // Finish line is the perpendicular vector with a length
+            // Draw a line from the start to the end of the end
+
+            using var g = GraphicsFromImage(map);
+            Vector2 startLine = new(points[0].X, points[0].Y);
+
+            var v1 = (perp *  length) + startLine;
+            var v2 = (perp * -length) + startLine;
+
+            var start = new PointF(v1.X, v1.Y);
+            var end   = new PointF(v2.X, v2.Y);
+
+            g.DrawLine(new Pen(color, thickness), start, end);
+        }
+
+        return map;
     }
 
     public static Bitmap FillBackground(Color color, float margin, List<TrackPoint> points, BoundingBox boundaries)
@@ -77,14 +114,10 @@ public static class TrackMapDrawer
         var bitmap = new Bitmap((int)w, (int)h, PixelFormat.Format32bppPArgb);
         bitmap.MakeTransparent();
 
-        using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
-
+        using var g = GraphicsFromImage(bitmap);
         using SolidBrush brush = new(color);
         using GraphicsPath path = new();
+
         path.AddLines(drawingPoints.ToArray());
         g.FillPath(brush, path);
 
@@ -96,11 +129,7 @@ public static class TrackMapDrawer
         var bitmap = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
         bitmap.MakeTransparent();
 
-        using var g = Graphics.FromImage(bitmap);
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
+        using var g = GraphicsFromImage(bitmap);
 
         for (int i = 0; i < bitmaps.Length; i++)
             g.DrawImage(bitmaps[i], Point.Empty);
@@ -112,30 +141,25 @@ public static class TrackMapDrawer
     {
         // TODO: prevent NullReferenceException when cache.Map is null
         var result = new Bitmap(cache.Map);
-        using var g = Graphics.FromImage(result);
-
-        g.SmoothingMode = SmoothingMode.AntiAlias;
-        g.CompositingMode = CompositingMode.SourceOver;
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
-        g.CompositingQuality = CompositingQuality.HighQuality;
+        using var g = GraphicsFromImage(result);
 
         var sessionType = ACCSharedMemory.Instance.PageFileGraphic.SessionType;
         using var font = FontUtil.FontSegoeMono(conf.Others.FontSize);
 
         foreach (var it in cars.Cars)
         {
-            Color outlineColor = Color.Black;
+            Color carColor = Color.Black;
 
             if (sessionType == ACCSharedMemory.AcSessionType.AC_RACE)
             {
-                outlineColor = GetRaceCarOutlineColor(cars.Player, it, conf, trackMeters);
+                carColor = GetRaceCarColor(cars.Player, it, conf, trackMeters);
             }
             else
             {
-                outlineColor = GetOtherSessionCarOutlineColor(it, conf);
+                carColor = GetOtherSessionCarColor(it, conf);
             }
 
-            var bitmap = CreateCircleWithOutline(GetCarBitmap(it.CarClass, conf), conf.Others.CarSize, conf.Others.OutCircleSize, outlineColor);
+            var bitmap = CreateCircleWithOutline(carColor, conf.Others.CarSize, conf.Others.OutCircleSize, Color.Black);
             DrawCarOnMap(it, bitmap, conf, g, font);
         }
 
@@ -160,8 +184,8 @@ public static class TrackMapDrawer
         return cls switch
         {
             CarClasses.GT2 => conf.CarColors.GT2,
-            CarClasses.GT3 => conf.CarColors.GT2,
-            CarClasses.GT4 => conf.CarColors.GT3,
+            CarClasses.GT3 => conf.CarColors.GT3,
+            CarClasses.GT4 => conf.CarColors.GT4,
             CarClasses.CUP => conf.CarColors.CUP,
             CarClasses.TCX => conf.CarColors.TCX,
             CarClasses.CHL => conf.CarColors.CHL,
@@ -270,7 +294,7 @@ public static class TrackMapDrawer
         }
     }
 
-    private static Color GetRaceCarOutlineColor(CarOnTrack player, CarOnTrack other, TrackMapConfiguration conf, float trackMeters)
+    private static Color GetRaceCarColor(CarOnTrack player, CarOnTrack other, TrackMapConfiguration conf, float trackMeters)
     {
         if (player == null || other == null)
         {
@@ -303,32 +327,31 @@ public static class TrackMapDrawer
             return conf.MapColors.OthersLappedPlayer;
         }
 
-        return Color.Black;
+        return GetCarBitmap(other.CarClass, conf);
     }
 
-    private static Color GetOtherSessionCarOutlineColor(CarOnTrack car, TrackMapConfiguration config)
+    private static Color GetOtherSessionCarColor(CarOnTrack car, TrackMapConfiguration conf)
     {
         if (car.Location != CarLocationEnum.Track)
         {
-            return config.MapColors.Default;
+            return conf.MapColors.Default;
         }
 
-        if (car.Kmh <= config.General.KmhThreshold)
+        if (car.Kmh <= conf.General.KmhThreshold)
         {
             return Color.Yellow;
         }
 
         if (!car.IsValid)
         {
-            return config.MapColors.PlayerLappedOthers;
+            return conf.MapColors.PlayerLappedOthers;
         }
 
         if (car.Delta < 0 && car.IsValidForBest)
         {
-            return config.MapColors.ImprovingLap;
+            return conf.MapColors.ImprovingLap;
         }
 
-        return Color.Black;
+        return GetCarBitmap(car.CarClass, conf);
     }
-
 }

@@ -185,26 +185,20 @@ internal sealed class TrackMapOverlay : AbstractOverlay
             _trackBoundingBox = boundaries;
             _trackPositions = track;
 
-            int idx = 0, fromSectorOne = 0;
-            while (_trackPositions[idx].Spline > 0.9f && _trackPositions[idx].Spline < _trackPositions[idx + 1].Spline)
-            {
-                ++idx;
-                ++fromSectorOne;
-            }
-
-            if (1.0f - _trackPositions[idx].Spline < float.Epsilon)
-            {
-                ++idx;
-                ++fromSectorOne;
-            }
-
-            while (idx < _trackPositions.Count && _trackPositions[idx].Spline < trackData.Sectors[0])
+            int idx = 0;
+            while (_trackPositions[idx].Spline >= 0.9f && _trackPositions[idx].Spline <= 1.0f)
             {
                 sector1.Add(_trackPositions[idx]);
                 ++idx;
             }
 
-            while (idx < _trackPositions.Count && _trackPositions[idx].Spline < trackData.Sectors[1])
+            while (_trackPositions[idx].Spline < trackData.Sectors[0])
+            {
+                sector1.Add(_trackPositions[idx]);
+                ++idx;
+            }
+
+            while (_trackPositions[idx].Spline < trackData.Sectors[1])
             {
                 sector2.Add(_trackPositions[idx]);
                 ++idx;
@@ -216,17 +210,13 @@ internal sealed class TrackMapOverlay : AbstractOverlay
                 ++idx;
             }
 
-            for (var i = 0; i < fromSectorOne; ++i)
-            {
-                if (i < _trackPositions.Count)
-                    sector3.Add(_trackPositions[i]);
-            }
-
             var bg = TrackMapDrawer.FillBackground(Color.FromArgb(_config.MapColors.BackgroundOpacity, _config.MapColors.Background), _margin, _trackPositions, _trackBoundingBox);
             var s1 = TrackMapDrawer.CreateLineFromPoints(_config.MapColors.MapSector1, _config.General.Thickness, _margin, sector1, _trackBoundingBox);
             var s2 = TrackMapDrawer.CreateLineFromPoints(_config.MapColors.MapSector2, _config.General.Thickness, _margin, sector2, _trackBoundingBox);
             var s3 = TrackMapDrawer.CreateLineFromPoints(_config.MapColors.MapSector3, _config.General.Thickness, _margin, sector3, _trackBoundingBox);
+
             _mapCache.Map = TrackMapDrawer.MixImages(s1.Width, s1.Height, bg, s1, s2, s3);
+            _mapCache.Map = TrackMapDrawer.CreateStartLine(_config.FinishLine.Color, _config.FinishLine.Length, _config.FinishLine.Thickness, _trackPositions, _mapCache.Map);
 
             Debug.WriteLine($"[MAP] {broadCastTrackData.TrackName} ({pageStatic.Track}) -> [S: {_scale:F3}] [L: {broadCastTrackData.TrackMeters:F3}] [P: {_trackPositions.Count}]");
 
@@ -273,14 +263,16 @@ internal sealed class TrackMapOverlay : AbstractOverlay
                 car.CarClass = ConversionFactory.GetConversion(carModel).CarClass;
             }
 
-            var x = it.Value.RealtimeCarUpdate.WorldPosX;
-            var y = it.Value.RealtimeCarUpdate.WorldPosY;
-            var spline = it.Value.RealtimeCarUpdate.SplinePosition;
-
             car.RacePosition = it.Value.RealtimeCarUpdate.Position.ToString();
             car.Laps = it.Value.RealtimeCarUpdate.Laps;
-            car.Pos = new TrackPoint() { X = x, Y = y, Spline = spline };
             car.Id = it.Key;
+
+            car.Pos = new TrackPoint()
+            {
+                X = it.Value.RealtimeCarUpdate.WorldPosX,
+                Y = it.Value.RealtimeCarUpdate.WorldPosY,
+                Spline = it.Value.RealtimeCarUpdate.SplinePosition
+            };
 
             car.Spline = it.Value.RealtimeCarUpdate.SplinePosition;
             car.Kmh = it.Value.RealtimeCarUpdate.Kmh;

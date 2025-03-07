@@ -81,25 +81,25 @@ public sealed class TrackMapConfiguration : OverlayConfiguration
     public sealed class CarColorGrouping
     {
         [ToolTip("GT2 cars color")]
-        public Color GT2 { get; init; } = Color.FromArgb(255, 195, 201, 209);
+        public Color GT2 { get; init; } = Color.FromArgb(255, 239, 246, 224);
 
         [ToolTip("GT3 cars color")]
         public Color GT3 { get; init; } = Color.FromArgb(255, 126, 124, 139);
 
         [ToolTip("GT4 cars color")]
-        public Color GT4 { get; init; } = Color.FromArgb(255, 84, 76, 97);
+        public Color GT4 { get; init; } = Color.FromArgb(255, 174, 195, 176);
 
         [ToolTip("CUP cars color")]
-        public Color CUP { get; init; } = Color.FromArgb(255, 224, 170, 255);
+        public Color CUP { get; init; } = Color.FromArgb(255, 253, 69, 17);
 
         [ToolTip("TCX cars color")]
-        public Color TCX { get; init; } = Color.FromArgb(255, 157, 78, 221);
+        public Color TCX { get; init; } = Color.FromArgb(255, 85, 100, 69);
 
         [ToolTip("CHL cars color")]
-        public Color CHL { get; init; } = Color.FromArgb(255, 60, 9, 108);
+        public Color CHL { get; init; } = Color.FromArgb(255, 194, 108, 69);
 
         [ToolTip("ST cars color")]
-        public Color ST { get; init; } = Color.FromArgb(255, 16, 0, 43);
+        public Color ST { get; init; } = Color.FromArgb(255, 35, 141, 193);
     }
 
     [ConfigGrouping("Map Colors", "Map colors")]
@@ -145,6 +145,22 @@ public sealed class TrackMapConfiguration : OverlayConfiguration
 
         [ToolTip("Pit stop with damage color")]
         public Color PitStopWithDamage { get; init; } = Color.FromArgb(255, 147, 112, 219);
+    }
+
+    [ConfigGrouping("Finish", "Finish line options")]
+    public FinishLineGrouping FinishLine { get; init; } = new();
+    public sealed class FinishLineGrouping
+    {
+        [ToolTip("Refresh interval (times per second)")]
+        [IntRange(5, 25, 1)]
+        public int Length { get; init; } = 6;
+
+        [ToolTip("Finish line thickness")]
+        [IntRange(1, 5, 1)]
+        public int Thickness { get; init; } = 3;
+
+        [ToolTip("Finish line color")]
+        public Color Color { get; init; } = Color.FromArgb(255, 255, 255, 255);
     }
 
     public TrackMapConfiguration() => this.GenericConfiguration.AllowRescale = false;

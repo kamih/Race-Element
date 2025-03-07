@@ -16,10 +16,12 @@ using RaceElement.Util;
 using ScottPlot;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -698,4 +700,56 @@ public partial class RaceSessionBrowser : UserControl
             }
         }
     }
+
+    private void GridSessionLapsOnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        DataGrid grid = null;
+        foreach (var child in gridSessionLaps.Children)
+            if (child is DataGrid dg)
+            {
+                grid = dg;
+                break;
+            }
+
+        if (grid == null) return;
+
+        StringBuilder stringBuilder = new();
+
+        string[] columnTitles = ["Lap", "Time", "S1", "S2", "S3", "Fuel Used", "Fuel Left", "Box", "Grip", "Air °C", "Track °C", "Valid Lap", "UTC Completed"];
+        stringBuilder.Append(string.Join(",", columnTitles.ToList()) + "\n");
+
+        foreach (var item in grid.Items)
+        {
+            if (item is DbLapData lap)
+            {
+                string[] columnData =
+                [
+                    $"{lap.Index}",
+                    $"{TimeSpan.FromMilliseconds(lap.Time):mm\\:ss\\.fff}",
+                    $"{lap.Sector1/1000f:F3}",
+                    $"{lap.Sector2/1000f:F3}",
+                    $"{lap.Sector3/1000f:F3}",
+                    $"{lap.FuelUsage/1000f:F3}",
+                    $"{lap.FuelInTank:F3}",
+                    $"{LapTypeToString(lap.LapType)}",
+                    $"{lap.GripStatus}",
+                    $"{lap.TempAmbient:F3}",
+                    $"{lap.TempTrack:F3}",
+                    $"{(lap.IsValid ? "Yes" : "No")}",
+                    $"{DateTime.SpecifyKind(lap.UtcCompleted, DateTimeKind.Utc).ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture)}",
+                ];
+                stringBuilder.Append(string.Join(",", columnData.ToList()) + "\n");
+            }
+
+        }
+        Clipboard.SetText(stringBuilder.ToString());
+        MainWindow.Instance.EnqueueSnackbarMessage($"Copied all laps to clipboard in csv format (comma seperated).");
+    }
+
+    private static string LapTypeToString(LapType type) => type switch
+    {
+        LapType.Inlap => "In",
+        LapType.Outlap => "Out",
+        _ => string.Empty,
+    };
 }

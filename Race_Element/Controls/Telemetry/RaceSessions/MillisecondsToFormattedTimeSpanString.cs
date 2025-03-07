@@ -10,7 +10,7 @@ internal class MillisecondsToFormattedTimeSpanString : IValueConverter
     {
         if (value is int)
         {
-            return $"{new TimeSpan(0, 0, 0, 0, (int)value):mm\\:ss\\:fff}";
+            return $"{new TimeSpan(0, 0, 0, 0, (int)value):mm\\:ss\\.fff}";
         }
         return string.Empty;
     }

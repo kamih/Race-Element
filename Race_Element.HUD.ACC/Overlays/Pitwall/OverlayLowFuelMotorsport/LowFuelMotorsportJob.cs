@@ -68,6 +68,7 @@ internal sealed class LowFuelMotorsportJob(string userId) : AbstractLoopJob
             var entry = new SplitEntry
             {
                 IsPlayer = id == (string)e["steam_id"],
+                CarClass = (string)e["car_class"],
                 RaceNumber = (int)e["raceNumber"],
                 Elo = (int)e["elo"]
             };

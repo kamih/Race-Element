@@ -50,7 +50,7 @@ internal sealed class LowFuelMotorsportElo
 
         foreach (SplitEntry e in entries)
         {
-            if (e.IsPlayer) continue;
+            if (e.IsPlayer || (e.CarClass != player.CarClass)) continue;
             magic += ComputeMagic(player.Elo, e.Elo);
         }
 

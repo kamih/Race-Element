@@ -116,7 +116,7 @@ public sealed unsafe class ACCSharedMemory
         StopAndGo_10_PitSpeeding,
         StopAndGo_20_PitSpeeding,
         StopAndGo_30_PitSpeeding,
-        Disqualified_PitSpeeding,
+        Disqualified_PitSpeeding = 11,
         RemoveBestLaptime_PitSpeeding,
 
         Disqualified_IgnoredMandatoryPit,
@@ -125,7 +125,7 @@ public sealed unsafe class ACCSharedMemory
         Disqualified_Trolling,
         Disqualified_PitEntry,
         Disqualified_PitExit,
-        Disqualified_WrongWay,
+        Disqualified_WrongWay = 22,
 
         DriveThrough_IgnoredDriverStint,
         Disqualified_IgnoredDriverStint,
