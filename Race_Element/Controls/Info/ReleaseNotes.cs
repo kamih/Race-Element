@@ -7,7 +7,9 @@ public static class ReleaseNotes
     internal static readonly Dictionary<string, string> Notes = new()
     {
         {"2.2.5.0", "Assetto Corsa Competizione:"+
-                    "\n- Expected Qualifying HUD: Is Now allowed to Scale Up or Down."
+                    "\n- Expected Qualifying HUD: Can now scale up or down."+
+                    "\n- Track Map HUD: Added start/finish line."+
+                    "\n- LFM HUD: Speech Synthesizer now takes account of hours and days."
                     },
         {"2.2.4.8", "Assetto Corsa Competizione:"+
                     "\n- Added Expected Qualifying HUD: Shows the delta to the purple lap and the expected position when finishing the current lap with the current lap delta. Only works during qualifying and optionally practice sessions."+
