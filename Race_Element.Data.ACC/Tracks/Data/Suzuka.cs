@@ -15,7 +15,7 @@ internal sealed class Suzuka : AbstractTrackData
     public override float FactorScale => 0.18f;
     public override float PitLaneTime => 27f;
 
-    public override List<float> Sectors => new() { 0.324f, 0.757f };
+    public override List<float> Sectors => [0.324f, 0.757f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {

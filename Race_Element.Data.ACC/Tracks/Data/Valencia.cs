@@ -15,7 +15,7 @@ internal sealed class Valencia : AbstractTrackData
     public override float FactorScale => 0.37f;
     public override float PitLaneTime => 27f;
 
-    public override List<float> Sectors => new() { 0.3785f, 0.7245f };
+    public override List<float> Sectors => [0.3785f, 0.7245f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {
