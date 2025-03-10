@@ -147,5 +147,21 @@ public sealed class TrackMapConfiguration : OverlayConfiguration
         public Color PitStopWithDamage { get; init; } = Color.FromArgb(255, 147, 112, 219);
     }
 
+    [ConfigGrouping("Finish", "Finish line options")]
+    public FinishLineGrouping FinishLine { get; init; } = new();
+    public sealed class FinishLineGrouping
+    {
+        [ToolTip("Refresh interval (times per second)")]
+        [IntRange(5, 25, 1)]
+        public int Length { get; init; } = 6;
+
+        [ToolTip("Finish line thickness")]
+        [IntRange(1, 5, 1)]
+        public int Thickness { get; init; } = 3;
+
+        [ToolTip("Finish line color")]
+        public Color Color { get; init; } = Color.FromArgb(255, 255, 255, 255);
+    }
+
     public TrackMapConfiguration() => this.GenericConfiguration.AllowRescale = false;
 }
