@@ -15,7 +15,7 @@ internal sealed class Misano : AbstractTrackData
     public override float FactorScale => 0.310f;
     public override float PitLaneTime => 28f;
 
-    public override List<float> Sectors => new() { 0.222f, 0.621f };
+    public override List<float> Sectors => [0.222f, 0.621f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {

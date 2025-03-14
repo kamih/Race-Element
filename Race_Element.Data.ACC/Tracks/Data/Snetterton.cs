@@ -15,7 +15,7 @@ internal sealed class Snetterton : AbstractTrackData
     public override float FactorScale => 0.3f;
     public override float PitLaneTime => 19f;
 
-    public override List<float> Sectors => new() { 0.321f, 0.678f };
+    public override List<float> Sectors => [0.321f, 0.678f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {

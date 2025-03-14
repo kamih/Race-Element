@@ -15,7 +15,7 @@ internal sealed class Hungaroring : AbstractTrackData
     public override float FactorScale => 0.23f;
     public override float PitLaneTime => 24f;
 
-    public override List<float> Sectors => new() { 0.397f, 0.748f };
+    public override List<float> Sectors => [0.397f, 0.748f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {

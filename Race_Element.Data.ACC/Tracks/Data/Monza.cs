@@ -15,7 +15,7 @@ internal sealed class Monza : AbstractTrackData
     public override float FactorScale => 0.16f;
     public override float PitLaneTime => 31f;
 
-    public override List<float> Sectors => new() { 0.334f, 0.661f };
+    public override List<float> Sectors => [0.334f, 0.661f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {
