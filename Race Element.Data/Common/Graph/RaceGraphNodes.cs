@@ -5,9 +5,9 @@ namespace RaceElement.Data.Common.Graph;
 
 
 /// <summary>
-/// Child of <see cref="RacingDriverNode"/> with <see cref="OwnsEdge"/>.
+/// Child of <see cref="DriverNode"/> with <see cref="OwnsEdge"/>.
 /// </summary>
-public sealed record class LapTimeDataNode : AbstractNode
+public sealed record class LapDataNode : AbstractNode
 {
     /// <summary>
     /// Lap index (starting from 0). -1 means invalid and not set.
@@ -33,9 +33,9 @@ public sealed record class LapTimeDataNode : AbstractNode
 }
 
 /// <summary>
-/// Child of <see cref="RacingCarNode"/> with <see cref="OwnsEdge" />.
+/// Child of <see cref="CarNode"/> with <see cref="OwnsEdge" />.
 /// </summary>
-public sealed record class RacingDriverNode : AbstractNode
+public sealed record class DriverNode : AbstractNode
 {
     /// <summary>
     /// Can be driver index or specific number if assigned.
@@ -47,7 +47,7 @@ public sealed record class RacingDriverNode : AbstractNode
     public string Country { get; init; } = string.Empty;
 }
 
-public sealed record class RacingCarNode : AbstractNode
+public sealed record class CarNode : AbstractNode
 {
     /// <summary>
     /// Car number.
@@ -72,7 +72,7 @@ public sealed record class RacingCarNode : AbstractNode
 }
 
 /// <summary>
-/// Describes a <see cref="TrackStates"/> change for a <see cref="RacingCarNode"/>
+/// Describes a <see cref="TrackStates"/> change for a <see cref="CarNode"/>
 /// </summary>
 public sealed record class TrackStateEdge : AbstractEdge
 {
