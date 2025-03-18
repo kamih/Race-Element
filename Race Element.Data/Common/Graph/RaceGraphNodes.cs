@@ -3,6 +3,10 @@ using RaceElement.Graph.Node;
 
 namespace RaceElement.Data.Common.Graph;
 
+
+/// <summary>
+/// Child of <see cref="RacingDriverNode"/> with <see cref="OwnsEdge"/>.
+/// </summary>
 public sealed record class LapTimeDataNode : AbstractNode
 {
     /// <summary>
@@ -28,6 +32,9 @@ public sealed record class LapTimeDataNode : AbstractNode
     public bool IsValid { get; init; } = true;
 }
 
+/// <summary>
+/// Child of <see cref="RacingCarNode"/> with <see cref="OwnsEdge" />.
+/// </summary>
 public sealed record class RacingDriverNode : AbstractNode
 {
     /// <summary>
@@ -78,12 +85,10 @@ public sealed record class TrackStateEdge : AbstractEdge
 [Flags]
 public enum TrackStates : uint
 {
-    None = 0,
-    PitLaneIn = 1,
-    PitLaneOut = 2,
-    Pitlane = 3,
-    Track = 4,
-    OffTrack = 5,
+    None = 1 << 0,
+    PitLaneIn = 1 << 1,
+    PitLaneOut = 1 << 2,
+    Pitlane = 1 << 3,
+    Track = 1 << 4,
+    OffTrack = 1 << 5,
 }
-
-
