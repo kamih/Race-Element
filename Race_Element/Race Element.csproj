@@ -20,7 +20,7 @@
         <UseWPF>true</UseWPF>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
         <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-        <Copyright>Copyright © Reinier Klarenberg 2024</Copyright>
+        <Copyright>Copyright © Reinier Klarenberg 2022</Copyright>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
