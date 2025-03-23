@@ -74,7 +74,7 @@ public partial class Hardware : UserControl
         stackerAllLocks.Children.Clear();
 
         CarModels[] carModels = (CarModels[])Enum.GetValues(typeof(CarModels));
-        carModels.ForEach(carModel =>
+        Array.ForEach(carModels, carModel =>
         {
             var search = ConversionFactory.ParseNames.Where(x => x.Value == carModel);
             if (search.Any())
