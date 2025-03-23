@@ -6,8 +6,10 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
-        {"2.2.5.2", "Automobilista 2:"+
-                    "- Car Electronics HUD: no available TC will now show as 0 TC instead of -1 TC."
+        {"2.2.5.2", "Race Element:"+
+                    "\n- Updated .NET Packages to 9.0.3"+
+                    "\n\nAutomobilista 2:"+
+                    "\n- Car Electronics HUD: no available TC will now show as 0 TC instead of -1 TC."
                     },
         {"2.2.5.0", "Assetto Corsa Competizione:"+
                     "\n- Expected Qualifying HUD: Can now scale up or down."+
