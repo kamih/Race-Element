@@ -21,9 +21,9 @@ internal static class R3EDataGraphMapper
             return;
         }
 
-        var existingCars = graph.Where(x => x is RacingCarNode).Select(x => x as RacingCarNode);
-        var existingDrivers = graph.Where(x => x is RacingDriverNode).Select(x => x as RacingDriverNode);
-        var existingLaps = graph.Where(x => x is LapTimeDataNode).Select(x => x as LapTimeDataNode);
+        var existingCars = graph.Where(x => x is CarNode).Select(x => x as CarNode);
+        var existingDrivers = graph.Where(x => x is DriverNode).Select(x => x as DriverNode);
+        var existingLaps = graph.Where(x => x is LapDataNode).Select(x => x as LapDataNode);
 
         for (int i = 0; i < shared.DriverData.Length; i++)
         {
@@ -33,14 +33,14 @@ internal static class R3EDataGraphMapper
             var matchingCars = existingCars.Where(x => x?.CarNumber == driverData.DriverInfo.CarNumber);
             if (!matchingCars.Any())
             {
-                var raceCarNode = new RacingCarNode()
+                var raceCarNode = new CarNode()
                 {
                     CarNumber = driverData.DriverInfo.CarNumber,
                     CarModelGameID = $"{driverData.DriverInfo.ModelId}",
                     Position = driverData.Place,
                     Laps = driverData.CompletedLaps,
                 };
-                var raceDriverNode = new RacingDriverNode()
+                var raceDriverNode = new DriverNode()
                 {
                     DriverId = driverData.DriverInfo.UserId,
                     Name = System.Text.Encoding.UTF8.GetString(driverData.DriverInfo.Name).TrimEnd('\0'),
@@ -75,13 +75,13 @@ internal static class R3EDataGraphMapper
                         if (sectors.Sum() <= 0)
                             continue;
 
-                        LapTimeDataNode lapNode = new() { SectorTimesMs = sectors, LapIndex = raceCarNode.Laps, LapTimeMs = sectors.Sum() };
+                        LapDataNode lapNode = new() { SectorTimesMs = sectors, LapIndex = raceCarNode.Laps, LapTimeMs = sectors.Sum() };
                         Debug.WriteLine($"Added new lap for:\n- {raceCarNode}\n- {lapNode}");
                         graph.Add(lapNode);
 
                         graph.TryGetEdgesFrom(raceCarNode, out var carEdgesFrom);
 
-                        RacingDriverNode driverNode = (RacingDriverNode)existingDrivers.First(x => carEdgesFrom.Select(x => x.ChildId).Contains(x.Id));
+                        DriverNode driverNode = (DriverNode)existingDrivers.First(x => carEdgesFrom.Select(x => x.ChildId).Contains(x.Id));
 
 
                         graph.TryAddEdge(new OwnsEdge() { ParentId = driverNode.Id, ChildId = lapNode.Id });

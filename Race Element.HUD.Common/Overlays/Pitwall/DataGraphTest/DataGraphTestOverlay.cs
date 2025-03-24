@@ -44,7 +44,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         var trackStates = Enum.GetValues<TrackStates>();
         _ = Parallel.For(0, carCount, i =>
          {
-             var someCar = new RacingCarNode() { CarNumber = i + 1 };
+             var someCar = new CarNode() { CarNumber = i + 1 };
              _graph.Add(someCar);
              _graph.TryAddEdge(new TrackStateEdge() { ParentId = someCar.Id, State = trackStates[Random.Shared.Next(1, trackStates.Length - 1)] });
              _graph.TryAddEdge(new TrackStateEdge() { ParentId = someCar.Id, State = trackStates[Random.Shared.Next(1, trackStates.Length - 1)] });
@@ -54,11 +54,11 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         Debug.WriteLine($"Inserting {racingDriverCount} Racing Drivers with each having {lapCount} Laps");
         _ = Parallel.For(0, racingDriverCount, i =>
         {
-            var someDriver = new RacingDriverNode() { DriverId = i * 2, Name = $"Driver {i}" };
+            var someDriver = new DriverNode() { DriverId = i * 2, Name = $"Driver {i}" };
             _graph.Add(someDriver);
 
             int carNumber = Random.Shared.Next(1, carCount);
-            RacingCarNode? raceCar = _graph.FirstOrDefault(x => x is RacingCarNode car && car.CarNumber == carNumber) as RacingCarNode;
+            CarNode? raceCar = _graph.FirstOrDefault(x => x is CarNode car && car.CarNumber == carNumber) as CarNode;
             _graph.TryAddEdge(new OwnsEdge() { ParentId = raceCar.Id, ChildId = someDriver.Id });
 
             Parallel.For(1, lapCount, j =>
@@ -66,7 +66,7 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
                 int s1 = Random.Shared.Next(10000, 40000);
                 int s2 = Random.Shared.Next(10000, 40000);
                 int s3 = Random.Shared.Next(10000, 40000);
-                LapTimeDataNode lapData = new() { LapIndex = j, LapTimeMs = s1 + s2 + s3, SectorTimesMs = [s1, s2, s3] };
+                LapDataNode lapData = new() { LapIndex = j, LapTimeMs = s1 + s2 + s3, SectorTimesMs = [s1, s2, s3] };
                 _graph.Add(lapData);
                 _graph.TryAddEdge(new OwnsEdge()
                 {
@@ -106,18 +106,18 @@ internal sealed class DataGraphTestOverlay : CommonAbstractOverlay
         // start of time tracking
         var now = TimeProvider.System.GetTimestamp();
 
-        var allLapTimes = _graph.Where(x => x is LapTimeDataNode);
-        var allDrivers = _graph.Where(x => x is RacingDriverNode);
-        var allCars = _graph.Where(x => x is RacingCarNode);
+        var allLapTimes = _graph.Where(x => x is LapDataNode);
+        var allDrivers = _graph.Where(x => x is DriverNode);
+        var allCars = _graph.Where(x => x is CarNode);
         var allTrackStates = _graph.Edges.Where(x => x is TrackStateEdge);
 
-        LapTimeDataNode? fastestLap = allLapTimes.MinBy(x => ((LapTimeDataNode)x).LapTimeMs) as LapTimeDataNode;
+        LapDataNode? fastestLap = allLapTimes.MinBy(x => ((LapDataNode)x).LapTimeMs) as LapDataNode;
         _ = _graph.TryGetEdgesTo(fastestLap, out var edges);
         var fastestDriverId = edges.First().ParentId;
-        var fastestDriver = (RacingDriverNode)allDrivers.First(x => x.Id == fastestDriverId);
+        var fastestDriver = (DriverNode)allDrivers.First(x => x.Id == fastestDriverId);
 
         _graph.TryGetEdgesTo(fastestDriver, out var driverEdgesTo);
-        RacingCarNode fastestCar = (RacingCarNode)allCars.First(x => driverEdgesTo.Select(x => x.ParentId).Contains(x.Id));
+        CarNode fastestCar = (CarNode)allCars.First(x => driverEdgesTo.Select(x => x.ParentId).Contains(x.Id));
         var allCarStates = _graph.Edges.Where(x => x.ParentId == fastestCar.Id && x is TrackStateEdge);
         var latestTrackState = allCarStates.Where(x => x.ParentId == fastestCar.Id).MaxBy(x => x.TimeStampUtc) as TrackStateEdge;
 

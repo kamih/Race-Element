@@ -69,18 +69,16 @@ internal static class Compression
     }
 }
 
-internal record CompressionResult(
+internal sealed record CompressionResult(
     CompressionValue Original,
     CompressionValue Result,
     CompressionLevel Level,
     string Kind
 )
 {
-    public int Difference =>
-        Original.Size - Result.Size;
+    public int Difference => Original.Size - Result.Size;
 
-    public decimal Percent =>
-      Math.Abs(Difference / (decimal)Original.Size);
+    public decimal Percent => Math.Abs(Difference / (decimal)Original.Size);
 }
 
-internal record CompressionValue(string Value, int Size);
+internal sealed record CompressionValue(string Value, int Size);
