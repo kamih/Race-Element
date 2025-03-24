@@ -286,7 +286,7 @@ public partial class MainWindow : Window
         if (!runningBeta)
             try
             {
-                string hitCounter = $"http://race.elementfuture.com/analytics?version={FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion}";
+                string hitCounter = $"https://race.elementfuture.com/analytics?version={FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion}";
 
                 using HttpClient client = new();
                 client.GetAsync(hitCounter).Wait();
