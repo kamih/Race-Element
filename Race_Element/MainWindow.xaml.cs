@@ -286,12 +286,16 @@ public partial class MainWindow : Window
         if (!runningBeta)
             try
             {
-                string hitCounter = "https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FRiddleTime%2FRace-Element";
+                string hitCounter = $"http://race.elementfuture.com/analytics?version={FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion}";
 
                 using HttpClient client = new();
                 client.GetAsync(hitCounter).Wait();
+
+                Thread.Sleep(2000);
+
+                client.Dispose();
             }
-            catch (Exception) { }
+            catch (Exception e) { Debug.WriteLine(e); }
     }
 
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
