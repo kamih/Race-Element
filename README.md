@@ -1,4 +1,4 @@
-[![Downloads](https://img.shields.io/github/downloads/riddletime/race-element/RaceElement.exe?style=flat&label=Downloads
+[![Downloads](https://img.shields.io/github/downloads/riddletime/race-element/RaceElement.exe?style=flat&label=Downloads&color=%23FF4500
 )](https://race.elementfuture.com/guide/how-to-get-started)
 [![Discord](https://badgen.net/discord/members/26AAEW5mUq?icon=discord&color=5562ea&label=Race%20Element)](https://discord.gg/26AAEW5mUq)
 
