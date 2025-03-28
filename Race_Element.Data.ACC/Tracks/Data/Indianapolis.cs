@@ -15,7 +15,7 @@ internal sealed class Indianapolis : AbstractTrackData
     public override float FactorScale => 0.25f;
     public override float PitLaneTime => 44f;
 
-    public override List<float> Sectors => new() { 0.390f, 0.719f };
+    public override List<float> Sectors => [0.390f, 0.719f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {

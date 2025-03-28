@@ -15,7 +15,7 @@ internal sealed class Silverstone : AbstractTrackData
     public override float FactorScale => 0.21f;
     public override float PitLaneTime => 23f;
 
-    public override List<float> Sectors => new() { 0.315f, 0.707f };
+    public override List<float> Sectors => [0.315f, 0.707f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {

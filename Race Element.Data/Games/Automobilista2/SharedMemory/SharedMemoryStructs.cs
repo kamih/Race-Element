@@ -258,6 +258,6 @@ internal struct Shared
     [MarshalAs(UnmanagedType.I1)] public bool mSessionIsPrivate;    // true if this is a public session where users cannot see or interact with other drivers (and so would not need positional awareness of them etc)
     public Int32 mLaunchStage;                                      // [ enum (Type#17) LaunchStage
 
-    public static readonly Int32 Size = Marshal.SizeOf(typeof(Shared));
+    public static readonly Int32 Size = Marshal.SizeOf<Shared>();
     public static readonly byte[] Buffer = new byte[Size];
 }

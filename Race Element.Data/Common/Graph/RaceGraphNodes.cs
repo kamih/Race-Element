@@ -3,7 +3,11 @@ using RaceElement.Graph.Node;
 
 namespace RaceElement.Data.Common.Graph;
 
-public sealed record class LapTimeDataNode : AbstractNode
+
+/// <summary>
+/// Child of <see cref="DriverNode"/> with <see cref="OwnsEdge"/>.
+/// </summary>
+public sealed record class LapDataNode : AbstractNode
 {
     /// <summary>
     /// Lap index (starting from 0). -1 means invalid and not set.
@@ -28,7 +32,10 @@ public sealed record class LapTimeDataNode : AbstractNode
     public bool IsValid { get; init; } = true;
 }
 
-public sealed record class RacingDriverNode : AbstractNode
+/// <summary>
+/// Child of <see cref="CarNode"/> with <see cref="OwnsEdge" />.
+/// </summary>
+public sealed record class DriverNode : AbstractNode
 {
     /// <summary>
     /// Can be driver index or specific number if assigned.
@@ -40,7 +47,7 @@ public sealed record class RacingDriverNode : AbstractNode
     public string Country { get; init; } = string.Empty;
 }
 
-public sealed record class RacingCarNode : AbstractNode
+public sealed record class CarNode : AbstractNode
 {
     /// <summary>
     /// Car number.
@@ -65,7 +72,7 @@ public sealed record class RacingCarNode : AbstractNode
 }
 
 /// <summary>
-/// Describes a <see cref="TrackStates"/> change for a <see cref="RacingCarNode"/>
+/// Describes a <see cref="TrackStates"/> change for a <see cref="CarNode"/>
 /// </summary>
 public sealed record class TrackStateEdge : AbstractEdge
 {
@@ -78,12 +85,10 @@ public sealed record class TrackStateEdge : AbstractEdge
 [Flags]
 public enum TrackStates : uint
 {
-    None = 0,
-    PitLaneIn = 1,
-    PitLaneOut = 2,
-    Pitlane = 3,
-    Track = 4,
-    OffTrack = 5,
+    None = 1 << 0,
+    PitLaneIn = 1 << 1,
+    PitLaneOut = 1 << 2,
+    Pitlane = 1 << 3,
+    Track = 1 << 4,
+    OffTrack = 1 << 5,
 }
-
-

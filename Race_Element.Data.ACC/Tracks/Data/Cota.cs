@@ -15,7 +15,7 @@ internal sealed class Cota : AbstractTrackData
     public override float FactorScale => 0.2f;
     public override float PitLaneTime => 29f;
 
-    public override List<float> Sectors => new() { 0.236f, 0.647f };
+    public override List<float> Sectors => [0.236f, 0.647f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {

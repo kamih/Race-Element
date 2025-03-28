@@ -15,7 +15,7 @@ internal sealed class Zolder : AbstractTrackData
     public override float FactorScale => 0.28f;
     public override float PitLaneTime => 30f;
 
-    public override List<float> Sectors => new() { 0.3625f, 0.6835f };
+    public override List<float> Sectors => [0.3625f, 0.6835f];
 
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {

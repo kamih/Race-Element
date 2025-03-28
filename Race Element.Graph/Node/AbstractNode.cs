@@ -5,11 +5,11 @@
 /// </summary>
 public abstract record class AbstractNode
 {
+    public Guid Id { get; init; }
+
     public AbstractNode()
     {
         if (Id == Guid.Empty)
             Id = Guid.NewGuid();
     }
-
-    public Guid Id { get; init; }
 }

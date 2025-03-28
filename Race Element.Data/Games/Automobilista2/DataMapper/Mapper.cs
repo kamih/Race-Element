@@ -85,6 +85,9 @@ internal static class Ams2Mapper
         // Is running as long as engine RPM > 0.
         local.Engine.IsRunning = shared.mRpm > 0;
 
+        if (shared.mViewedParticipantIndex == -1)
+            return;
+
         // Player info
         local.Race.LapPositionPercentage = shared.mTrackLength / shared.mParticipantInfo[shared.mViewedParticipantIndex].mCurrentLapDistance;
         local.Race.GlobalPosition = (int)shared.mParticipantInfo[shared.mViewedParticipantIndex].mRacePosition;

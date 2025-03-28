@@ -78,5 +78,5 @@ internal sealed class Nordschleife : AbstractTrackData
         { new FloatRangeStruct(0.9753f, 0.985f), (56, "Hohenrain Schikane")}
         
     };
-    public override List<float> Sectors => new() { 0.32676908f, 0.641197f };
+    public override List<float> Sectors => [0.32676908f, 0.641197f];
 }

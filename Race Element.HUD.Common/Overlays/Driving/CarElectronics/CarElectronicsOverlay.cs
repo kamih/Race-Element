@@ -49,7 +49,7 @@ public sealed class CarElectronicsOverlay : CommonAbstractOverlay
         public sealed override DataModel Collect => new()
         {
             BrakeBias = SimDataProvider.LocalCar.Electronics.BrakeBias,
-            TcLevel = SimDataProvider.LocalCar.Electronics.TractionControlLevel,
+            TcLevel = SimDataProvider.LocalCar.Electronics.TractionControlLevel < 0 ? 0 : SimDataProvider.LocalCar.Electronics.TractionControlLevel,
             AbsLevel = SimDataProvider.LocalCar.Electronics.AbsLevel,
         };
     }
