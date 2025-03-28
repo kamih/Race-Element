@@ -246,7 +246,7 @@ public partial class MainWindow : Window
 
             Thread.Sleep(2000);
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Optimized, false, false);
-            UpdateUsage();
+            //UpdateUsage();  // disabled for now.. no counter
         });
 
         if (!App.Instance.StartMinimized)
@@ -275,28 +275,28 @@ public partial class MainWindow : Window
         }
     }
 
-    private void UpdateUsage()
-    {
-        // prevent beta versions from increasing real life usage
-        bool runningBeta = false;
-        if (int.TryParse(FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion.Last().ToString(), out int versionLast))
-            if (versionLast % 2 != 0)
-                runningBeta = true;
+    //private void UpdateUsage()
+    //{
+    //    // prevent beta versions from increasing real life usage
+    //    bool runningBeta = false;
+    //    if (int.TryParse(FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion.Last().ToString(), out int versionLast))
+    //        if (versionLast % 2 != 0)
+    //            runningBeta = true;
 
-        if (!runningBeta)
-            try
-            {
-                string hitCounter = $"https://race.elementfuture.com/analytics?version={FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion}";
+    //    if (!runningBeta)
+    //        try
+    //        {
+    //            string hitCounter = $"https://race.elementfuture.com/analytics?version={FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion}";
 
-                using HttpClient client = new();
-                client.GetAsync(hitCounter).Wait();
+    //            using HttpClient client = new();
+    //            client.GetAsync(hitCounter).Wait();
 
-                Thread.Sleep(2000);
+    //            Thread.Sleep(2000);
 
-                client.Dispose();
-            }
-            catch (Exception e) { Debug.WriteLine(e); }
-    }
+    //            client.Dispose();
+    //        }
+    //        catch (Exception e) { Debug.WriteLine(e); }
+    //}
 
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
