@@ -6,7 +6,9 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
-        {"2.2.5.4", "Multi-Sim"+
+        {"2.2.5.4", "Race Element:"+
+                    "\n- Info Tab: added button to open guides on the website."+
+                    "\n\nMulti-Sim"+
                     "\n- Input Trace: Trace colors can now be modified."+
                     "\n\nAssetto Corsa Competizione:"+
                     "\n- Input Trace: Trace colors can now be modified."
