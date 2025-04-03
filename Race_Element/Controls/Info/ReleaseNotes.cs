@@ -6,6 +6,11 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+        {"2.2.5.4", "Multi-Sim"+
+                    "\n- Input Trace: Trace colors can now be modified."+
+                    "\n\nAssetto Corsa Competizione:"+
+                    "\n- Input Trace: Trace colors can now be modified."
+                    },
         {"2.2.5.2", "Race Element:"+
                     "\n- Updated .NET Packages to 9.0.3"+
                     "\n\nAutomobilista 2:"+
