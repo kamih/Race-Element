@@ -6,7 +6,11 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
-        {"2.2.5.6", "Clock HUD: Added a visiblity option with 3 options: default, always and always when game is running." },
+        {"2.2.5.6", "Race Element:"+
+                    "\n- HUD Tab: the Control + Home hotkey to activate movement mode will be automatically disabled if the game is not running. In this case the hotkey will only work if Race Element is the active window. " +
+                    "This should prevent unwwanted activation of the HUD Movement Mode."+
+                    "\n- Clock HUD: Added a visiblity option with 3 options: default, always and always when game is running."
+                    },
         {"2.2.5.4", "Race Element:"+
                     "\n- Info Tab: added button to open guides on the website."+
                     "\n\nMulti-Sim:"+
