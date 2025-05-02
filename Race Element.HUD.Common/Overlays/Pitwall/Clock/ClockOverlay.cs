@@ -43,7 +43,7 @@ internal sealed class ClockOverlay(Rectangle rectangle) : CommonAbstractOverlay(
             [ToolTip("Change between Full(24h) and AM/PM notation of time.")]
             public TimeFormat Format { get; init; } = TimeFormat.Full;
 
-            [ToolTip("Change between Full(24h) and AM/PM notation of time.")]
+            [ToolTip("Default means the clock will only show when the engine is running.\nAlways means always.\nAlways when game is running hides once you exit the game.")]
             public VisibilityOption Visibility { get; init; } = VisibilityOption.Always;
         }
     }
