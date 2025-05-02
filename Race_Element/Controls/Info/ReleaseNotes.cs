@@ -6,6 +6,7 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+        {"2.2.5.6", "Clock HUD: Added a visiblity option with 3 options: default, always and always when game is running." },
         {"2.2.5.4", "Race Element:"+
                     "\n- Info Tab: added button to open guides on the website."+
                     "\n\nMulti-Sim:"+
