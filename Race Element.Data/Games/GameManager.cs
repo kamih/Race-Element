@@ -5,11 +5,25 @@ namespace RaceElement.Data.Games;
 
 public static class GameManager
 {
-    private static SimpleLoopJob _dataUpdaterJob;
     public static Game CurrentGame { get; private set; } = Game.Any;
+    public static bool IsGameRunning { get => _isGameRunning; set => _isGameRunning = value; }
 
+    private static bool _isGameRunning = false;
 
     public static event EventHandler<(Game previous, Game next)>? OnGameChanged;
+
+    private static readonly SimpleLoopJob _dataUpdaterJob = new()
+    {
+        Action = () => SimDataProvider.Update(),
+        IntervalMillis = 1000 / SimDataProvider.Instance.PollingRate()
+    };
+
+    private static readonly SimpleLoopJob _gameMonitorJob = new()
+    {
+        Action = () => _isGameRunning = CurrentGame == GameExtensions.GetRunningGame(),
+        IntervalMillis = 500
+    };
+
     public static void SetCurrentGame(Game nextGame)
     {
         ExitGameData(CurrentGame);
@@ -22,13 +36,9 @@ public static class GameManager
         SimDataProvider.Update(true);
         if (SimDataProvider.Instance != null)
         {
-            _dataUpdaterJob = new()
-            {
-                Action = () => SimDataProvider.Update(),
-                IntervalMillis = 1000 / SimDataProvider.Instance.PollingRate()
-            };
             SimDataProvider.Instance.Start();
             _dataUpdaterJob.Run();
+            _gameMonitorJob.Run();
         }
     }
 
@@ -38,6 +48,7 @@ public static class GameManager
     /// <param name="game"></param>
     private static void ExitGameData(Game game)
     {
+        _gameMonitorJob.CancelJoin();
         SimDataProvider.Stop();
         _dataUpdaterJob?.CancelJoin();
     }
