@@ -48,8 +48,8 @@ public partial class GamePicker : UserControl
             {
                 var list = comboGamePicker.ItemsSource.Cast<GamePickerModel>();
                 var nextItem = list.FirstOrDefault(x => x.Game == requested);
-                ;
                 comboGamePicker.SelectedItem = nextItem;
+                MainWindow.Instance.EnqueueSnackbarMessage($"Automatically switched to {nextItem.FriendlyName}");
             }
         });
     }
