@@ -49,7 +49,7 @@ public static class GameManager
                 if (AutoSwitch && !_isGameRunning && _runningGame != Game.Any)
                     OnAutoGameRequest?.Invoke(null, _runningGame);
             },
-            IntervalMillis = 1000,
+            IntervalMillis = 2000,
         };
         _autoSwitchJob.Run();
 
