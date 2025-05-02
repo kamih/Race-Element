@@ -12,17 +12,9 @@ public static class GameManager
 
     public static event EventHandler<(Game previous, Game next)>? OnGameChanged;
 
-    private static readonly SimpleLoopJob _dataUpdaterJob = new()
-    {
-        Action = () => SimDataProvider.Update(),
-        IntervalMillis = 1000 / SimDataProvider.Instance.PollingRate()
-    };
+    private static SimpleLoopJob? _dataUpdaterJob;
 
-    private static readonly SimpleLoopJob _gameMonitorJob = new()
-    {
-        Action = () => _isGameRunning = CurrentGame == GameExtensions.GetRunningGame(),
-        IntervalMillis = 500
-    };
+    private static SimpleLoopJob? _gameMonitorJob;
 
     public static void SetCurrentGame(Game nextGame)
     {
@@ -37,9 +29,24 @@ public static class GameManager
         if (SimDataProvider.Instance != null)
         {
             SimDataProvider.Instance.Start();
+
+            _dataUpdaterJob = new()
+            {
+                Action = () => SimDataProvider.Update(),
+                IntervalMillis = 1000 / SimDataProvider.Instance.PollingRate()
+            };
             _dataUpdaterJob.Run();
-            _gameMonitorJob.Run();
         }
+
+        _gameMonitorJob = new()
+        {
+            Action = () =>
+            {
+                _isGameRunning = CurrentGame == GameExtensions.GetRunningGame();
+            },
+            IntervalMillis = 500
+        };
+        _gameMonitorJob.Run();
     }
 
     /// <summary>
@@ -48,7 +55,9 @@ public static class GameManager
     /// <param name="game"></param>
     private static void ExitGameData(Game game)
     {
-        _gameMonitorJob.CancelJoin();
+        _gameMonitorJob?.CancelJoin();
+        _isGameRunning = false;
+
         SimDataProvider.Stop();
         _dataUpdaterJob?.CancelJoin();
     }
