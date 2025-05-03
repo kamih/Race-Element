@@ -184,7 +184,7 @@ public partial class Info : UserControl
                     Text = note.Key,
                     Style = Resources["MaterialDesignBody1TextBlock"] as Style,
                     FontWeight = FontWeights.Bold,
-                    FontStyle = FontStyles.Oblique
+                    FontStyle = FontStyles.Italic
                 };
                 TextBlock noteDescription = new()
                 {
@@ -193,7 +193,7 @@ public partial class Info : UserControl
                     Style = Resources["MaterialDesignDataGridTextColumnStyle"] as Style
                 };
 
-                StackPanel changePanel = new() { Margin = new Thickness(0, 10, 0, 0) };
+                StackPanel changePanel = new() { Margin = new Thickness(0, 10, 0, 0), Orientation = Orientation.Vertical };
                 changePanel.Children.Add(noteTitle);
                 changePanel.Children.Add(noteDescription);
 

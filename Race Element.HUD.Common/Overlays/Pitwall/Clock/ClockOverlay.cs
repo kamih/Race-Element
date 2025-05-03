@@ -1,4 +1,5 @@
-﻿using RaceElement.HUD.Overlay.Configuration;
+﻿using RaceElement.Data.Games;
+using RaceElement.HUD.Overlay.Configuration;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.OverlayUtil;
 using RaceElement.HUD.Overlay.OverlayUtil.InfoPanel;
@@ -28,6 +29,13 @@ internal sealed class ClockOverlay(Rectangle rectangle) : CommonAbstractOverlay(
             AmPm
         }
 
+        public enum VisibilityOption
+        {
+            Default,
+            AlwaysWhenGameRuns,
+            Always,
+        }
+
         [ConfigGrouping("Clock", "Change settings that alter the presentation of the time.")]
         public InfoPanelGrouping InfoPanel { get; init; } = new();
         public sealed class InfoPanelGrouping
@@ -35,8 +43,8 @@ internal sealed class ClockOverlay(Rectangle rectangle) : CommonAbstractOverlay(
             [ToolTip("Change between Full(24h) and AM/PM notation of time.")]
             public TimeFormat Format { get; init; } = TimeFormat.Full;
 
-            [ToolTip("Renders this HUD regardless of the whether the engine is running or not.")]
-            public bool AlwaysShow { get; init; } = true;
+            [ToolTip("Default means the clock will only show when the engine is running.\nAlways means always.\nAlways when game is running hides once you exit the game.")]
+            public VisibilityOption Visibility { get; init; } = VisibilityOption.Always;
         }
     }
 
@@ -49,7 +57,7 @@ internal sealed class ClockOverlay(Rectangle rectangle) : CommonAbstractOverlay(
     private const string FullTimeFormat = "HH\\:mm\\:ss";
     private const string AmpPmTimeFormat = "hh\\:mm\\:ss tt";
 
-    public override void BeforeStart()
+    public sealed override void BeforeStart()
     {
         _timeFormat = _config.InfoPanel.Format switch
         {
@@ -104,22 +112,24 @@ internal sealed class ClockOverlay(Rectangle rectangle) : CommonAbstractOverlay(
         RefreshRateHz = 1;
     }
 
-    public override void BeforeStop()
+    public sealed override void BeforeStop()
     {
         _font?.Dispose();
         _timeHeader?.Dispose();
         _timeValue?.Dispose();
     }
 
-    public override bool ShouldRender()
+    public sealed override bool ShouldRender()
     {
-        if (_config.InfoPanel.AlwaysShow)
-            return true;
-
-        return base.ShouldRender();
+        return _config.InfoPanel.Visibility switch
+        {
+            SystemTimeConfig.VisibilityOption.Always => true,
+            SystemTimeConfig.VisibilityOption.AlwaysWhenGameRuns => GameManager.IsGameRunning,
+            _ => base.ShouldRender(),
+        };
     }
 
-    public override void Render(Graphics g)
+    public sealed override void Render(Graphics g)
     {
         _timeHeader.Draw(g, "Clock", Scale);
         _timeValue.Draw(g, $"{DateTime.Now.ToString(_timeFormat)}", Scale);

@@ -33,8 +33,25 @@ public partial class GamePicker : UserControl
 
             SetToolTip(currentGame);
         };
+        GameManager.OnAutoGameRequest += GameManager_OnAutoGameRequest;
+
         ToolTipService.SetInitialShowDelay(this, 0);
         ToolTipService.SetPlacement(this, System.Windows.Controls.Primitives.PlacementMode.Right);
+    }
+
+    private void GameManager_OnAutoGameRequest(object sender, Game requested)
+    {
+        comboGamePicker.Dispatcher.BeginInvoke(() =>
+        {
+            var selected = comboGamePicker.SelectedItem as GamePickerModel;
+            if (selected.Game != requested)
+            {
+                var list = comboGamePicker.ItemsSource.Cast<GamePickerModel>();
+                var nextItem = list.FirstOrDefault(x => x.Game == requested);
+                comboGamePicker.SelectedItem = nextItem;
+                MainWindow.Instance.EnqueueSnackbarMessage($"Automatically switched to {nextItem.FriendlyName}");
+            }
+        });
     }
 
     private void SetToolTip(Game game)
@@ -94,11 +111,11 @@ public partial class GamePicker : UserControl
         comboGamePicker.ItemsSource = availableGames;
 
         var uiSettings = new UiSettings();
-        Game selectedGame = GameExtensions.GetRunningGame();
+        Game selectedGame = Game.Any;//  GameExtensions.GetRunningGame();
 
         if (selectedGame == Game.Any)
         {
-            selectedGame = uiSettings.Get().SelectedGame;;
+            selectedGame = uiSettings.Get().SelectedGame; ;
         }
 
         var model = availableGames.FirstOrDefault(x => x.Game == selectedGame);
