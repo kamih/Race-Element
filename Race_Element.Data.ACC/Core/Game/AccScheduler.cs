@@ -11,6 +11,7 @@ public static class AccScheduler
 
     public static void UnregisterJobs()
     {
+        PageStaticTracker.Instance.CancelJoin();
         ACCTrackerDispose.Dispose();
     }
 }
