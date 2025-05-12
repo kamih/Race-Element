@@ -145,21 +145,18 @@ public partial class App : Application
 
     private void App_Startup(object sender, StartupEventArgs e)
     {
-        Environment.SetEnvironmentVariable("COMPlus_DbgJitDebugLaunchSetting", "0");
-
         // Handle UI thread exceptions
-        DispatcherUnhandledException += (s, args) =>
-            {
-                args.Handled = true; // Prevent crash
-                LogWriter.WriteToLog($"UI Exception: {args.Exception.Message}");
-            };
+        //DispatcherUnhandledException += (s, args) =>
+        //    {
+        //        //args.Handled = true; // Prevent crash
+        //        //LogWriter.WriteToLog($"UI Exception: {args.Exception.Message}");
+        //    };
 
         // Handle non-UI thread exceptions
         AppDomain.CurrentDomain.UnhandledException += (s, args) =>
         {
             var exception = args.ExceptionObject as Exception;
             LogWriter.WriteToLog($"Non-UI Exception: {exception?.Message}");
-            Debug.WriteLine(exception);
             if (args.IsTerminating)
             {
                 LogWriter.WriteToLog($"App Crashed.");
