@@ -2,6 +2,7 @@
 using RaceElement.Data.ACC.Core;
 using RaceElement.Data.ACC.Database.LapDataDB;
 using RaceElement.Data.ACC.Session;
+using RaceElement.Data.Games;
 using RaceElement.Util;
 using System;
 using System.Collections.Generic;
@@ -139,8 +140,7 @@ public class LapTracker
                 try
                 {
 
-
-                    if (AccProcess.IsRunning && RaceSessionTracker.Instance.CurrentSession != null)
+                    if (GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione && RaceSessionTracker.Instance.CurrentSession != null)
                     {
                         Thread.Sleep(1000 / 20);
 

@@ -1,5 +1,6 @@
 ﻿using RaceElement.Data.ACC.Core;
 using RaceElement.Data.ACC.EntryList;
+using RaceElement.Data.Games;
 using RaceElement.Util;
 using System;
 using System.Diagnostics;
@@ -37,7 +38,7 @@ public sealed class PageGraphicsTracker : IDisposable
         {
             while (isTracking)
             {
-                if (AccProcess.IsRunning)
+                if (GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
                 {
                     Thread.Sleep(10);
                     Tracker?.Invoke(this, ACCSharedMemory.Instance.ReadGraphicsPageFile());
@@ -58,7 +59,7 @@ public sealed class PageGraphicsTracker : IDisposable
                 {
                     Thread.Sleep(100);
 
-                    if (AccProcess.IsRunning)
+                    if (GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
                     {
                         SPageFileGraphic sPageFileGraphic = ACCSharedMemory.Instance.ReadGraphicsPageFile(false);
                         SPageFilePhysics sPageFilePhysics = ACCSharedMemory.Instance.ReadPhysicsPageFile(false);

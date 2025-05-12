@@ -1,4 +1,5 @@
 ﻿using RaceElement.Data.ACC.Core;
+using RaceElement.Data.Games;
 using SharpDX.DirectInput;
 using System;
 using System.Diagnostics;
@@ -58,7 +59,7 @@ public sealed class SteeringLockTracker : IDisposable
 
                 try
                 {
-                    if (AccProcess.IsRunning)
+                    if (GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
                         if (ACCSharedMemory.Instance.ReadGraphicsPageFile(true).Status != ACCSharedMemory.AcStatus.AC_OFF)
                         {
                             SetHardwareLock();

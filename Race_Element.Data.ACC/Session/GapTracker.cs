@@ -2,6 +2,7 @@
 using RaceElement.Data.ACC.Core;
 using RaceElement.Data.ACC.EntryList;
 using RaceElement.Data.ACC.Tracker;
+using RaceElement.Data.Games;
 using RaceElement.Util.SystemExtensions;
 using System;
 using System.Collections.Concurrent;
@@ -80,7 +81,7 @@ public sealed class GapTracker : AbstractLoopJob
 
     public override void RunAction()
     {
-        if (EntryListTracker.Instance.Cars.Count == 0 || !AccProcess.IsRunning)
+        if (EntryListTracker.Instance.Cars.Count == 0 || (!GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione))
         {
             if (GapData.IsEmpty) GapData.Clear();
             return;
