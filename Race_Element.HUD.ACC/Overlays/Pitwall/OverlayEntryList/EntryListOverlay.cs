@@ -153,7 +153,13 @@ internal sealed class EntryListOverlay : AbstractOverlay
                             var carAheadData = EntryListTracker.Instance.GetCarData(carAhead.CarIndex);
                             if (kv.Value.RealtimeCarUpdate.Laps == carAheadData.RealtimeCarUpdate.Laps)
                             {
-                                float timeGapToAhead = GapTracker.Instance.TimeGapBetween(kv.Key, kv.Value.RealtimeCarUpdate.SplinePosition, carAhead.CarIndex);
+                                var ms = kv.Value.RealtimeCarUpdate.Kmh * (1000.0 / 3600.0);
+                                var trackLen = broadCastTrackData.TrackMeters;
+
+                                var pos = kv.Value.RealtimeCarUpdate.SplinePosition * trackLen;
+                                var carAheadPos = carAheadData.RealtimeCarUpdate.SplinePosition * trackLen;
+
+                                float timeGapToAhead = (float)((carAheadPos - pos) * ms);
                                 distanceText = $" +{timeGapToAhead:F3}";
                             }
                             else
