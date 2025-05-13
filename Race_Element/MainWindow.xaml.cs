@@ -133,10 +133,6 @@ public partial class MainWindow : Window
 
         _uiSettings.Save(uiSettings);
 
-        this.PreviewDrop += (s, e) =>
-        {
-            Debug.WriteLine(e);
-        };
         this.Drop += MainWindow_Drop;
 
         InitializeSystemTrayIcon();
@@ -319,9 +315,9 @@ public partial class MainWindow : Window
 
         //Application.Current.Shutdown();
         Debug.WriteLine("cleaned up app");
-#if !DEBUG
-         Environment.Exit(0);
-#endif
+//#if !DEBUG
+//         //Environment.Exit(0);
+//#endif
     }
 
     private void CurrentDomain_ProcessExit(object sender, EventArgs e)
@@ -341,9 +337,9 @@ public partial class MainWindow : Window
         FileUtil.CleanDownloadCache();
 
         Debug.WriteLine("exiting app");
-#if !DEBUG
-         Environment.Exit(0);
-#endif
+//#if !DEBUG
+//         //Environment.Exit(0);
+//#endif
     }
 
     private System.Windows.Forms.NotifyIcon _notifyIcon;

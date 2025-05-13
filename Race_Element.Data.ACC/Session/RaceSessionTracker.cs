@@ -8,6 +8,7 @@ using RaceElement.Data.ACC.Database.RaceWeekend;
 using RaceElement.Data.ACC.Database.SessionData;
 using RaceElement.Data.ACC.Database.Telemetry;
 using RaceElement.Data.ACC.Tracker;
+using RaceElement.Data.Games;
 using RaceElement.Util.Settings;
 using System;
 using System.Diagnostics;
@@ -184,7 +185,7 @@ public sealed class RaceSessionTracker
         {
             Thread.Sleep(100);
 
-            if (AccProcess.IsRunning == false)
+            if (!GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
             {
                 continue;
             }

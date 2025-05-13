@@ -4,6 +4,7 @@ using RaceElement.Controls.Util;
 using RaceElement.Data;
 using RaceElement.Data.ACC.Core;
 using RaceElement.Data.ACC.Tracks;
+using RaceElement.Data.Games;
 using RaceElement.Util;
 using RaceElement.Util.SystemExtensions;
 using SharpCompress.Archives.Zip;
@@ -157,7 +158,7 @@ public partial class SetupBrowser : UserControl
                         ClearSetups();
 
                         // Pre-expand the current car and track leafs
-                        if (AccProcess.IsRunning)
+                        if (GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
                         {
                             var staticPage = ACCSharedMemory.Instance.ReadStaticPageFile();
                             if (staticPage != null)

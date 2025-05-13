@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using RaceElement.Core.Jobs.Timer;
+using System.Threading.Tasks;
 
 namespace RaceElement;
 
@@ -32,6 +33,7 @@ public partial class App : Application
     public App()
     {
         Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+
         this.Startup += App_Startup;
         this.Exit += App_Exit;
 
@@ -101,7 +103,7 @@ public partial class App : Application
     {
         try
         {
-            while (true)
+            while (MainWindow.IsEnabled)
             {
                 NamedPipeServerStream server = new("8f81b9c5-284a-4458-98be-2387c9046562", PipeDirection.InOut, 1, PipeTransmissionMode.Byte);
                 server.WaitForConnection();
@@ -143,6 +145,32 @@ public partial class App : Application
 
     private void App_Startup(object sender, StartupEventArgs e)
     {
+        // Handle UI thread exceptions
+        //DispatcherUnhandledException += (s, args) =>
+        //    {
+        //        //args.Handled = true; // Prevent crash
+        //        //LogWriter.WriteToLog($"UI Exception: {args.Exception.Message}");
+        //    };
+
+        // Handle non-UI thread exceptions
+        AppDomain.CurrentDomain.UnhandledException += (s, args) =>
+        {
+            var exception = args.ExceptionObject as Exception;
+            LogWriter.WriteToLog($"Non-UI Exception: {exception?.Message}");
+            if (args.IsTerminating)
+            {
+                LogWriter.WriteToLog($"App Crashed.");
+            }
+        };
+
+        TaskScheduler.UnobservedTaskException += (s, args) =>
+        {
+            args.SetObserved(); // Mark as handled
+            LogWriter.WriteToLog($"Task Exception: {args.Exception.Message}");
+        };
+
+
+
         bool isAnotherInstanceRunning = IsAnotherInstanceRunning();
         Debug.WriteLine("is other running " + isAnotherInstanceRunning);
         RegisterNamedPipe(isAnotherInstanceRunning, e.Args);
@@ -222,6 +250,5 @@ public partial class App : Application
     {
         JobTimerExecutor.Instance().Dispose();
         AccScheduler.UnregisterJobs();
-        Environment.Exit(0);
     }
 }

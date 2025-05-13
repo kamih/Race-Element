@@ -2,6 +2,7 @@
 using RaceElement.Data.ACC.Core;
 using RaceElement.Data.ACC.Session;
 using RaceElement.Data.ACC.Tracker;
+using RaceElement.Data.Games;
 using RaceElement.Util.Settings;
 using System;
 using System.Diagnostics;
@@ -28,7 +29,7 @@ public abstract class AbstractOverlay(Rectangle rectangle, string Name) : Common
         if (HudSettings.Cached.DemoMode)
             return true;
 
-        if (!AccProcess.IsRunning)
+        if (!GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
             return false;
 
         bool shouldRender = true;
