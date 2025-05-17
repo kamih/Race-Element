@@ -1,4 +1,5 @@
 ﻿using RaceElement.Data.ACC.Core;
+using RaceElement.Data.Games;
 using RaceElement.HUD.Overlay.Configuration;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.Util;
@@ -71,7 +72,7 @@ internal sealed class AccProcessOverlay : AbstractOverlay
     public override void Render(Graphics g)
     {
 
-        _panel.AddLine("Process Alive", $"{AccProcess.IsRunning}");
+        _panel.AddLine("Process Alive", $"{GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione}");
         _panel.Draw(g);
     }
 

@@ -54,6 +54,7 @@
 
         <TabControl x:Name="tabControl" Style="{StaticResource MaterialDesignUniformTabControl}"  VerticalAlignment="Stretch" TabStripPlacement="Left" Grid.Row="1">
 
+
             <TabItem Style="{DynamicResource MaterialDesignTabItem}" x:Name="tabHUD" Height="64">
                 <TabItem.Header>
                     <Grid Style="{DynamicResource HoverGrid}" ToolTip="Customizable Overlays">
@@ -263,6 +264,8 @@
                     <controls:Info Grid.Column="1"></controls:Info>
                 </Grid>
             </TabItem>
+
+
         </TabControl>
 
         <controls:GamePicker Grid.Row="1" Width="92" Padding="0,0,0,0" Margin="0,0,0,72" HorizontalAlignment="Left" VerticalAlignment="Bottom"></controls:GamePicker>

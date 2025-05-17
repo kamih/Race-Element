@@ -1,4 +1,5 @@
 ﻿using RaceElement.Data.ACC.Core;
+using RaceElement.Data.Games;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ public sealed class PagePhysicsTracker : IDisposable
             isTracking = true;
             while (isTracking)
             {
-                if (AccProcess.IsRunning)
+                if (GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
                 {
                     Thread.Sleep(2);
                     Tracker?.Invoke(this, ACCSharedMemory.Instance.ReadPhysicsPageFile());
@@ -50,6 +51,7 @@ public sealed class PagePhysicsTracker : IDisposable
     public void Dispose()
     {
         isTracking = false;
+        trackingTask.Wait();
         trackingTask.Dispose();
     }
 }
