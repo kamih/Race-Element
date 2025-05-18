@@ -38,6 +38,18 @@ internal sealed class EntryListOverlay : AbstractOverlay
             public bool ExtendedData { get; set; } = false;
         }
 
+        [ConfigGrouping("Gap interval prediction", "Use distance and speed to determine the gap between cars.")]
+        public GapIntervalPrediction GapPrediction { get; set; } = new GapIntervalPrediction();
+        public sealed class GapIntervalPrediction
+        {
+            [ToolTip("Predict car ahead gap interval based on distance and speed.")]
+            public bool Enable { get; set; } = false;
+
+            [IntRange(1, 50, 1)]
+            [ToolTip("Smooth the prediction by taking into account the last N values (EMA).")]
+            public int SmoothPeriod { get; set; } = 12;
+        }
+
         [ConfigGrouping("Dock", "Provides settings for overlay docking.")]
         public DockConfigGrouping Dock { get; set; } = new DockConfigGrouping();
         public class DockConfigGrouping
@@ -52,6 +64,7 @@ internal sealed class EntryListOverlay : AbstractOverlay
         }
     }
 
+    private Dictionary<int, EmaFilter> _gaps = new();
     private readonly InfoTable _table;
 
     private readonly Color Gt3Color = Color.FromArgb(255, Color.Black);
@@ -82,6 +95,8 @@ internal sealed class EntryListOverlay : AbstractOverlay
 
     public sealed override void BeforeStart()
     {
+        _gaps.Clear();
+
         if (this._config.Dock.Undock)
             this.AllowReposition = true;
         else
@@ -100,7 +115,6 @@ internal sealed class EntryListOverlay : AbstractOverlay
             DebugInfoHelper.Instance.RemoveOverlay(this);
             DebugInfoHelper.Instance.WidthChanged -= Instance_WidthChanged;
         }
-
     }
 
     public sealed override void Render(Graphics g)
@@ -153,21 +167,22 @@ internal sealed class EntryListOverlay : AbstractOverlay
                             var carAheadData = EntryListTracker.Instance.GetCarData(carAhead.CarIndex);
                             if (kv.Value.RealtimeCarUpdate.Laps == carAheadData.RealtimeCarUpdate.Laps)
                             {
-                                var ms = kv.Value.RealtimeCarUpdate.Kmh * (1000.0 / 3600.0);
-                                var trackLen = broadCastTrackData.TrackMeters;
-
-                                var pos = kv.Value.RealtimeCarUpdate.SplinePosition * trackLen;
-                                var carAheadPos = carAheadData.RealtimeCarUpdate.SplinePosition * trackLen;
-
-                                float timeGapToAhead = (float)((carAheadPos - pos) * ms);
-                                distanceText = $" +{timeGapToAhead:F3}";
+                                float timeGapToAhead = 0;
+                                if (_config.GapPrediction.Enable)
+                                {
+                                    timeGapToAhead = PredictGapInterval(kv.Key, kv.Value.RealtimeCarUpdate, carAheadData.RealtimeCarUpdate);
+                                }
+                                else
+                                {
+                                    timeGapToAhead = GapTracker.Instance.TimeGapBetween(kv.Key, kv.Value.RealtimeCarUpdate.SplinePosition, carAhead.CarIndex);
+                                }
+                                distanceText = $" +{timeGapToAhead:F1}";
                             }
                             else
                             {
                                 distanceText = $"+{carAheadData.RealtimeCarUpdate.Laps - kv.Value.RealtimeCarUpdate.Laps}L";
                             }
                         }
-
                     }
 
                     string currentLap = "|----- NO LAP";
@@ -177,12 +192,10 @@ internal sealed class EntryListOverlay : AbstractOverlay
                     _table.AddRow(String.Empty, [String.Empty, $"{distanceText}", speed, currentLap]);
                 }
                 carAhead = PositionGraph.Instance.GetCar(kv.Value.CarInfo.CarIndex);
-
             }
         }
 
         _table._headerWidthSet = false;
-
         _table.Draw(g);
     }
 
@@ -226,7 +239,16 @@ internal sealed class EntryListOverlay : AbstractOverlay
                             var carAheadData = EntryListTracker.Instance.GetCarData(carAhead.CarIndex);
                             if (kv.Value.RealtimeCarUpdate.Laps == carAheadData.RealtimeCarUpdate.Laps)
                             {
-                                float timeGapToAhead = GapTracker.Instance.TimeGapBetween(kv.Key, kv.Value.RealtimeCarUpdate.SplinePosition, carAhead.CarIndex);
+                                float timeGapToAhead = 0;
+                                if (_config.GapPrediction.Enable)
+                                {
+                                    timeGapToAhead = PredictGapInterval(kv.Key, kv.Value.RealtimeCarUpdate, carAheadData.RealtimeCarUpdate);
+                                }
+                                else
+                                {
+                                    timeGapToAhead = GapTracker.Instance.TimeGapBetween(kv.Key, kv.Value.RealtimeCarUpdate.SplinePosition, carAhead.CarIndex);
+                                }
+
                                 if (timeGapToAhead > 0)
                                     firstRow[2] = $"+{timeGapToAhead:F3}";
 
@@ -554,6 +576,26 @@ internal sealed class EntryListOverlay : AbstractOverlay
 
 
         return cars.First().Value;
+    }
+
+    private float PredictGapInterval(int currentCarIndex, RealtimeCarUpdate currentCar, RealtimeCarUpdate carAhead)
+    {
+        var currentCarPos = currentCar.SplinePosition;
+        var carAheadPos = carAhead.SplinePosition;
+
+        var kmh = (currentCar.Kmh + carAhead.Kmh) / 2;
+        var distance = (carAheadPos - currentCarPos) * broadCastTrackData.TrackMeters;
+
+        kmh = kmh == 0 ? 1 : kmh;
+        var gap  = distance / kmh * 3.6f;
+
+        if (!_gaps.TryGetValue(currentCarIndex, out EmaFilter value))
+        {
+            _gaps[currentCarIndex] = new EmaFilter(_config.GapPrediction.SmoothPeriod, gap);
+            return gap;
+        }
+
+        return (float)value.Update(gap);
     }
 
     public sealed override bool ShouldRender() => true;
