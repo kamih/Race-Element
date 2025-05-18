@@ -155,19 +155,19 @@ public partial class App : Application
         // Handle non-UI thread exceptions
         AppDomain.CurrentDomain.UnhandledException += (s, args) =>
         {
-            var exception = args.ExceptionObject as Exception;
-            LogWriter.WriteToLog($"Non-UI Exception: {exception?.Message}");
             if (args.IsTerminating)
             {
+                var exception = args.ExceptionObject as Exception;
+                LogWriter.WriteToLog($"Non-UI Exception: {exception?.Message}");
                 LogWriter.WriteToLog($"App Crashed.");
             }
         };
 
-        TaskScheduler.UnobservedTaskException += (s, args) =>
-        {
-            args.SetObserved(); // Mark as handled
-            LogWriter.WriteToLog($"Task Exception: {args.Exception.Message}");
-        };
+        //TaskScheduler.UnobservedTaskException += (s, args) =>
+        //{
+        //    args.SetObserved(); // Mark as handled
+        //    LogWriter.WriteToLog($"Task Exception: {args.Exception.Message}");
+        //};
 
 
 

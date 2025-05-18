@@ -6,6 +6,12 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+        {"2.2.6.2", "Race Element:"+
+                    "\n- Reworked shutdown procedure."+
+                    "\n- Upgraded .NET packages to 9.0.5"+
+                    "\n\nAssetto Corsa Competizione:"+
+                    "\n- Internal changes for detecting when the game is running."
+                    },
         {"2.2.6.0", "Race Element:"+
                     "\n- Race Element can now automatically switch itself between supported games, this option can be found in the Main Settings of Race Element."+
                     "\n- HUD Tab: the Control + Home hotkey to activate movement mode will be automatically disabled if the game is not running. In this case the hotkey will only work if Race Element is the active window. " +
