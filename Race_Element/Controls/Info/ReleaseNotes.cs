@@ -6,6 +6,8 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+        {"2.2.6.4", "- Clock HUD: Fixed text being cut off from header being too small whilst scaling."
+                    },
         {"2.2.6.2", "Race Element:"+
                     "\n- Reworked shutdown procedure."+
                     "\n- Upgraded .NET packages to 9.0.5"+

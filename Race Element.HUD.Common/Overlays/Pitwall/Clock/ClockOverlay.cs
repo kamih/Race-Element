@@ -71,7 +71,7 @@ internal sealed class ClockOverlay(Rectangle rectangle) : CommonAbstractOverlay(
 
         int lineHeight = _font.Height;
 
-        int unscaledHeaderWidth = 46;
+        int unscaledHeaderWidth = 48;
         int unscaledValueWidth = 80;
         if (_config.InfoPanel.Format == SystemTimeConfig.TimeFormat.AmPm)
             unscaledValueWidth += 24;
