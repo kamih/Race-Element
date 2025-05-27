@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace RaceElement.Util;
@@ -75,7 +76,11 @@ public sealed class LogWriter
         lock (Instance.LogQueue)
         {
             // Create log
-            Log log = new($"{memberName}:L{lineNumber} {message}");
+            string file = string.Empty;
+            if(filePath.Contains('\\'))
+                file = filePath.Split("\\").Last().Replace(".cs", "");
+
+            Log log = new($"[{file}.{memberName}():L{lineNumber}] {message}");
             Instance.LogQueue.Enqueue(log);
 
             // Check if should flush
