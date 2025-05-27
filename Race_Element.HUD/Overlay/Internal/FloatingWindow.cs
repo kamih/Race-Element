@@ -36,7 +36,7 @@ public class FloatingWindow : NativeWindow, IDisposable
     #region #  Fields  #
     protected bool _disposed = false;
     private byte _alpha = 255;
-    private Size _size = new(5, 5);
+    private Size _size = new(1, 1);
     private Rectangle _drawingRect;
     private Point _location = new(50, 50);
     #endregion
