@@ -6,9 +6,11 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
-        {"2.2.6.4", "- Clock HUD: Fixed text being cut off from header whilst scaling."+
+        {"2.2.6.4", "Race Element:"+
+                    "\n- Improved logging."+
+                    "\n- Clock HUD: Fixed text being cut off from header whilst scaling."+
                     "\n\nAssetto Corsa Competizione:"+
-                    "\n- Entry List Overlay: added option for gap smoothing (by iFuSiiOnzZ)."
+                    "\n- Entrylist Overlay: added option for gap smoothing (by iFuSiiOnzZ)."
                     },
         {"2.2.6.2", "Race Element:"+
                     "\n- Reworked shutdown procedure."+
