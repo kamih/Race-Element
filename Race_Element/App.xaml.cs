@@ -15,7 +15,6 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using RaceElement.Core.Jobs.Timer;
-using System.Threading.Tasks;
 
 namespace RaceElement;
 
@@ -177,7 +176,8 @@ public partial class App : Application
 
         StringBuilder sb = new();
         foreach (var arg in e.Args) sb.Append(arg);
-        LogWriter.WriteToLog(sb.ToString());
+        if (e.Args.Length != 0)
+            LogWriter.WriteToLog(sb.ToString());
 
         for (int i = 0; i != e.Args.Length; ++i)
         {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace RaceElement.Util;
 
@@ -22,8 +24,10 @@ public sealed class LogWriter
         {
             if (_instance == null)
             {
-                _instance = new LogWriter();
-                _instance.LogQueue = new Queue<Log>();
+                _instance = new LogWriter
+                {
+                    LogQueue = new Queue<Log>()
+                };
                 FlushedAt = DateTime.Now;
             }
             return _instance;
@@ -48,12 +52,12 @@ public sealed class LogWriter
     /// <summary>
     /// Flush log when time reached
     /// </summary>
-    private static int FlushAtAge = 1000 * 60 * 60;
+    private static readonly int FlushAtAge = 1000 * 60 * 60;
 
     /// <summary>
     /// Flush log when quantity reached
     /// </summary>
-    private static int FlushAtQty = 0;
+    private static readonly int FlushAtQty = 0;
 
     /// <summary>
     /// Timestamp of last flush
@@ -69,12 +73,16 @@ public sealed class LogWriter
     /// Log message
     /// </summary>
     /// <param name="message">Message to log</param>
-    public static void WriteToLog(string message)
+    public static void WriteToLog(string message, [CallerMemberName] string memberName = default, [CallerFilePath] string filePath = default, [CallerLineNumber] int lineNumber = default)
     {
         lock (Instance.LogQueue)
         {
             // Create log
-            Log log = new(message);
+            string file = string.Empty;
+            if(filePath.Contains('\\'))
+                file = filePath.Split("\\").Last().Replace(".cs", "");
+
+            Log log = new($"[{file}.{memberName}():L{lineNumber}] {message}");
             Instance.LogQueue.Enqueue(log);
 
             // Check if should flush
@@ -90,7 +98,7 @@ public sealed class LogWriter
     /// Log exception
     /// </summary>
     /// <param name="e">Exception to log</param>
-    public static void WriteToLog(Exception e)
+    public static void WriteToLog(Exception e, [CallerMemberName] string memberName = default, [CallerFilePath] string filePath = default, [CallerLineNumber] int lineNumber = default)
     {
         lock (Instance.LogQueue)
         {
