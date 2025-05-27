@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace RaceElement.Util;
 
@@ -69,12 +70,12 @@ public sealed class LogWriter
     /// Log message
     /// </summary>
     /// <param name="message">Message to log</param>
-    public static void WriteToLog(string message)
+    public static void WriteToLog(string message, [CallerMemberName] string memberName = default, [CallerFilePath] string filePath = default, [CallerLineNumber] int lineNumber = default)
     {
         lock (Instance.LogQueue)
         {
             // Create log
-            Log log = new(message);
+            Log log = new($"{memberName}:L{lineNumber} {message}");
             Instance.LogQueue.Enqueue(log);
 
             // Check if should flush
@@ -90,7 +91,7 @@ public sealed class LogWriter
     /// Log exception
     /// </summary>
     /// <param name="e">Exception to log</param>
-    public static void WriteToLog(Exception e)
+    public static void WriteToLog(Exception e, [CallerMemberName] string memberName = default, [CallerFilePath] string filePath = default, [CallerLineNumber] int lineNumber = default)
     {
         lock (Instance.LogQueue)
         {
