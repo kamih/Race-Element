@@ -8,7 +8,7 @@ public static class ReleaseNotes
     {
         {"2.2.6.4", "- Clock HUD: Fixed text being cut off from header whilst scaling."+
                     "\n\nAssetto Corsa Competizione:"+
-                    "\n- Entry List Overlay: added option for gap smoothing (iFuSiiOnzZ)."
+                    "\n- Entry List Overlay: added option for gap smoothing (by iFuSiiOnzZ)."
                     },
         {"2.2.6.2", "Race Element:"+
                     "\n- Reworked shutdown procedure."+
