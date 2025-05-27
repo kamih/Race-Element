@@ -24,8 +24,10 @@ public sealed class LogWriter
         {
             if (_instance == null)
             {
-                _instance = new LogWriter();
-                _instance.LogQueue = new Queue<Log>();
+                _instance = new LogWriter
+                {
+                    LogQueue = new Queue<Log>()
+                };
                 FlushedAt = DateTime.Now;
             }
             return _instance;
@@ -50,12 +52,12 @@ public sealed class LogWriter
     /// <summary>
     /// Flush log when time reached
     /// </summary>
-    private static int FlushAtAge = 1000 * 60 * 60;
+    private static readonly int FlushAtAge = 1000 * 60 * 60;
 
     /// <summary>
     /// Flush log when quantity reached
     /// </summary>
-    private static int FlushAtQty = 0;
+    private static readonly int FlushAtQty = 0;
 
     /// <summary>
     /// Timestamp of last flush
