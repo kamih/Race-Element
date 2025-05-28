@@ -9,11 +9,9 @@ using System.Linq;
 
 namespace RaceElement.HUD.ACC.Overlays.Driving.Opponents;
 
-#if DEBUG
 [Overlay(
 Name = "Opponents",
 Description = "Shows information about the cars ahead and behind in terms of race position.")]
-#endif
 internal sealed class OpponentsOverlay : AbstractOverlay
 {
     private readonly OpponentsConfiguration _config = new();
@@ -56,7 +54,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         public int GapLaps { get; init; }
     }
 
-    private InfoTable _table;
+    private readonly InfoTable _table;
     public OpponentsOverlay(Rectangle rectangle) : base(rectangle, "Opponents")
     {
         Width = 350;
@@ -67,7 +65,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
 
     }
 
-    public override bool ShouldRender() => true;
+    public sealed override bool ShouldRender() => true;
 
     public sealed override void Render(Graphics g)
     {
@@ -223,7 +221,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         };
     }
 
-    private EntryListTracker.CarData GetCarData(int carId)
+    private static EntryListTracker.CarData GetCarData(int carId)
     {
         var allCars = EntryListTracker.Instance.Cars;
         if (allCars.Count == 0) return null;
