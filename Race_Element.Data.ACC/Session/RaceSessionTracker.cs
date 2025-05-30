@@ -185,8 +185,9 @@ public sealed class RaceSessionTracker
         {
             Thread.Sleep(100);
 
-            if (!GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
+            if (GameManager.CurrentGame != Game.AssettoCorsaCompetizione || !GameManager.IsGameRunning)
             {
+                Thread.Sleep(1000);
                 continue;
             }
 
