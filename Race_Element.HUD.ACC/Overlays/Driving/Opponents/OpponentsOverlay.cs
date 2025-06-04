@@ -1,6 +1,5 @@
 ﻿using RaceElement.Data.ACC.EntryList;
 using RaceElement.Data.ACC.Session;
-using RaceElement.HUD.Overlay.Configuration;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.OverlayUtil;
 using System.Collections.Generic;
