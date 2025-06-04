@@ -50,7 +50,8 @@ internal sealed class PushToPassOverlay : CommonAbstractOverlay
         {
             Min = 0f,
             Max = 100f,
-            Value = 0f
+            Value = 0f,
+            Rounded = true,
         };
     }
 
@@ -62,6 +63,7 @@ internal sealed class PushToPassOverlay : CommonAbstractOverlay
     public override void Render(Graphics g)
     {
         _bar.Value = SimDataProvider.LocalCar.Electronics.PushToPassLevel;
+        
         _bar.Draw(g, 0, 0);
     }
 }
