@@ -6,6 +6,9 @@ public static class ReleaseNotes
 {
     internal static readonly Dictionary<string, string> Notes = new()
     {
+
+        {"2.2.6.6", "- Improve multi-sim experience." 
+                    },
         {"2.2.6.4", "Race Element:"+
                     "\n- Improved logging."+
                     "\n- Clock HUD: Fixed text being cut off from header whilst scaling."+

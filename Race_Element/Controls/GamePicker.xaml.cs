@@ -56,7 +56,7 @@ public partial class GamePicker : UserControl
 
     private void SetToolTip(Game game)
     {
-        this.ToolTip = $"Game: {game.ToFriendlyName()}\n\nClick here select a different game. This might take a few seconds.";
+        this.ToolTip = $"{game.ToFriendlyName()}\n\nClick here select a different game. This might take a few seconds.";
     }
 
     private void GamePicker_Loaded(object sender, RoutedEventArgs e)

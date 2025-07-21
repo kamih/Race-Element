@@ -198,6 +198,15 @@ public sealed record ElectronicsData
         Left = (1 << 1),
         Right = (1 << 2),
     }
+
+    /// <summary>
+    /// Used for cars with KERS/Push to pass
+    /// </summary>
+    public bool PushToPassActive { get; internal set; }
+    /// <summary>
+    /// Amount of KERS left (0 to 100%)
+    /// </summary>
+    public float PushToPassLevel { get; internal set; }
 }
 
 
