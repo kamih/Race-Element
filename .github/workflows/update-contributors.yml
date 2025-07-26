@@ -35,9 +35,17 @@ jobs:
           fi
           total_commits=$(echo "$commits" | wc -w | tr -d ' ')
           echo "Total commits to process: $total_commits"
-          # Log first few commit SHAs for debugging without pipeline
+          # Log first few commit SHAs for debugging, avoiding direct stdout
           echo "First few commit SHAs (for debugging):"
-          git log --pretty=format:%H -n 5 2>/dev/null || echo "Warning: Failed to log first 5 commit SHAs"
+          set +e  # Temporarily disable exit-on-error for debugging output
+          git log --pretty=format:%H -n 5 > temp_shas.txt 2>/dev/null
+          if [ $? -eq 0 ]; then
+            cat temp_shas.txt || echo "Warning: Failed to display temp_shas.txt"
+            rm -f temp_shas.txt
+          else
+            echo "Warning: Failed to log first 5 commit SHAs"
+          fi
+          set -e  # Re-enable exit-on-error
           # Process commits using while read to handle large lists
           echo "$commits" | while read -r commit; do
             ((commit_count++))
