@@ -17,83 +17,108 @@ jobs:
       - name: Log checkout completion
         run: echo "Checked out repository at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 
-      - name: Get Contributors, Lines Added, and Commits
+      - name: Get Contributors and Commit Counts
         id: contributors
         run: |
+          set -euo pipefail
           echo "Starting contributor data collection at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
           # Initialize output file for contributor stats
-          echo "{}" > contributors.json
-          commit_count=0
+          echo "{}" > contributors.json || { echo "Error: Failed to create contributors.json"; exit 1; }
           # Switch to dev branch
-          git checkout dev || { echo "Failed to checkout dev branch"; exit 1; }
-          # Get all commits in dev branch
-          commits=$(git log --pretty=format:%H || { echo "Failed to run git log"; exit 1; })
-          total_commits=$(echo "$commits" | wc -l | tr -d ' ')
+          git checkout dev || { echo "Error: Failed to checkout dev branch"; exit 2; }
+          # Get unique contributors and their commit counts
+          echo "Fetching contributors and commit counts"
+          contributors=$(git log --pretty=format:%an 2>/dev/null | sort | uniq -c || { echo "Error: Failed to run git log or process contributors"; exit 3; })
+          if [ -z "$contributors" ]; then
+            echo "Error: No contributors found in git log output"
+            exit 4
+          fi
+          total_commits=$(git log --oneline 2>/dev/null | wc -l | tr -d ' ')
           echo "Total commits to process: $total_commits"
-          for commit in $commits; do
-            ((commit_count++))
-            echo "Processing commit $commit ($commit_count/$total_commits)"
-            author_name=$(git show -s --format=%an "$commit" 2>/dev/null || echo "")
+          # Log first few contributors for debugging
+          echo "First few contributors (for debugging):"
+          set +e  # Disable exit-on-error for debugging output
+          git log --pretty=format:%an -n 5 2>/dev/null > temp_contributors.txt
+          if [ $? -eq 0 ]; then
+            cat temp_contributors.txt || echo "Warning: Failed to display temp_contributors.txt"
+            rm -f temp_contributors.txt
+          else
+            echo "Warning: Failed to log first 5 contributors"
+          fi
+          set -e  # Re-enable exit-on-error
+          # Process contributors and commit counts
+          echo "Processing contributors"
+          echo "$contributors" | while read -r count author_name; do
             if [ -z "$author_name" ]; then
-              echo "Skipping commit $commit with no author name"
+              echo "Skipping empty author name with count $count"
               continue
             fi
-            # Use author name as GitHub username, sanitize for URL
+            # Sanitize author name as GitHub username
             login=$(echo "$author_name" | tr -s ' ' '-' | tr -dc '[:alnum:]-')
-            if echo "$author_name" | grep -q ' '; then
+            if echo "$author_name" | grep -q '[[:space:]]'; then
               echo "Warning: Author '$author_name' may not be a valid GitHub username (contains spaces, sanitized to '$login')"
             fi
-            echo "Processing commit $commit by $login"
-            # Get commit stats
-            stats=$(git show --shortstat --format= "$commit" 2>/dev/null | grep -E '[0-9]+ file(s)? changed' | awk '{add=$4; del=$6} END {print (add ? add : 0) - (del ? del : 0)}' || echo "0")
-            net_lines=${stats:-0}
-            echo "Commit $commit by $login: $net_lines net lines"
+            echo "Contributor: $login, Commits: $count"
             # Update JSON with contributor stats
-            jq --arg login "$login" --arg net_lines "$net_lines" \
-               '.[$login] |= (. // {netLines: 0, commits: 0, login: $login} | .netLines += ($net_lines | tonumber) | .commits += 1)' \
-               contributors.json > tmp.json 2>/dev/null || { echo "Error: jq failed to update stats for $login in commit $commit"; exit 1; }
-            mv tmp.json contributors.json || { echo "Error: Failed to move tmp.json"; exit 1; }
+            if ! jq --arg login "$login" --arg count "$count" \
+               '.[$login] |= (. // {commits: 0, login: $login} | .commits = ($count | tonumber))' \
+               contributors.json > tmp.json 2>/dev/null; then
+              echo "Error: jq failed to update stats for $login"
+              exit 5
+            fi
+            if ! mv tmp.json contributors.json 2>/dev/null; then
+              echo "Error: Failed to move tmp.json for $login"
+              exit 6
+            fi
           done
-          echo "Total commits processed: $commit_count"
-          # Format table
-          table=$(jq -r 'to_entries | sort_by(.value.netLines) | reverse | .[] | select(.value.netLines > 0 or .value.commits > 0) | "| [\(.key)](https://github.com/\(.key)) | \(.value.netLines) | \(.value.commits) |"' contributors.json 2>/dev/null || { echo "Error: jq failed to format table"; exit 1; })
+          # Format table sorted by commit count
+          echo "Generating contributor table"
+          if ! table=$(jq -r 'to_entries | sort_by(.value.commits) | reverse | .[] | select(.value.commits > 0) | "| [\(.key)](https://github.com/\(.key)) | \(.value.commits) |"' contributors.json 2>/dev/null); then
+            echo "Error: jq failed to format table"
+            exit 7
+          fi
           if [ -z "$table" ]; then
-            table="No contributors with commits or net lines added."
+            table="No contributors with commits."
             echo "Warning: No valid contributors found"
           else
-            table="| Contributor | Net Lines Added | Commits |\n|-------------|-----------------|---------|\n$table"
+            table="| Contributor | Commits |\n|-------------|---------|\n$table"
           fi
-          echo "Total contributors: $(jq 'length' contributors.json 2>/dev/null || echo "Error: jq failed to count contributors")"
+          total_contributors=$(jq 'length' contributors.json 2>/dev/null || { echo "Error: jq failed to count contributors"; exit 8; })
+          echo "Total contributors: $total_contributors"
           echo "Generated table:"
           echo "$table"
-          echo "$table" > contributors.txt || { echo "Error: Failed to write contributors.txt"; exit 1; }
+          if ! echo "$table" > contributors.txt; then
+            echo "Error: Failed to write contributors.txt"
+            exit 9
+          fi
         shell: bash
 
       - name: Update README
         run: |
+          set -euo pipefail
           echo "Starting README update at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-          if [ ! -s contributors.txt ] || [ "$(cat contributors.txt)" = "No contributors with commits or net lines added." ]; then
-            echo "No contributors with commits or net lines added. Skipping README update."
+          if [ ! -s contributors.txt ] || [ "$(cat contributors.txt)" = "No contributors with commits." ]; then
+            echo "No contributors with commits. Skipping README update."
             exit 0
           fi
           if grep -q "## Contributors" README.md; then
             echo "Found existing ## Contributors section. Replacing content."
-            sed -i '/## Contributors/,/##/c\## Contributors\n\n'"$(cat contributors.txt)"'\n\n##' README.md
+            sed -i '/## Contributors/,/##/c\## Contributors\n\n'"$(cat contributors.txt)"'\n\n##' README.md || { echo "Error: failed to update README with sed"; exit 1; }
           else
             echo "No ## Contributors section found. Appending to README."
-            echo -e "\n## Contributors\n\n$(cat contributors.txt)\n" >> README.md
+            echo -e "\n## Contributors\n\n$(cat contributors.txt)\n" >> README.md || { echo "Error: failed to append to README"; exit 2; }
           fi
           echo "Updated README content. Checking for changes."
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
-          git add README.md
+          git add README.md || { echo "Error: git add failed"; exit 3; }
           if git diff-index --quiet HEAD; then
             echo "No changes to commit. Exiting."
             exit 0
           fi
           echo "Committing changes to README at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-          git commit -m "Update contributors table with net lines and commits"
-          git push
+          git commit -m "Update contributors table with commit counts" || { echo "Error: git commit failed"; exit 4; }
+          git push || { echo "Error: git push failed"; exit 5; }
           echo "Pushed updated README to dev branch."
         env:
           GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
