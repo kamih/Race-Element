@@ -35,8 +35,9 @@ jobs:
           fi
           total_commits=$(echo "$commits" | wc -w | tr -d ' ')
           echo "Total commits to process: $total_commits"
+          # Log first few commit SHAs for debugging without pipeline
           echo "First few commit SHAs (for debugging):"
-          echo "$commits" | head -n 5
+          git log --pretty=format:%H -n 5 2>/dev/null || echo "Warning: Failed to log first 5 commit SHAs"
           # Process commits using while read to handle large lists
           echo "$commits" | while read -r commit; do
             ((commit_count++))
