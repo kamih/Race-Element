@@ -32,11 +32,17 @@ jobs:
           for commit in $commits; do
             ((commit_count++))
             echo "Processing commit $commit ($commit_count)"
-            author_email=$(git show -s --format=%ae $commit)
-            login=$(echo "$author_email" | sed 's/@.*//')
-            if [ -z "$login" ]; then
-              echo "Skipping commit $commit with no author email"
+            author_name=$(git show -s --format=%an $commit)
+            if [ -z "$author_name" ]; then
+              echo "Skipping commit $commit with no author name"
               continue
+            fi
+            # Map author name to GitHub username using author_to_github.json
+            login=$(jq -r --arg name "$author_name" '.[$name] // $name' author_to_github.json)
+            if [ "$login" = "$author_name" ]; then
+              echo "Warning: No GitHub username mapping for author '$author_name' in commit $commit"
+            else
+              echo "Mapped author '$author_name' to GitHub username '$login'"
             fi
             stats=$(git show --shortstat --format= $commit | grep -E '[0-9]+ file(s)? changed' | awk '{add=$4; del=$6} END {print (add ? add : 0) - (del ? del : 0)}')
             net_lines=${stats:-0}
