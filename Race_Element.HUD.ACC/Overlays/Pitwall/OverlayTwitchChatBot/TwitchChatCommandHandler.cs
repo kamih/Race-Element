@@ -568,6 +568,6 @@ internal sealed class TwitchChatBotCommandHandler
         var currentTrack = RaceElement.Data.ACC.Tracks.TrackData.GetCurrentTrack(_overlay.pageStatic.Track);
         if (currentTrack == null) return string.Empty;
 
-        return $"{currentTrack.FullName}, Length: {currentTrack.TrackLength} meters";
+        return $"{currentTrack.FullName}, Length: {currentTrack.TrackLength} meters, Pitlane: {currentTrack.PitLaneTime} seconds.";
     }
 }
