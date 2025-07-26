@@ -32,3 +32,6 @@ https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0
 </a> 
 
 Free code signing provided by [SignPath.io](https://signpath.io?utm_source=foundation&utm_medium=github&utm_campaign=race-element), certificate by [SignPath Foundation](https://signpath.org?utm_source=foundation&utm_medium=github&utm_campaign=race-element)
+
+## Contributors
+<!-- This section will be updated by GitHub Actions -->
