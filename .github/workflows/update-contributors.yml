@@ -14,126 +14,46 @@ jobs:
         with:
           fetch-depth: 0 # Fetch all history to access commit details
 
-      - name: Log checkout completion
-        run: echo "Checked out repository at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-
       - name: Get Contributors and Commit Counts
         id: contributors
         run: |
           set -euo pipefail
-          echo "Starting contributor data collection at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-          # Initialize output file for contributor stats
-          echo "{}" > contributors.json || { echo "Error: Failed to create contributors.json"; exit 1; }
-          # Switch to dev branch
-          git checkout dev || { echo "Error: Failed to checkout dev branch"; exit 2; }
-          # Get unique contributors and their commit counts
-          echo "Fetching contributors and commit counts"
-          contributors=$(git log --pretty=format:%an 2>/dev/null | sort | uniq -c || { echo "Error: Failed to run git log or process contributors"; exit 3; })
-          if [ -z "$contributors" ]; then
-            echo "Error: No contributors found in git log output"
-            exit 4
-          fi
-          total_commits=$(git log --oneline 2>/dev/null | wc -l | tr -d ' ')
-          echo "Total commits to process: $total_commits"
-          # Log first few contributors for debugging
-          echo "First few contributors (for debugging):"
-          set +e  # Disable exit-on-error for debugging output
-          git log --pretty=format:%an -n 5 2>/dev/null > temp_contributors.txt
-          if [ $? -eq 0 ]; then
-            cat temp_contributors.txt || echo "Warning: Failed to display temp_contributors.txt"
-            rm -f temp_contributors.txt
-          else
-            echo "Warning: Failed to log first 5 contributors"
-          fi
-          set -e  # Re-enable exit-on-error
-          # Process contributors and commit counts
-          echo "Processing contributors"
+          # Fetch contributors and commit counts
+          echo "{}" > contributors.json
+          git checkout dev
+          contributors=$(git log --pretty=format:%an | sort | uniq -c)
           echo "$contributors" | while read -r count author_name; do
-            if [ -z "$author_name" ]; then
-              echo "Skipping empty author name with count $count"
-              continue
-            fi
-            # Sanitize author name as GitHub username
+            if [ -z "$author_name" ]; then continue; fi
             login=$(echo "$author_name" | tr -s ' ' '-' | tr -dc '[:alnum:]-')
-            if echo "$author_name" | grep -q '[[:space:]]'; then
-              echo "Warning: Author '$author_name' may not be a valid GitHub username (contains spaces, sanitized to '$login')"
-            fi
-            echo "Contributor: $login, Commits: $count"
-            # Update JSON with contributor stats
-            if ! jq --arg login "$login" --arg count "$count" \
+            jq --arg login "$login" --arg count "$count" \
                '.[$login] |= (. // {commits: 0, login: $login} | .commits = ($count | tonumber))' \
-               contributors.json > tmp.json 2>/dev/null; then
-              echo "Error: jq failed to update stats for $login"
-              exit 5
-            fi
-            if ! mv tmp.json contributors.json 2>/dev/null; then
-              echo "Error: Failed to move tmp.json for $login"
-              exit 6
-            fi
+               contributors.json > tmp.json && mv tmp.json contributors.json
           done
-          # Format table sorted by commit count
-          echo "Generating contributor table"
-          if ! table=$(jq -r 'to_entries | sort_by(.value.commits) | reverse | .[] | select(.value.commits > 0) | "| [\(.key)](https://github.com/\(.key)) | \(.value.commits) |"' contributors.json 2>/dev/null); then
-            echo "Error: jq failed to format table"
-            exit 7
-          fi
-          if [ -z "$table" ]; then
-            table="No contributors with commits."
-            echo "Warning: No valid contributors found"
-          else
-            table="| Contributor | Commits |\n|-------------|---------|\n$table"
-          fi
-          total_contributors=$(jq 'length' contributors.json 2>/dev/null || { echo "Error: jq failed to count contributors"; exit 8; })
-          echo "Total contributors: $total_contributors"
-          echo "Generated table:"
-          echo "$table"
-          if ! echo "$table" > contributors.txt; then
-            echo "Error: Failed to write contributors.txt"
-            exit 9
-          fi
+          # Generate list sorted by commit count
+          list=$(jq -r 'to_entries | sort_by(.value.commits) | reverse | .[] | select(.value.commits > 0) | "- [\(.key)](https://github.com/\(.key))"' contributors.json)
+          if [ -z "$list" ]; then list="No contributors with commits."; fi
+          echo "$list" > contributors_list.txt
         shell: bash
 
       - name: Update README
         run: |
           set -euo pipefail
-          echo "Starting README update at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-          if [ ! -s contributors.txt ] || [ "$(cat contributors.txt)" = "No contributors with commits." ]; then
-            echo "No contributors with commits. Skipping README update."
+          if [ ! -s contributors_list.txt ] || [ "$(cat contributors_list.txt)" = "No contributors with commits." ]; then
+            echo "No contributors to update."
             exit 0
           fi
-          # Create temporary README
-          if grep -q "## Contributors" README.md; then
-            echo "Found existing ## Contributors section. Replacing content."
-            # Copy content before ## Contributors
-            sed -n '1,/## Contributors/p' README.md | head -n -1 > temp_readme.md
-            # Add new Contributors section with actual newlines
-            echo "## Contributors" >> temp_readme.md
-            echo "" >> temp_readme.md
-            cat contributors.txt >> temp_readme.md
-            echo "" >> temp_readme.md
-            # Copy content after ## Contributors
-            sed -n '/## Contributors/,${/##/{p;d;};p}' README.md | grep -A 9999 '^##' | tail -n +2 >> temp_readme.md
-          else
-            echo "No ## Contributors section found. Appending to README."
-            cp README.md temp_readme.md
-            echo "" >> temp_readme.md
-            echo "## Contributors" >> temp_readme.md
-            echo "" >> temp_readme.md
-            cat contributors.txt >> temp_readme.md
-          fi
-          # Replace README with temporary file
+          # Replace content between markers
+          awk '/<!-- START_CONTRIBUTORS -->/{print; while(getline < "contributors_list.txt") print; flag=1; next} /<!-- END_CONTRIBUTORS -->/{flag=0} !flag' README.md > temp_readme.md
           mv temp_readme.md README.md
-          echo "Updated README content. Checking for changes."
+          # Commit changes
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
           git add README.md
           if git diff-index --quiet HEAD; then
-            echo "No changes to commit. Exiting."
+            echo "No changes to commit."
             exit 0
           fi
-          echo "Committing changes to README at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-          git commit -m "Update contributors table with commit counts"
+          git commit -m "Update contributors list"
           git push
-          echo "Pushed updated README to dev branch."
         env:
           GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
