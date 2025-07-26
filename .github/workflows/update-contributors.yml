@@ -2,10 +2,7 @@ name: Update Contributors
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight UTC
-  push:
-    branches:
-      - dev
+    - cron: '0 0 * * 0' # Runs weekly on Sunday at midnight UTC
   workflow_dispatch: # Allows manual trigger
 
 jobs:
@@ -76,22 +73,3 @@ jobs:
       - name: Update README
         run: |
           if [ -z "${{ steps.contributors.outputs.result }}" ] || [ "${{ steps.contributors.outputs.result }}" = "No contributors with commits or net lines added." ]; then
-            echo "No contributors with commits or net lines added."
-            exit 0
-          fi
-          if grep -q "## Contributors" README.md; then
-            sed -i '/## Contributors/,/##/c\## Contributors\n\n${{ steps.contributors.outputs.result }}\n\n##' README.md
-          else
-            echo -e "\n## Contributors\n\n${{ steps.contributors.outputs.result }}\n" >> README.md
-          fi
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-          git add README.md
-          if git diff-index --quiet HEAD; then
-            echo "No changes to commit"
-            exit 0
-          fi
-          git commit -m "Update contributors table with net lines and commits"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
