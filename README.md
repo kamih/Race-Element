@@ -35,6 +35,30 @@ Free code signing provided by [SignPath.io](https://signpath.io?utm_source=found
 
 ## Contributors
 
+| Contributor | Commits |\n|-------------|---------|\n| [RiddleTime](https://github.com/RiddleTime) | 3344 |
+| [Reinier-Klarenberg](https://github.com/Reinier-Klarenberg) | 767 |
+| [iFuSiiOnzZ](https://github.com/iFuSiiOnzZ) | 174 |
+| [KrisV147](https://github.com/KrisV147) | 126 |
+| [floriwan](https://github.com/floriwan) | 47 |
+| [Andrei-Jianu](https://github.com/Andrei-Jianu) | 34 |
+| [Dirk](https://github.com/Dirk) | 32 |
+| [Florian](https://github.com/Florian) | 29 |
+| [ConnorMolz](https://github.com/ConnorMolz) | 28 |
+| [goeflo](https://github.com/goeflo) | 27 |
+| [Andi-Maier](https://github.com/Andi-Maier) | 7 |
+| [dirkaw](https://github.com/dirkaw) | 6 |
+| [Mominon](https://github.com/Mominon) | 4 |
+| [RST](https://github.com/RST) | 3 |
+| [Marco-De-Fanti](https://github.com/Marco-De-Fanti) | 2 |
+| [Glen-Germaine](https://github.com/Glen-Germaine) | 2 |
+| [Balzs-Fehr](https://github.com/Balzs-Fehr) | 2 |
+| [mreininger23](https://github.com/mreininger23) | 1 |
+| [Kris](https://github.com/Kris) | 1 |
+| [GitHub-Action](https://github.com/GitHub-Action) | 1 |
+| [Dirk-W](https://github.com/Dirk-W) | 1 |
+| [Andreas-Willich](https://github.com/Andreas-Willich) | 1 |
+
+
 | Contributor | Commits |\n|-------------|---------|\n| [RiddleTime](https://github.com/RiddleTime) | 3343 |
 | [Reinier-Klarenberg](https://github.com/Reinier-Klarenberg) | 767 |
 | [iFuSiiOnzZ](https://github.com/iFuSiiOnzZ) | 174 |
