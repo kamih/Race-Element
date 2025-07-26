@@ -105,35 +105,35 @@ jobs:
           if grep -q "## Contributors" README.md; then
             echo "Found existing ## Contributors section. Replacing content."
             # Copy content before ## Contributors
-            sed -n '1,/## Contributors/p' README.md | head -n -1 > temp_readme.md || { echo "Error: Failed to copy content before ## Contributors"; exit 1; }
-            # Add new Contributors section
+            sed -n '1,/## Contributors/p' README.md | head -n -1 > temp_readme.md
+            # Add new Contributors section with actual newlines
             echo "## Contributors" >> temp_readme.md
             echo "" >> temp_readme.md
-            cat contributors.txt >> temp_readme.md || { echo "Error: Failed to append contributors.txt"; exit 2; }
+            cat contributors.txt >> temp_readme.md
             echo "" >> temp_readme.md
-            # Copy content after ## Contributors (skip until next ## or end)
-            sed -n '/## Contributors/,${/##/{p;d;};p}' README.md | grep -A 9999 '^##' | tail -n +2 >> temp_readme.md || { echo "Error: Failed to copy content after ## Contributors"; exit 3; }
+            # Copy content after ## Contributors
+            sed -n '/## Contributors/,${/##/{p;d;};p}' README.md | grep -A 9999 '^##' | tail -n +2 >> temp_readme.md
           else
             echo "No ## Contributors section found. Appending to README."
-            cp README.md temp_readme.md || { echo "Error: Failed to copy README.md"; exit 4; }
+            cp README.md temp_readme.md
             echo "" >> temp_readme.md
             echo "## Contributors" >> temp_readme.md
             echo "" >> temp_readme.md
-            cat contributors.txt >> temp_readme.md || { echo "Error: Failed to append contributors.txt"; exit 2; }
+            cat contributors.txt >> temp_readme.md
           fi
           # Replace README with temporary file
-          mv temp_readme.md README.md || { echo "Error: Failed to move temp_readme.md to README.md"; exit 5; }
+          mv temp_readme.md README.md
           echo "Updated README content. Checking for changes."
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
-          git add README.md || { echo "Error: git add failed"; exit 6; }
+          git add README.md
           if git diff-index --quiet HEAD; then
             echo "No changes to commit. Exiting."
             exit 0
           fi
           echo "Committing changes to README at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-          git commit -m "Update contributors table with commit counts" || { echo "Error: git commit failed"; exit 7; }
-          git push || { echo "Error: git push failed"; exit 8; }
+          git commit -m "Update contributors table with commit counts"
+          git push
           echo "Pushed updated README to dev branch."
         env:
           GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
