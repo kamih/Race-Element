@@ -27,7 +27,7 @@ jobs:
           # Switch to dev branch
           git checkout dev || { echo "Failed to checkout dev branch"; exit 1; }
           # Get all commits in dev branch
-          commits=$(git log --pretty=format:%H || { echo "Failed to run git log"; exit 1; })
+          commits=$(git log --pretty=format:%H || { echo "Failed to run git log"; exit 2; })
           total_commits=$(echo "$commits" | wc -l | tr -d ' ')
           echo "Total commits to process: $total_commits"
           for commit in $commits; do
@@ -51,12 +51,12 @@ jobs:
             # Update JSON with contributor stats
             jq --arg login "$login" --arg net_lines "$net_lines" \
                '.[$login] |= (. // {netLines: 0, commits: 0, login: $login} | .netLines += ($net_lines | tonumber) | .commits += 1)' \
-               contributors.json > tmp.json 2>/dev/null || { echo "Error: jq failed to update stats for $login in commit $commit"; exit 1; }
-            mv tmp.json contributors.json || { echo "Error: Failed to move tmp.json"; exit 1; }
+               contributors.json > tmp.json 2>/dev/null || { echo "Error: jq failed to update stats for $login in commit $commit"; exit 3; }
+            mv tmp.json contributors.json || { echo "Error: Failed to move tmp.json"; exit 4; }
           done
           echo "Total commits processed: $commit_count"
           # Format table
-          table=$(jq -r 'to_entries | sort_by(.value.netLines) | reverse | .[] | select(.value.netLines > 0 or .value.commits > 0) | "| [\(.key)](https://github.com/\(.key)) | \(.value.netLines) | \(.value.commits) |"' contributors.json 2>/dev/null || { echo "Error: jq failed to format table"; exit 1; })
+          table=$(jq -r 'to_entries | sort_by(.value.netLines) | reverse | .[] | select(.value.netLines > 0 or .value.commits > 0) | "| [\(.key)](https://github.com/\(.key)) | \(.value.netLines) | \(.value.commits) |"' contributors.json 2>/dev/null || { echo "Error: jq failed to format table"; exit 5; })
           if [ -z "$table" ]; then
             table="No contributors with commits or net lines added."
             echo "Warning: No valid contributors found"
@@ -66,7 +66,7 @@ jobs:
           echo "Total contributors: $(jq 'length' contributors.json 2>/dev/null || echo "Error: jq failed to count contributors")"
           echo "Generated table:"
           echo "$table"
-          echo "$table" > contributors.txt || { echo "Error: Failed to write contributors.txt"; exit 1; }
+          echo "$table" > contributors.txt || { echo "Error: Failed to write contributors.txt"; exit 6; }
         shell: bash
 
       - name: Update README
