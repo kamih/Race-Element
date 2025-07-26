@@ -24,7 +24,7 @@ jobs:
           git checkout dev || { echo "Error: Failed to checkout dev branch"; exit 2; }
           # Get unique contributors and their commit counts, excluding GitHub-Action
           echo "Fetching contributors and commit counts"
-          contributors=$(git log --pretty=format:%an 2>/dev/null | grep -v "^GitHub-Action$" | sort | uniq -c || { echo "Error: Failed to run git log or process contributors"; exit 3; })
+          contributors=$(git log --pretty=format:%an 2>/dev/null | grep -v "^actions-user$" | sort | uniq -c || { echo "Error: Failed to run git log or process contributors"; exit 3; })
           if [ -z "$contributors" ]; then
             echo "Error: No contributors found in git log output (excluding GitHub-Action)"
             exit 4
