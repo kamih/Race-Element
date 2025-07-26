@@ -25,7 +25,7 @@ https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-9.0
 - [Angular](https://github.com/angular/angular)
 - [Analog](https://github.com/analogjs/analog)
 
-## Code Signing
+## Code Signing Policy
 
 <a href="https://www.signpath.io">
     <img src="https://about.signpath.io/assets/signpath-logo.svg" width="150">
