@@ -29,12 +29,18 @@ jobs:
           git checkout dev || { echo "Error: Failed to checkout dev branch"; exit 2; }
           # Get all commits in dev branch
           commits=$(git log --pretty=format:%H 2>/dev/null || { echo "Error: Failed to run git log"; exit 3; })
+          if [ -z "$commits" ]; then
+            echo "Error: No commits found in git log output"
+            exit 4
+          fi
           total_commits=$(echo "$commits" | wc -w | tr -d ' ')
           echo "Total commits to process: $total_commits"
-          for commit in $commits; do
+          echo "First few commit SHAs (for debugging):"
+          echo "$commits" | head -n 5
+          # Process commits using while read to handle large lists
+          echo "$commits" | while read -r commit; do
             ((commit_count++))
             echo "Processing commit $commit ($commit_count/$total_commits)"
-            # Get author name
             author_name=$(git show -s --format=%an "$commit" 2>/dev/null || { echo "Error: git show failed to get author for commit $commit"; continue; })
             if [ -z "$author_name" ]; then
               echo "Skipping commit $commit with no author name"
@@ -55,18 +61,18 @@ jobs:
                '.[$login] |= (. // {netLines: 0, commits: 0, login: $login} | .netLines += ($net_lines | tonumber) | .commits += 1)' \
                contributors.json > tmp.json 2>/dev/null; then
               echo "Error: jq failed to update stats for $login in commit $commit"
-              exit 4
+              exit 5
             fi
             if ! mv tmp.json contributors.json 2>/dev/null; then
               echo "Error: Failed to move tmp.json for commit $commit"
-              exit 5
+              exit 6
             fi
           done
           echo "Total commits processed: $commit_count"
           # Format table
           if ! table=$(jq -r 'to_entries | sort_by(.value.netLines) | reverse | .[] | select(.value.netLines > 0 or .value.commits > 0) | "| [\(.key)](https://github.com/\(.key)) | \(.value.netLines) | \(.value.commits) |"' contributors.json 2>/dev/null); then
             echo "Error: jq failed to format table"
-            exit 6
+            exit 7
           fi
           if [ -z "$table" ]; then
             table="No contributors with commits or net lines added."
@@ -74,13 +80,13 @@ jobs:
           else
             table="| Contributor | Net Lines Added | Commits |\n|-------------|-----------------|---------|\n$table"
           fi
-          total_contributors=$(jq 'length' contributors.json 2>/dev/null || { echo "Error: jq failed to count contributors"; exit 7; })
+          total_contributors=$(jq 'length' contributors.json 2>/dev/null || { echo "Error: jq failed to count contributors"; exit 8; })
           echo "Total contributors: $total_contributors"
           echo "Generated table:"
           echo "$table"
           if ! echo "$table" > contributors.txt; then
             echo "Error: Failed to write contributors.txt"
-            exit 8
+            exit 9
           fi
         shell: bash
 
