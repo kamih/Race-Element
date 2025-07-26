@@ -19,98 +19,60 @@ jobs:
 
       - name: Get Contributors, Lines Added, and Commits
         id: contributors
-        uses: actions/github-script@v7
-        with:
-          script: |
-            console.log('Starting contributor data collection at ' + new Date().toISOString());
-
-            // Initialize map to store net lines and commits per contributor
-            const contributorStats = {};
-            let commitCount = 0;
-            let pageCount = 0;
-
-            // Fetch commits for the dev branch
-            for await (const { data: commits } of github.paginate.iterator(
-              github.rest.repos.listCommits,
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                sha: 'dev', // Target the dev branch
-                per_page: 100
-              }
-            )) {
-              pageCount++;
-              console.log(`Processing commit page ${pageCount} with ${commits.length} commits`);
-
-              for (const commit of commits) {
-                commitCount++;
-                const author = commit.author?.login || commit.commit.author.name;
-                if (!author) {
-                  console.log(`Skipping commit ${commit.sha} with no author`);
-                  continue;
-                }
-
-                console.log(`Fetching details for commit ${commit.sha} by ${author}`);
-
-                // Fetch commit details to get stats
-                const commitDetails = await github.rest.repos.getCommit({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  ref: commit.sha
-                });
-
-                const stats = commitDetails.data.stats || { additions: 0, deletions: 0 };
-                const netLines = stats.additions - stats.deletions;
-
-                if (!contributorStats[author]) {
-                  contributorStats[author] = { netLines: 0, commits: 0, login: author };
-                  console.log(`New contributor added: ${author}`);
-                }
-                contributorStats[author].netLines += netLines;
-                contributorStats[author].commits += 1;
-
-                console.log(`Processed commit ${commit.sha}: ${stats.additions} additions, ${stats.deletions} deletions, ${netLines} net lines`);
-              }
-            }
-
-            console.log(`Total commits processed: ${commitCount}`);
-            console.log(`Total contributors: ${Object.keys(contributorStats).length}`);
-
-            // Log contributor stats
-            Object.values(contributorStats).forEach(contributor => {
-              console.log(`Contributor ${contributor.login}: ${contributor.netLines} net lines, ${contributor.commits} commits`);
-            });
-
-            // Format contributors list as a table
-            const contributorList = Object.values(contributorStats)
-              .filter(contributor => contributor.netLines > 0 || contributor.commits > 0)
-              .sort((a, b) => b.netLines - a.netLines)
-              .map(contributor => {
-                return `| [${contributor.login}](https://github.com/${contributor.login}) | ${contributor.netLines} | ${contributor.commits} |`;
-              })
-              .join('\n');
-
-            // Add table headers
-            const table = contributorList.length > 0
-              ? `| Contributor | Net Lines Added | Commits |\n|-------------|-----------------|---------|\n${contributorList}`
-              : 'No contributors with commits or net lines added.';
-
-            console.log('Generated table:\n' + table);
-            return table;
+        run: |
+          echo "Starting contributor data collection at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          # Initialize output file for contributor stats
+          echo "{}" > contributors.json
+          commit_count=0
+          # Switch to dev branch
+          git checkout dev
+          # Get all commits in dev branch
+          commits=$(git log --pretty=format:%H)
+          echo "Total commits to process: $(echo "$commits" | wc -l)"
+          for commit in $commits; do
+            ((commit_count++))
+            echo "Processing commit $commit ($commit_count)"
+            author_email=$(git show -s --format=%ae $commit)
+            login=$(echo "$author_email" | sed 's/@.*//')
+            if [ -z "$login" ]; then
+              echo "Skipping commit $commit with no author email"
+              continue
+            fi
+            stats=$(git show --shortstat --format= $commit | grep -E '[0-9]+ file(s)? changed' | awk '{add=$4; del=$6} END {print (add ? add : 0) - (del ? del : 0)}')
+            net_lines=${stats:-0}
+            echo "Commit $commit by $login: $net_lines net lines"
+            # Update JSON with contributor stats
+            jq --arg login "$login" --arg net_lines "$net_lines" \
+               '.[$login] |= (. // {netLines: 0, commits: 0, login: $login} | .netLines += ($net_lines | tonumber) | .commits += 1)' \
+               contributors.json > tmp.json && mv tmp.json contributors.json
+          done
+          echo "Total commits processed: $commit_count"
+          # Format table
+          table=$(jq -r 'to_entries | sort_by(.value.netLines) | reverse | .[] | select(.value.netLines > 0 or .value.commits > 0) | "| [\(.key)](https://github.com/\(.key)) | \(.value.netLines) | \(.value.commits) |"' contributors.json)
+          if [ -z "$table" ]; then
+            table="No contributors with commits or net lines added."
+          else
+            table="| Contributor | Net Lines Added | Commits |\n|-------------|-----------------|---------|\n$table"
+          fi
+          echo "Total contributors: $(jq 'length' contributors.json)"
+          echo "Generated table:"
+          echo "$table"
+          echo "$table" > contributors.txt
+        shell: bash
 
       - name: Update README
         run: |
           echo "Starting README update at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-          if [ -z "${{ steps.contributors.outputs.result }}" ] || [ "${{ steps.contributors.outputs.result }}" = "No contributors with commits or net lines added." ]; then
+          if [ ! -s contributors.txt ] || [ "$(cat contributors.txt)" = "No contributors with commits or net lines added." ]; then
             echo "No contributors with commits or net lines added. Skipping README update."
             exit 0
           fi
           if grep -q "## Contributors" README.md; then
             echo "Found existing ## Contributors section. Replacing content."
-            sed -i '/## Contributors/,/##/c\## Contributors\n\n${{ steps.contributors.outputs.result }}\n\n##' README.md
+            sed -i '/## Contributors/,/##/c\## Contributors\n\n'"$(cat contributors.txt)"'\n\n##' README.md
           else
             echo "No ## Contributors section found. Appending to README."
-            echo -e "\n## Contributors\n\n${{ steps.contributors.outputs.result }}\n" >> README.md
+            echo -e "\n## Contributors\n\n$(cat contributors.txt)\n" >> README.md
           fi
           echo "Updated README content. Checking for changes."
           git config user.name "GitHub Action"
