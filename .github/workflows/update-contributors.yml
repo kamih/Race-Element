@@ -1,0 +1,97 @@
+name: Update Contributors
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
+  push:
+    branches:
+      - dev
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  update-contributors:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history to access commit details
+
+      - name: Get Contributors, Lines Added, and Commits
+        id: contributors
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Initialize map to store net lines and commits per contributor
+            const contributorStats = {};
+
+            // Fetch commits for the dev branch
+            for await (const { data: commits } of github.paginate.iterator(
+              github.rest.repos.listCommits,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: 'dev', // Target the dev branch
+                per_page: 100
+              }
+            )) {
+              for (const commit of commits) {
+                const author = commit.author?.login || commit.commit.author.name;
+                if (!author) continue;
+
+                // Fetch commit details to get stats
+                const commitDetails = await github.rest.repos.getCommit({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: commit.sha
+                });
+
+                const stats = commitDetails.data.stats || { additions: 0, deletions: 0 };
+                const netLines = stats.additions - stats.deletions;
+
+                if (!contributorStats[author]) {
+                  contributorStats[author] = { netLines: 0, commits: 0, login: author };
+                }
+                contributorStats[author].netLines += netLines;
+                contributorStats[author].commits += 1;
+              }
+            }
+
+            // Format contributors list as a table
+            const contributorList = Object.values(contributorStats)
+              .filter(contributor => contributor.netLines > 0 || contributor.commits > 0) // Include contributors with commits or net lines
+              .sort((a, b) => b.netLines - a.netLines) // Sort by net lines descending
+              .map(contributor => {
+                return `| [${contributor.login}](https://github.com/${contributor.login}) | ${contributor.netLines} | ${contributor.commits} |`;
+              })
+              .join('\n');
+
+            // Add table headers
+            const table = contributorList.length > 0
+              ? `| Contributor | Net Lines Added | Commits |\n|-------------|-----------------|---------|\n${contributorList}`
+              : 'No contributors with commits or net lines added.';
+
+            return table;
+
+      - name: Update README
+        run: |
+          if [ -z "${{ steps.contributors.outputs.result }}" ] || [ "${{ steps.contributors.outputs.result }}" = "No contributors with commits or net lines added." ]; then
+            echo "No contributors with commits or net lines added."
+            exit 0
+          fi
+          if grep -q "## Contributors" README.md; then
+            sed -i '/## Contributors/,/##/c\## Contributors\n\n${{ steps.contributors.outputs.result }}\n\n##' README.md
+          else
+            echo -e "\n## Contributors\n\n${{ steps.contributors.outputs.result }}\n" >> README.md
+          fi
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add README.md
+          if git diff-index --quiet HEAD; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Update contributors table with net lines and commits"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
