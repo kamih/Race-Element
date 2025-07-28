@@ -18,4 +18,4 @@ Thank you for contributing to this project! Please follow these guidelines to en
 - Ensure your code is well-documented and tested.
 
 ## Questions?
-Feel free to reach out via issues or the discord server: https://discord.gg/26AAEW5mUq
+Feel free to reach out in the discord server: https://discord.gg/26AAEW5mUq
