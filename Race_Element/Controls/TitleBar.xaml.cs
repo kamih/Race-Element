@@ -120,7 +120,7 @@ public partial class TitleBar : UserControl
                 }
         }
 
-        App.Current.MainWindow.WindowState = targetState;
+        App.Current.MainWindow.Dispatcher.Invoke(() => App.Current.MainWindow.WindowState = targetState); ;
     }
 
     public void SetIcons(ActivatedIcons icon, bool enabled)
@@ -154,9 +154,8 @@ public partial class TitleBar : UserControl
 
     private void ButtonExit_Click(object sender, RoutedEventArgs e)
     {
-        MainWindow.Instance.EnqueueSnackbarMessage("Shutting down Race Element");
         MainWindow.Instance.SaveLocation();
-        Environment.Exit(0);
+        App.Instance.Shutdown();
     }
 
     public static string GetAssemblyFileVersion()

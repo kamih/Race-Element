@@ -49,10 +49,18 @@ public partial class Info : UserControl
             Arguments = $"/c start https://race.elementfuture.com/guide/sponsor",
             WindowStyle = ProcessWindowStyle.Hidden,
         });
+        buttonGuidesWebsite.Click += (sender, e) => Process.Start(new ProcessStartInfo()
+        {
+            FileName = "cmd",
+            Arguments = $"/c start https://race.elementfuture.com/guide",
+            WindowStyle = ProcessWindowStyle.Hidden,
+        });
+
         ToolTipService.SetInitialShowDelay(buttonWebsite, 1);
         ToolTipService.SetInitialShowDelay(buttonDiscord, 1);
         ToolTipService.SetInitialShowDelay(buttonGithub, 1);
         ToolTipService.SetInitialShowDelay(buttonDonate, 1);
+        ToolTipService.SetInitialShowDelay(buttonGuidesWebsite, 1);
 
         new Thread(() => CheckNewestVersion()).Start();
 
@@ -176,7 +184,7 @@ public partial class Info : UserControl
                     Text = note.Key,
                     Style = Resources["MaterialDesignBody1TextBlock"] as Style,
                     FontWeight = FontWeights.Bold,
-                    FontStyle = FontStyles.Oblique
+                    FontStyle = FontStyles.Italic
                 };
                 TextBlock noteDescription = new()
                 {
@@ -185,7 +193,7 @@ public partial class Info : UserControl
                     Style = Resources["MaterialDesignDataGridTextColumnStyle"] as Style
                 };
 
-                StackPanel changePanel = new() { Margin = new Thickness(0, 10, 0, 0) };
+                StackPanel changePanel = new() { Margin = new Thickness(0, 10, 0, 0), Orientation = Orientation.Vertical };
                 changePanel.Children.Add(noteTitle);
                 changePanel.Children.Add(noteDescription);
 

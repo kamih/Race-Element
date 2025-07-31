@@ -182,6 +182,14 @@ public partial class HudOptions : UserControl
                     m_GlobalHook = Hook.GlobalEvents();
                     m_GlobalHook.OnCombination(new Dictionary<Combination, Action> {
                         { Combination.FromString("Control+Home"), () => {
+
+                            // prevent hotkey from working when the game is not running, in this case it will only work when the app is the active window.
+                            if (!GameManager.IsGameRunning)
+                            {
+                                if (MainWindow.Instance.WindowState == WindowState.Minimized || !MainWindow.Instance.IsActive)
+                                    return;
+                            }
+
                             if (_lastMovementModeChange.AddMilliseconds(MovementModeDebounce) < DateTime.Now) {
                                 Dispatcher.BeginInvoke(new Action(() => {
                                     this.listBoxItemToggleMovementMode.IsSelected = !this.listBoxItemToggleMovementMode.IsSelected;

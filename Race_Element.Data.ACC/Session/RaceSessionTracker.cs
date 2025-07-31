@@ -8,6 +8,8 @@ using RaceElement.Data.ACC.Database.RaceWeekend;
 using RaceElement.Data.ACC.Database.SessionData;
 using RaceElement.Data.ACC.Database.Telemetry;
 using RaceElement.Data.ACC.Tracker;
+using RaceElement.Data.Games;
+using RaceElement.Util.Settings;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -117,7 +119,8 @@ public sealed class RaceSessionTracker
             RaceSessionCollection.Insert(CurrentSession);
             OnNewSessionStarted?.Invoke(this, CurrentSession);
 
-            TelemetryRecorder.Instance.Record();
+            if (new AccManagerSettings().Get().TelemetryRecordDetailed)
+                TelemetryRecorder.Instance.Record();
         }
     }
 
@@ -182,8 +185,9 @@ public sealed class RaceSessionTracker
         {
             Thread.Sleep(100);
 
-            if (AccProcess.IsRunning == false)
+            if (GameManager.CurrentGame != Game.AssettoCorsaCompetizione || !GameManager.IsGameRunning)
             {
+                Thread.Sleep(1000);
                 continue;
             }
 

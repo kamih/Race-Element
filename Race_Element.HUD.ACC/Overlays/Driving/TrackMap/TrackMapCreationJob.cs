@@ -9,6 +9,7 @@ using RaceElement.Data.ACC.Core;
 using RaceElement.Util;
 using System.Reflection;
 using System.Linq;
+using RaceElement.Data.Games;
 
 namespace RaceElement.HUD.ACC.Overlays.Driving.TrackMap;
 
@@ -108,7 +109,7 @@ public class TrackMapCreationJob : AbstractLoopJob
             OnMapProgressCallback?.Invoke(null, msg);
         }
 
-        if (!AccProcess.IsRunning)
+        if (!GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
         {
             return CreationState.Start;
         }

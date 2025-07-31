@@ -133,10 +133,6 @@ public partial class MainWindow : Window
 
         _uiSettings.Save(uiSettings);
 
-        this.PreviewDrop += (s, e) =>
-        {
-            Debug.WriteLine(e);
-        };
         this.Drop += MainWindow_Drop;
 
         InitializeSystemTrayIcon();
@@ -246,7 +242,7 @@ public partial class MainWindow : Window
 
             Thread.Sleep(2000);
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Optimized, false, false);
-            UpdateUsage();
+            //UpdateUsage();  // disabled for now.. no counter
         });
 
         if (!App.Instance.StartMinimized)
@@ -275,24 +271,28 @@ public partial class MainWindow : Window
         }
     }
 
-    private void UpdateUsage()
-    {
-        // prevent beta versions from increasing real life usage
-        bool runningBeta = false;
-        if (int.TryParse(FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion.Last().ToString(), out int versionLast))
-            if (versionLast % 2 != 0)
-                runningBeta = true;
+    //private void UpdateUsage()
+    //{
+    //    // prevent beta versions from increasing real life usage
+    //    bool runningBeta = false;
+    //    if (int.TryParse(FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion.Last().ToString(), out int versionLast))
+    //        if (versionLast % 2 != 0)
+    //            runningBeta = true;
 
-        if (!runningBeta)
-            try
-            {
-                string hitCounter = "https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FRiddleTime%2FRace-Element";
+    //    if (!runningBeta)
+    //        try
+    //        {
+    //            string hitCounter = $"https://race.elementfuture.com/analytics?version={FileVersionInfo.GetVersionInfo(Environment.ProcessPath).FileVersion}";
 
-                using HttpClient client = new();
-                client.GetAsync(hitCounter).Wait();
-            }
-            catch (Exception) { }
-    }
+    //            using HttpClient client = new();
+    //            client.GetAsync(hitCounter).Wait();
+
+    //            Thread.Sleep(2000);
+
+    //            client.Dispose();
+    //        }
+    //        catch (Exception e) { Debug.WriteLine(e); }
+    //}
 
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
@@ -315,9 +315,9 @@ public partial class MainWindow : Window
 
         //Application.Current.Shutdown();
         Debug.WriteLine("cleaned up app");
-#if !DEBUG
-         Environment.Exit(0);
-#endif
+//#if !DEBUG
+//         //Environment.Exit(0);
+//#endif
     }
 
     private void CurrentDomain_ProcessExit(object sender, EventArgs e)
@@ -337,9 +337,9 @@ public partial class MainWindow : Window
         FileUtil.CleanDownloadCache();
 
         Debug.WriteLine("exiting app");
-#if !DEBUG
-         Environment.Exit(0);
-#endif
+//#if !DEBUG
+//         //Environment.Exit(0);
+//#endif
     }
 
     private System.Windows.Forms.NotifyIcon _notifyIcon;

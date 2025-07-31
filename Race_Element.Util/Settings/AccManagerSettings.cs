@@ -3,6 +3,7 @@
 public sealed class AccManagerSettingsJson : IGenericSettingsJson
 {
     public bool MinimizeToSystemTray { get; set; }
+    public bool AutoSwitchGames { get; set; }
     public bool TelemetryRecordDetailed { get; set; }
     public int TelemetryDetailedHerz { get; set; }
     public bool Generate4kDDS { get; set; }
@@ -20,6 +21,7 @@ public sealed class AccManagerSettings : AbstractSettingsJson<AccManagerSettings
         TelemetryRecordDetailed = false,
         TelemetryDetailedHerz = 20,
         Generate4kDDS = false,
+        AutoSwitchGames = true,
     };
 
 }

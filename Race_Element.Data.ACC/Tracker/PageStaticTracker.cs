@@ -1,5 +1,6 @@
 ﻿using RaceElement.Core.Jobs.Loop;
 using RaceElement.Data.ACC.Core;
+using RaceElement.Data.Games;
 using System;
 using static RaceElement.ACCSharedMemory;
 
@@ -28,7 +29,7 @@ public sealed class PageStaticTracker : AbstractLoopJob
 
     public override void RunAction()
     {
-        if (AccProcess.IsRunning)
+        if (GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
             Tracker?.Invoke(null, ACCSharedMemory.Instance.ReadStaticPageFile());
     }
 }

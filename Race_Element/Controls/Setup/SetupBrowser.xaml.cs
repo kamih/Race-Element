@@ -1,9 +1,9 @@
 ﻿using MaterialDesignThemes.Wpf;
 using RaceElement.Controls.Setup;
 using RaceElement.Controls.Util;
-using RaceElement.Data;
 using RaceElement.Data.ACC.Core;
 using RaceElement.Data.ACC.Tracks;
+using RaceElement.Data.Games;
 using RaceElement.Util;
 using RaceElement.Util.SystemExtensions;
 using SharpCompress.Archives.Zip;
@@ -18,8 +18,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using static RaceElement.Data.ACC.Tracks.TrackData;
-using static RaceElement.Data.ConversionFactory;
-using static RaceElement.Data.SetupJson;
+using static RaceElement.Data.ACC.SetupParser.ConversionFactory;
+using static RaceElement.Data.ACC.SetupParser.SetupJson;
+using RaceElement.Data.ACC.SetupParser;
 
 namespace RaceElement.Controls;
 
@@ -157,7 +158,7 @@ public partial class SetupBrowser : UserControl
                         ClearSetups();
 
                         // Pre-expand the current car and track leafs
-                        if (AccProcess.IsRunning)
+                        if (GameManager.IsGameRunning && GameManager.CurrentGame == Game.AssettoCorsaCompetizione)
                         {
                             var staticPage = ACCSharedMemory.Instance.ReadStaticPageFile();
                             if (staticPage != null)

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using static RaceElement.Data.ACC.Tracks.TrackData;
 
-namespace ACCManager.Data.ACC.Tracks.Data;
+namespace RaceElement.Data.ACC.Tracks.Data;
 
 internal sealed class Nurburgring : AbstractTrackData
 {
@@ -20,7 +20,7 @@ internal sealed class Nurburgring : AbstractTrackData
     // https://www.paradigmshiftracing.com/uploads/4/8/2/6/48261497/nurburgring-map_orig.png
     public override Dictionary<FloatRangeStruct, (int, string)> CornerNames => new()
     {
-        { new FloatRangeStruct(0.09318506f, 0.1456866f), (1, "Yohohama Kurve")},
+        { new FloatRangeStruct(0.09318506f, 0.1456866f), (1, "Yokohama Kurve")},
         { new FloatRangeStruct(0.1456867f, 0.184711f), (2, "Mercedes Arena")},
         { new FloatRangeStruct(0.1969276f, 0.2212936f), (3, "Mercedes Arena")},
         { new FloatRangeStruct(0.2212937f, 0.255046f), (4, "")},

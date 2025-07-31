@@ -1,6 +1,6 @@
-﻿using RaceElement.Data.ACC.Session;
+﻿using RaceElement.Data.ACC.Laps;
+using RaceElement.Data.ACC.Session;
 using RaceElement.Data.ACC.Tracker;
-using RaceElement.Data.ACC.Tracker.Laps;
 using RaceElement.Util;
 using RaceElement.Util.Settings;
 using System;
@@ -97,10 +97,11 @@ internal class TelemetryRecorder
             return;
         }
 
-        LogWriter.WriteToLog("TelemetryRecorder: Record()");
-
         if (!new AccManagerSettings().Get().TelemetryRecordDetailed)
             return;
+
+        LogWriter.WriteToLog("TelemetryRecorder: Record()");
+       
 
         _isRunning = true;
         new Thread(x =>

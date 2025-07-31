@@ -15,6 +15,11 @@
             <Label VerticalAlignment="Center">Minimize Race Element to system tray</Label>
         </StackPanel>
 
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" ToolTip="If any of the supported games is running and Race Element isn't set to this game, it will automatically switch for you.">
+            <ToggleButton x:Name="toggleAutoSwitchGames" Width="50" Height="35" VerticalAlignment="Center" Cursor="Hand"/>
+            <Label VerticalAlignment="Center">Automatically switch to supported running games.</Label>
+        </StackPanel>
+
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" ToolTip="Usually dds_1 files are downscaled to 2K, this forces it to be 4k. Useful if you want to make screenshots of your custom livery whilst driving.">
             <ToggleButton x:Name="toggleGenerate4kDDS" Width="50" Height="35" VerticalAlignment="Center" Cursor="Hand"/>
             <Label VerticalAlignment="Center">DDS Generator: generate 4K dds_1 files.</Label>

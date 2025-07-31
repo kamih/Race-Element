@@ -35,6 +35,9 @@ public partial class AccManagerSettingsTab : UserControl
 
             sliderTelemetryHerz.ValueChanged += (s, e) => SaveSettings();
 
+            toggleAutoSwitchGames.Checked += (s, e) => SaveSettings();
+            toggleAutoSwitchGames.Unchecked += (s, e) => SaveSettings();
+
             buttonOpenAccManagerFolder.Click += ButtonOpenAccManagerFolder_Click;
             buttonMigrateAccHudsToV2.Click += ButtonMigrateAccHudsToV2_Click;
         }));
@@ -58,7 +61,8 @@ public partial class AccManagerSettingsTab : UserControl
                 continue;
             }
             filesCopied++;
-        };
+        }
+        ;
 
         RunRaceElement(FileUtil.AppFullName + ".exe");
     }
@@ -93,6 +97,8 @@ public partial class AccManagerSettingsTab : UserControl
         labelTelemetryHerz.Content = $"Telemetry: Extended Data Herz: {_settings.Get().TelemetryDetailedHerz}";
         toggleMinimizeToSystemTray.IsChecked = _settings.Get().MinimizeToSystemTray;
         toggleGenerate4kDDS.IsChecked = _settings.Get().Generate4kDDS;
+        toggleAutoSwitchGames.IsChecked = _settings.Get().AutoSwitchGames;
+        GameManager.AutoSwitch = _settings.Get().AutoSwitchGames;
     }
 
     private void ButtonOpenAccManagerFolder_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -110,6 +116,8 @@ public partial class AccManagerSettingsTab : UserControl
         settings.TelemetryRecordDetailed = toggleRecordLapTelemetry.IsChecked.Value;
         settings.TelemetryDetailedHerz = (int)sliderTelemetryHerz.Value;
         settings.Generate4kDDS = toggleGenerate4kDDS.IsChecked.Value;
+        settings.AutoSwitchGames = toggleAutoSwitchGames.IsChecked.Value;
+        GameManager.AutoSwitch = settings.AutoSwitchGames;
 
         labelTelemetryHerz.Content = $"Telemetry: Extended Data Herz: {settings.TelemetryDetailedHerz}";
 

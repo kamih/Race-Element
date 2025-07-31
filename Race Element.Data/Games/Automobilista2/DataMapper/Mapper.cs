@@ -125,6 +125,9 @@ internal static class Ams2Mapper
         {
             local.Electronics.AbsLevel = 0;
         }
+        local.Electronics.PushToPassActive = shared.mBoostActive;
+        local.Electronics.PushToPassLevel = shared.mBoostAmount;
+
 
         // Car inputs
         local.Inputs.HandBrake = shared.mHandBrake;

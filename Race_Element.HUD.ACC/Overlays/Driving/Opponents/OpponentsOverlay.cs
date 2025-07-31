@@ -1,6 +1,5 @@
 ﻿using RaceElement.Data.ACC.EntryList;
 using RaceElement.Data.ACC.Session;
-using RaceElement.HUD.Overlay.Configuration;
 using RaceElement.HUD.Overlay.Internal;
 using RaceElement.HUD.Overlay.OverlayUtil;
 using System.Collections.Generic;
@@ -9,35 +8,16 @@ using System.Linq;
 
 namespace RaceElement.HUD.ACC.Overlays.Driving.Opponents;
 
-#if DEBUG
+# if DEBUG
 [Overlay(
-Name = "Opponents",
-Description = "Shows information about the cars ahead and behind in terms of race position.")]
+    Name = "Opponents",
+    Description = "Shows information about the cars ahead and behind in terms of race position."
+)]
 #endif
 internal sealed class OpponentsOverlay : AbstractOverlay
 {
     private readonly OpponentsConfiguration _config = new();
-    private sealed class OpponentsConfiguration : OverlayConfiguration
-    {
-        [ConfigGrouping("Opponents", "Change how many opponents are displayed either ahead or behind")]
-        public OpponentsGrouping Opponents { get; init; } = new();
-        public sealed class OpponentsGrouping
-        {
-            [IntRange(1, 5, 1)]
-            public int AheadCount { get; init; } = 1;
-            [IntRange(1, 5, 1)]
-            public int BehindCount { get; init; } = 1;
-        }
-
-        [ConfigGrouping("Data", "Change which opponents data is displayed.")]
-        public BehaviorGrouping Data { get; init; } = new();
-        public sealed class BehaviorGrouping
-        {
-            public bool Sectors { get; init; } = true;
-            public bool Gap { get; init; } = true;
-            public bool Difference { get; init; } = true;
-        }
-    }
+  
     private readonly record struct OpponentsModel
     {
         public CarDataModel[] Ahead { get; init; }
@@ -56,7 +36,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         public int GapLaps { get; init; }
     }
 
-    private InfoTable _table;
+    private readonly InfoTable _table;
     public OpponentsOverlay(Rectangle rectangle) : base(rectangle, "Opponents")
     {
         Width = 350;
@@ -64,10 +44,9 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         List<int> columnSizes = [50];
 
         _table = new InfoTable(12, [100, 100, 50]) { DrawBackground = true, DrawRowLines = true, DrawValueBackground = true, };
-
     }
 
-    public override bool ShouldRender() => true;
+    public sealed override bool ShouldRender() => true;
 
     public sealed override void Render(Graphics g)
     {
@@ -223,7 +202,7 @@ internal sealed class OpponentsOverlay : AbstractOverlay
         };
     }
 
-    private EntryListTracker.CarData GetCarData(int carId)
+    private static EntryListTracker.CarData GetCarData(int carId)
     {
         var allCars = EntryListTracker.Instance.Cars;
         if (allCars.Count == 0) return null;

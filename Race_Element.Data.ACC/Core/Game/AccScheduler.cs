@@ -1,6 +1,6 @@
 ﻿using RaceElement.Data.ACC.Tracker;
 
-namespace ACCManager.Data.ACC.Core.Game;
+namespace RaceElement.Data.ACC.Core.Game;
 
 public static class AccScheduler
 {
@@ -11,6 +11,7 @@ public static class AccScheduler
 
     public static void UnregisterJobs()
     {
+        PageStaticTracker.Instance.CancelJoin();
         ACCTrackerDispose.Dispose();
     }
 }

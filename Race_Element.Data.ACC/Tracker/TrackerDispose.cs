@@ -1,7 +1,8 @@
-﻿using RaceElement.Data.ACC.Database;
+﻿using RaceElement.Data.ACC.Core;
+using RaceElement.Data.ACC.Database;
 using RaceElement.Data.ACC.EntryList;
+using RaceElement.Data.ACC.Laps;
 using RaceElement.Data.ACC.Session;
-using RaceElement.Data.ACC.Tracker.Laps;
 using RaceElement.Data.ACC.Tyres;
 using System.Diagnostics;
 
@@ -19,12 +20,12 @@ public class ACCTrackerDispose
         SetupHiderTracker.Instance.Dispose();
 
         PageGraphicsTracker.Stop();
+        PagePhysicsTracker.Instance.Dispose();
 
         RaceSessionTracker.Instance.Stop();
         LapTracker.Instance.Stop();
         TyresTracker.Instance.Stop();
 
         RaceWeekendDatabase.Close();
-
     }
 }
